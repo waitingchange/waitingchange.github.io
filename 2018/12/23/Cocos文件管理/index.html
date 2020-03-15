@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Cocos 中脚本文件是如何被载入和执行&amp;emsp;&amp;emsp;Cocos 是可以执行 lua 和 js 的，lua 和 js 都可以认为是解释性语言，不涉及编译和链接步骤，那么文件是如何在Cocos中被载入到内存中并且被执行呢 ？ &amp;emsp;&amp;emsp;前提，我们知道不管是IOS 系统还是 Android 系统，Cocos 的执行流程都是需要把MainLoop 执行起来。如果这个流程不太清楚，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cocos文件管理">
+<meta property="og:url" content="waitingchange.github.io/2018/12/23/Cocos文件管理/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="Cocos 中脚本文件是如何被载入和执行&amp;emsp;&amp;emsp;Cocos 是可以执行 lua 和 js 的，lua 和 js 都可以认为是解释性语言，不涉及编译和链接步骤，那么文件是如何在Cocos中被载入到内存中并且被执行呢 ？ &amp;emsp;&amp;emsp;前提，我们知道不管是IOS 系统还是 Android 系统，Cocos 的执行流程都是需要把MainLoop 执行起来。如果这个流程不太清楚，">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-01-13T04:48:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Cocos文件管理">
+<meta name="twitter:description" content="Cocos 中脚本文件是如何被载入和执行&amp;emsp;&amp;emsp;Cocos 是可以执行 lua 和 js 的，lua 和 js 都可以认为是解释性语言，不涉及编译和链接步骤，那么文件是如何在Cocos中被载入到内存中并且被执行呢 ？ &amp;emsp;&amp;emsp;前提，我们知道不管是IOS 系统还是 Android 系统，Cocos 的执行流程都是需要把MainLoop 执行起来。如果这个流程不太清楚，">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="waitingchange.github.io/2018/12/23/Cocos文件管理/">
+
+
+
+
+
+  <title>Cocos文件管理 | 懒人的胡言乱语</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">懒人的胡言乱语</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            About
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            Tags
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            Categories
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="waitingchange.github.io/2018/12/23/Cocos文件管理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Cocos文件管理</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-12-23T15:00:31+08:00">
+                2018-12-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Cocos/" itemprop="url" rel="index">
+                    <span itemprop="name">Cocos</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Cocos-中脚本文件是如何被载入和执行"><a href="#Cocos-中脚本文件是如何被载入和执行" class="headerlink" title="Cocos 中脚本文件是如何被载入和执行"></a>Cocos 中脚本文件是如何被载入和执行</h1><p>&emsp;&emsp;Cocos 是可以执行 lua 和 js 的，lua 和 js 都可以认为是解释性语言，不涉及编译和链接步骤，那么文件是如何在Cocos中被载入到内存中并且被执行呢 ？</p>
+<p>&emsp;&emsp;前提，我们知道不管是IOS 系统还是 Android 系统，Cocos 的执行流程都是需要把MainLoop 执行起来。如果这个流程不太清楚，请参看我上一个帖子   <strong>Cocos 代码执行流程</strong></p>
+<p>&emsp;&emsp;以Cocos lua 为例，前面的代码部分已经解释了，在执行MainLoop 之前，AppDelegate::applicationDidFinishLaunching 函数中会先执行lua 虚拟机的初始化 和 设定 脚本执行的入口文件，我们继续跟踪代码执行，去发现Cocos 在文件操作方面是具有如何的特点。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">engine-&gt;executeScriptFile(<span class="string">"src/main.lua"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;对于main.lua 我们很熟悉，cocos-lua 中lua脚本执行入口文件。我们知道硬盘可以容纳很多的文件内容，但是这些文件内容在没有被计算机读取的时候就仅仅是存放而已，真正有效是在载入到内存以后被cpu处理的时候，话外题，先pass。我们继续回到main.lua ，同样，在入口的时候一定会先将文件载入到内存，那么文件的IO操作一定少不了。因为使用lua语言编写的，所以lua解释器需要介入和解释文本内容。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//猜想执行流程</span></span><br><span class="line"><span class="keyword">if</span>(isFileExistence)&#123;</span><br><span class="line">    <span class="comment">//执行文本IO 根据文本类型读取内容</span></span><br><span class="line">        FILE *fp = fopen(fullPath.c_str(), mode);</span><br><span class="line">        fseek(fp,<span class="number">0</span>,SEEK_END);</span><br><span class="line">    <span class="comment">//获取长度</span></span><br><span class="line">        *size = ftell(fp);</span><br><span class="line">        fseek(fp,<span class="number">0</span>,SEEK_SET);</span><br><span class="line">    <span class="comment">//获取文本内容 放入内存</span></span><br><span class="line">        buffer = (<span class="keyword">unsigned</span> <span class="keyword">char</span>*)<span class="built_in">malloc</span>(*size);</span><br><span class="line">        *size = fread(buffer,<span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">char</span>), *size,fp);</span><br><span class="line">        fclose(fp);</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">//判断如果文本是经过 xxtea 加密</span></span><br><span class="line">    <span class="comment">//拿到加密的buffer 进行解密 返回原始内容</span></span><br><span class="line">    <span class="comment">//拿到原始内容以后进行解释执行</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;如果这里没其他需求，最简单和直接的思路应该是这样的，所以我们转向看下Cocos 的代码部分。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> BYTECODE_FILE_EXT    = <span class="string">".luac"</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> NOT_BYTECODE_FILE_EXT = <span class="string">".lua"</span>;</span><br><span class="line"><span class="keyword">int</span> LuaStack::executeScriptFile(<span class="keyword">const</span> <span class="keyword">char</span>* filename)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">buf</span><span class="params">(filename)</span></span>;</span><br><span class="line">    <span class="comment">// remove .lua or .luac</span></span><br><span class="line">   	...</span><br><span class="line">    FileUtils *utils = FileUtils::getInstance();</span><br><span class="line">    <span class="comment">// 1. check .lua suffix 2. check .luac suffix</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> tmpfilename = buf + NOT_BYTECODE_FILE_EXT;</span><br><span class="line">    <span class="keyword">if</span> (utils-&gt;isFileExist(tmpfilename))&#123;</span><br><span class="line">        buf = tmpfilename;  <span class="comment">// .lua file</span></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        tmpfilename = buf + BYTECODE_FILE_EXT;</span><br><span class="line">        <span class="keyword">if</span> (utils-&gt;isFileExist(tmpfilename))&#123;</span><br><span class="line">            buf = tmpfilename;  <span class="comment">// .luac file</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//获取全路径</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> fullPath = utils-&gt;fullPathForFilename(buf);</span><br><span class="line">    Data data = utils-&gt;getDataFromFile(fullPath); <span class="comment">//获取buffer</span></span><br><span class="line">    <span class="keyword">int</span> rn = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!data.isNull())&#123;</span><br><span class="line">        <span class="comment">//载入lua buffer</span></span><br><span class="line">        <span class="keyword">if</span> (luaLoadBuffer(_state, (<span class="keyword">const</span> <span class="keyword">char</span>*)data.getBytes(), (<span class="keyword">int</span>)data.getSize(), fullPath.c_str()) == <span class="number">0</span>)&#123;</span><br><span class="line">            rn = executeFunction(<span class="number">0</span>); <span class="comment">//执行栈顶 func</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> rn;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;跟Cocos 这边进行对比发现基本逻辑实现好像差不多（所以我们也可以按照自己意愿封装自己的引擎了）。文本最终执行到了lua虚拟机然后进行函数执行。解释到这里似乎基本上已经完事儿了，是确定这样的吗？会有好奇心想要知道文本如何高效率精准被找到的吗？</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取全路径   如何做到的 ？</span></span><br><span class="line">   <span class="built_in">std</span>::<span class="built_in">string</span> fullPath = utils-&gt;fullPathForFilename(buf);</span><br><span class="line">   Data data = utils-&gt;getDataFromFile(fullPath); <span class="comment">//获取buffer 有什么其他要注意的吗 ？</span></span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;在我们的FileUtils 中有对外暴露的  setSearchPaths 函数，直面翻译函数名字叫做设置文件搜索路径。在我们不知道内部如何实现的时候我们可以尝试使用自己的思路进行猜测别人的逻辑如何实现，如果最后发现很接近，这样是不是很开心？如果发现不太一样，我们是不是能学到一些别人优秀的设计思想 ？继续回归代码层面，我们先做设想。设置进来的是文件路径数组，那么数组有两个目的，第一临时存储，第二方便遍历。所以从方便遍历的角度来讲进行文件查找，我们推测。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(isFileNameExistence)&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span>;i &lt; arry.length;i++)&#123;</span><br><span class="line">        <span class="comment">//1.取出每一个字符串中的内容 + 传递进入的文件名字</span></span><br><span class="line">        <span class="comment">//2.判断  isFileExist(tmpfilename) 存在的话就返回拼接后的字符串，</span></span><br><span class="line">    &#125;</span><br><span class="line">   	<span class="comment">//在最后如果没找到就返回没找到标识</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;我们看下源码实现部分</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> FileUtils::fullPathForFilename(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;filename) <span class="keyword">const</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (filename.empty())&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>;  <span class="comment">//空字符串监测</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (isAbsolutePath(filename))&#123;</span><br><span class="line">        <span class="keyword">return</span> filename; <span class="comment">//绝对路径直接返回 优化的点</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Already Cached ?  加入了缓存机制  _fullPathCache</span></span><br><span class="line">    <span class="keyword">auto</span> cacheIter = _fullPathCache.find(filename);</span><br><span class="line">    <span class="keyword">if</span>(cacheIter != _fullPathCache.end())&#123;</span><br><span class="line">        <span class="keyword">return</span> cacheIter-&gt;second;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Get the new file name. 缓存机制中使用了字典，所以字典两边都需要进行监测是否已经存在</span></span><br><span class="line">    const std::string newFilename( getNewFilename(filename) );</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> fullpath;</span><br><span class="line">	<span class="comment">//    遍历搜索路径</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; searchIt : _searchPathArray) &#123;</span><br><span class="line">        <span class="comment">//这里有一个分辨率搜索顺序的Vector 如果有多套分辨率 下面的资源和脚本路径结构一样可以进行设置，默认为空字符串</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; resolutionIt : _searchResolutionsOrderArray)&#123;</span><br><span class="line">            <span class="comment">//拼接内容 获取字符串内容 同时判断文件是否存在 存在返回全路径</span></span><br><span class="line">            fullpath = <span class="keyword">this</span>-&gt;getPathForFilename(newFilename, resolutionIt, searchIt);</span><br><span class="line">            <span class="keyword">if</span> (!fullpath.empty())&#123;</span><br><span class="line">                <span class="comment">// Using the filename passed in as key. 全路径不为空插入缓存 map 方便下次查找使用</span></span><br><span class="line">                _fullPathCache.insert(<span class="built_in">std</span>::make_pair(filename, fullpath));</span><br><span class="line">                <span class="keyword">return</span> fullpath;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(isPopupNotify())&#123;</span><br><span class="line">        CCLOG(<span class="string">"cocos2d: fullPathForFilename: No file found at %s. Possible missing file."</span>, filename.c_str());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// The file wasn't found, return empty string. 找不到返回空字符串</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">""</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;所以看下执行的逻辑和顺序，思考一下别人巧妙的思想。鉴于cocos脚本和资源部分大多数都要走fileUtils ，是不是我们可以做一些更巧妙的东西加入到cocos 的源码中 ？</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/01/Tinypng/" rel="next" title="Tinypng">
+                <i class="fa fa-chevron-left"></i> Tinypng
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/01/26/怎样获取fir-im中的IPA包/" rel="prev" title="怎样获取fir.im中的IPA包">
+                怎样获取fir.im中的IPA包 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="change">
+            
+              <p class="site-author-name" itemprop="name">change</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-name">categories</span>
+                </a>
+              </div>
+            
+
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/waitingchange" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:waiting0313@gmail.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Cocos-中脚本文件是如何被载入和执行"><span class="nav-number">1.</span> <span class="nav-text">Cocos 中脚本文件是如何被载入和执行</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
