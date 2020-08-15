@@ -89,7 +89,7 @@
 <meta property="og:image" content="waitingchange.github.io/2020/08/12/images/codelldb/CodeLLDB_quick_start.png">
 <meta property="og:image" content="waitingchange.github.io/2020/08/12/images/codelldb/nodeinspect.png">
 <meta property="og:image" content="waitingchange.github.io/2020/08/12/images/codelldb/compounds.png">
-<meta property="og:updated_time" content="2020-08-15T10:24:47.815Z">
+<meta property="og:updated_time" content="2020-08-15T10:49:41.288Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="使用vscode 进行调试Node + C++ ">
 <meta name="twitter:description" content="如何使用vscode 调试 nodejs + C++先讲遇到的问题Electron 部分发新版本，windows包，在一些设备上出现了崩溃，没有堆栈，没有可用信息，怀疑的点有一大堆。 以上是问题，解决思路是从git提交记录进行比对找出一些最怀疑的点进行日志跟踪，尝试找出崩溃发生前最后日志出现位置，推测上下文。 如何定位问题先不细讲，最后大致定位在native log日志部分，比如表现，在一些机器上">
@@ -403,6 +403,7 @@ height: 100%; left: 0; top: 0;"> </iframe></div>
 <p><strong>preLaunchTask</strong>字段，从字面意思就能了解是在做一些列操作之前可以先执行某种动作。</p>
 <p><img src="../images/codelldb/compounds.png" alt="compounds"></p>
 <p>演示的视频是在Mac 下面做的，在windows下面配置部分会略微不同，但是流程是一样的，需要先launch ，然后在attach node 文件，进而在需要的地方进行断点。</p>
+<p>附加： ：<a href="git@github.com:waitingchange/vscode_debug_nodejs_cpp.git">视频中用于测试的Demo 工程 Git 地址</a>   </p>
 
       
     </div>
