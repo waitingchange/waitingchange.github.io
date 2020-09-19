@@ -259,6 +259,188 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="waitingchange.github.io/2020/09/17/CMake/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/09/17/CMake/" itemprop="url">CMake</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-09-17T20:35:08+08:00">
+                2020-09-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CMake/" itemprop="url" rel="index">
+                    <span itemprop="name">CMake</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="为什么要使用CMake"><a href="#为什么要使用CMake" class="headerlink" title="为什么要使用CMake"></a>为什么要使用CMake</h1><p>嗯，考虑到能看到这里的基本都会对CMake 有一定了解，所以先不讲这东西是啥，问题是为啥要用这东西。</p>
+<p>我们这边有一些需求，目的是基础功能保持稳定性，又因为涉及到多个类型的客户端（IOS、Android、Windows、Mac），那么共用的内容C++使用就是一种必然，同时考虑到后期的可维护性，CMake 的使用就应该是一种必然。</p>
+<p>因为是要做公共基础内容，最直接的思考是提供静态库给各方使用，这也就间接回答了CMake 的用途，用来把源码生成二进制文件。</p>
+<p>按照正常的流程，先给一个开胃菜，提供一个Demo。</p>
+<p>推荐一个软件 <em>CLine</em> </p>
+<p><img src="../images/CMake/CLineDemo.png" alt="CLineDemo"></p>
+<p>刚好能够提供C++ 静态库和动态库。</p>
+<p>因为我需要优先做Android 的内容，所以我一步到位直接使用了AndroidStudio。</p>
+<p><img src="../images/CMake/AndroidCmake.png" alt="AndroidCmake"></p>
+<p>上面是简单的创建工程，咱们接着往下面。</p>
+<p>以CLine 为例子</p>
+<p><img src="../images/CMake/ClineCMake.png" alt="ClineCMake"></p>
+<p>CMake 文本的写法就是 需要设置 CMake version  然后给出一个 project(<strong>name</strong>)  name 为生成静态库名字 ，设置C11 ,然后就是给这个project 添加需要编译的CPP文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">├── CMakeLists.txt</span><br><span class="line">├── build</span><br><span class="line">├── library.cpp</span><br><span class="line">└── library.h</span><br></pre></td></tr></table></figure>
+
+<p>文件结构大致是这样，需要有<strong>source file ** 、 **build</strong> 文件夹（我不太喜欢CLine 默认的 cmake-build-debug，自己更改了）、和必需品 <strong>CMakeLists.txt</strong></p>
+<p>不依赖工具，可以在终端进入到当前文件夹下面的build 文件夹 然后执行 <strong>cmake ..</strong></p>
+<p>执行<strong>cmake 命令</strong>之后，需要生成库文件需要在当前命令行再次执行 <strong>make</strong> ， 等命令执行完毕，库文件就会出现在build 文件夹。</p>
+<p>依靠CLine 就相对容易，直接点击右上角的debug 标志即可。</p>
+<p>如果一切运行正常，在build 文件夹下面就会出现需要的 CmakeDemo 这个名字的二进制文件，因为我们需要的是静态库，那么到现在为止这个静态库可以被拿来使用了。</p>
+<h2 id="如何检验是否为自己需要的二进制静态库"><a href="#如何检验是否为自己需要的二进制静态库" class="headerlink" title="如何检验是否为自己需要的二进制静态库"></a>如何检验是否为自己需要的二进制静态库</h2><p>我们想要提供出去稳定可靠的二进制库，那么自测是必须不可少的一环。讲一下我这边比较常用的方式，我会去创建一个适合的console 工程，或者如果使用xcode ， 我会创建一个可视化的对应平台APP，把库文件暴露的接口交给新建demo 工程，按照正常使用的流程，载入编译出来的库文件。</p>
+<p>那么开搞。</p>
+<p>因为这里打算先提供一下简单的demo ， 只演示一下如何使用CMake ，创建静态库和使用静态库，这里简单替换原来的打印名言<strong>Hello,world!</strong> 更改为 **”Hello, from static lib !” **</p>
+<p>在进入build 文件夹执行过最后的 <strong>make</strong> 命令后，能够拿到库文件 <strong>libCmakeDemo.a</strong></p>
+<p>我们放入到consoleDemo 工程中 然后文件结构是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">├── CMakeLists.txt</span><br><span class="line">├── cmake-build-debug</span><br><span class="line">├── libCmakeDemo.a</span><br><span class="line">├── library.h</span><br><span class="line">└── main.cpp</span><br></pre></td></tr></table></figure>
+
+<p>更改CMakeLists.txt  内容如下</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#设置cmake version</span></span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.17</span>)</span><br><span class="line"><span class="comment">#设置变量名字</span></span><br><span class="line"><span class="keyword">set</span>(APP_NAME ConsoleDemo)</span><br><span class="line"><span class="comment"># 国际惯例 project name</span></span><br><span class="line"><span class="keyword">project</span>(<span class="variable">$&#123;APP_NAME&#125;</span>)</span><br><span class="line"><span class="comment">#C11</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">11</span>)</span><br><span class="line"><span class="comment"># 这里需要链接静态库</span></span><br><span class="line"><span class="keyword">link_libraries</span>(<span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/libCmakeDemo.a)</span><br><span class="line"><span class="comment">#正常编译需要的 添加source 文件</span></span><br><span class="line"><span class="keyword">add_executable</span>(<span class="variable">$&#123;APP_NAME&#125;</span> main.cpp library.h)</span><br></pre></td></tr></table></figure>
+
+<p>我这边比较懒，就直接搬运了静态库中使用的头文件，因为属于函数定义，并且没有特殊要求，这里就直接可以拿来使用。</p>
+<p>看下<strong>main</strong>函数中的修改</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"library.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    hello();</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">"Hello, World!"</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里就很简单了，直接引入头文件，然后在合适的地方进行执行。</p>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hello, from static lib !</span><br><span class="line">Hello, World!</span><br></pre></td></tr></table></figure>
+
+<p>如预期</p>
+<p>先写到这里，下次可以讲一下全平台的一些东西，比如一些难点，如果从C++ 通过nodejs 异步回调给JavaScript（可不是正常设置进去一个回调然后等执行后就从C++那边执行到JavaScript ，这样就没有技术含量）使用libuv 可以多次从C++ 回调给JavaScript，下次讲讲如何实现。</p>
+<p>惯例，使用的demo 地址  <a href="https://github.com/waitingchange/cmakeDemo" target="_blank" rel="noopener">Demo 地址</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="waitingchange.github.io/2020/08/12/使用vscode-进行调试Node &C++/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -69439,160 +69621,6 @@ document.getElementById('ipynb').height=$("#ipynb").contents().find("#notebook")
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="waitingchange.github.io/2019/01/26/怎样获取fir-im中的IPA包/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="change">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="懒人的胡言乱语">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/01/26/怎样获取fir-im中的IPA包/" itemprop="url">怎样获取fir.im中的IPA包</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-26T11:01:44+08:00">
-                2019-01-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">In</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/其他/" itemprop="url" rel="index">
-                    <span itemprop="name">其他</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="述求如题，怎样获取托管网站中分发的iOS安装包-？"><a href="#述求如题，怎样获取托管网站中分发的iOS安装包-？" class="headerlink" title="述求如题，怎样获取托管网站中分发的iOS安装包 ？"></a>述求如题，怎样获取托管网站中分发的iOS安装包 ？</h1><p>&emsp;&emsp;百度搜索，关键字 fir.im iOS安装包 ，第一篇，使用抓包。鉴于我不太会使用，所以暂时先放弃，其余的，跟关键字似乎无关。只有抓包才好使 ？保持怀疑。。。</p>
-<p>&emsp;&emsp;先把如何获取到放在一边，尝试了解一下需要下载的是什么。企业签名包如何制作，继续百度关键字，出现的结果都是多少多少钱，吐槽弃用。作为一个技术，我自己主要的搜索是Google，从这里我们可以找到相对满意的答案。比如我查到的结果 <a href="https://www.goodbarber.com/blog/distribute-your-ios-app-out-of-the-store-with-the-apple-developer-enterprise-program-a871/" target="_blank" rel="noopener">企业签名如何制作</a>。企业签名包在最后会生成一个plist文件，提供链接给ios设备Safari ，然后就可以自动安装。</p>
-<p>&emsp;&emsp;回归主题，汇总知道，需要下载plist ， 需要使用Safari。所以我们需要去fir.im 中去猜想他们是如何操作的的。</p>
-<p>&emsp;&emsp;1.首先我们需要一个fir.im 中对于APP 的一个下载地址，比如：<a href="https://fir.im/2cra" target="_blank" rel="noopener">https://fir.im/2cra</a> （网上资源，如果侵权请联系删除）</p>
-<p>&emsp;&emsp;2.iPad 或者 iPhone中使用 Safari 打开链接。</p>
-<p>&emsp;&emsp;3.手机中开启 Safari中高级设置 –&gt; Web Inspector </p>
-<p>&emsp;&emsp;4.手机连接电脑，打开Safari ，Developer –&gt; ipad —&gt; fir.im/2cra  如图</p>
-<p><img src="/images/safari_inspect.png" alt="&quot;inspect 截图&quot;"> 查看网页源码，根据文件名字，最感兴趣的应该是download.js 。 所以我们查看文本内容。根据我们获取的信息知道plist下载链接前面需要有 <em>itms-services://?action=download-manifest&amp;url=</em> 所以，我们查找之后的截图如下</p>
-<p><img src="/images/safari_plist_url_code.png" alt="&quot;plist链接如图&quot;"> 匹配到的函数是 plistUrl  和  iosSchema</p>
-<p>Safari 提供断点跟踪，所以，开始搞事情！！！</p>
-<p><img src="/images/safari_plist_url_value.png" alt="&quot;plist真实链接&quot;"> 貌似拿到了下载链接，如何验证呢 ？</p>
-<p>&emsp;&emsp;chrome 里面装上一个插件，使用iPad 访问链接，比如 <em>User-Agent Switcher for Chrome</em> 在头部加上http://   扔到浏览器访问，直接出来下载的plist   文件名字叫做 <strong>install</strong>  我们使用文本工具查看文件内容<img src="/images/safari_plist_install_content.jpg" alt="&quot;install 文件&quot;"></p>
-<p>&emsp;&emsp;<em><a href="https://ali-fir-pro-binary.fir.im/fe5b21535e0c908bb95adc7560c8ab8db9a914fa?auth_key=1548583391-0-0-73f83a6c4d6151baba81747148ff0f8b" target="_blank" rel="noopener">https://ali-fir-pro-binary.fir.im/fe5b21535e0c908bb95adc7560c8ab8db9a914fa?auth_key=1548583391-0-0-73f83a6c4d6151baba81747148ff0f8b</a></em> 链接地址就是ipa下载地址，丢到浏览器，完事儿。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -69645,7 +69673,7 @@ document.getElementById('ipynb').height=$("#ipynb").contents().find("#notebook")
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -69656,7 +69684,7 @@ document.getElementById('ipynb').height=$("#ipynb").contents().find("#notebook")
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>

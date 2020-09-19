@@ -259,6 +259,160 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="waitingchange.github.io/2019/01/26/怎样获取fir-im中的IPA包/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/01/26/怎样获取fir-im中的IPA包/" itemprop="url">怎样获取fir.im中的IPA包</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-01-26T11:01:44+08:00">
+                2019-01-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/其他/" itemprop="url" rel="index">
+                    <span itemprop="name">其他</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="述求如题，怎样获取托管网站中分发的iOS安装包-？"><a href="#述求如题，怎样获取托管网站中分发的iOS安装包-？" class="headerlink" title="述求如题，怎样获取托管网站中分发的iOS安装包 ？"></a>述求如题，怎样获取托管网站中分发的iOS安装包 ？</h1><p>&emsp;&emsp;百度搜索，关键字 fir.im iOS安装包 ，第一篇，使用抓包。鉴于我不太会使用，所以暂时先放弃，其余的，跟关键字似乎无关。只有抓包才好使 ？保持怀疑。。。</p>
+<p>&emsp;&emsp;先把如何获取到放在一边，尝试了解一下需要下载的是什么。企业签名包如何制作，继续百度关键字，出现的结果都是多少多少钱，吐槽弃用。作为一个技术，我自己主要的搜索是Google，从这里我们可以找到相对满意的答案。比如我查到的结果 <a href="https://www.goodbarber.com/blog/distribute-your-ios-app-out-of-the-store-with-the-apple-developer-enterprise-program-a871/" target="_blank" rel="noopener">企业签名如何制作</a>。企业签名包在最后会生成一个plist文件，提供链接给ios设备Safari ，然后就可以自动安装。</p>
+<p>&emsp;&emsp;回归主题，汇总知道，需要下载plist ， 需要使用Safari。所以我们需要去fir.im 中去猜想他们是如何操作的的。</p>
+<p>&emsp;&emsp;1.首先我们需要一个fir.im 中对于APP 的一个下载地址，比如：<a href="https://fir.im/2cra" target="_blank" rel="noopener">https://fir.im/2cra</a> （网上资源，如果侵权请联系删除）</p>
+<p>&emsp;&emsp;2.iPad 或者 iPhone中使用 Safari 打开链接。</p>
+<p>&emsp;&emsp;3.手机中开启 Safari中高级设置 –&gt; Web Inspector </p>
+<p>&emsp;&emsp;4.手机连接电脑，打开Safari ，Developer –&gt; ipad —&gt; fir.im/2cra  如图</p>
+<p><img src="/images/safari_inspect.png" alt="&quot;inspect 截图&quot;"> 查看网页源码，根据文件名字，最感兴趣的应该是download.js 。 所以我们查看文本内容。根据我们获取的信息知道plist下载链接前面需要有 <em>itms-services://?action=download-manifest&amp;url=</em> 所以，我们查找之后的截图如下</p>
+<p><img src="/images/safari_plist_url_code.png" alt="&quot;plist链接如图&quot;"> 匹配到的函数是 plistUrl  和  iosSchema</p>
+<p>Safari 提供断点跟踪，所以，开始搞事情！！！</p>
+<p><img src="/images/safari_plist_url_value.png" alt="&quot;plist真实链接&quot;"> 貌似拿到了下载链接，如何验证呢 ？</p>
+<p>&emsp;&emsp;chrome 里面装上一个插件，使用iPad 访问链接，比如 <em>User-Agent Switcher for Chrome</em> 在头部加上http://   扔到浏览器访问，直接出来下载的plist   文件名字叫做 <strong>install</strong>  我们使用文本工具查看文件内容<img src="/images/safari_plist_install_content.jpg" alt="&quot;install 文件&quot;"></p>
+<p>&emsp;&emsp;<em><a href="https://ali-fir-pro-binary.fir.im/fe5b21535e0c908bb95adc7560c8ab8db9a914fa?auth_key=1548583391-0-0-73f83a6c4d6151baba81747148ff0f8b" target="_blank" rel="noopener">https://ali-fir-pro-binary.fir.im/fe5b21535e0c908bb95adc7560c8ab8db9a914fa?auth_key=1548583391-0-0-73f83a6c4d6151baba81747148ff0f8b</a></em> 链接地址就是ipa下载地址，丢到浏览器，完事儿。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="waitingchange.github.io/2018/12/23/Cocos文件管理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1317,7 +1471,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
@@ -1328,7 +1482,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">categories</span>
                 </a>
               </div>
