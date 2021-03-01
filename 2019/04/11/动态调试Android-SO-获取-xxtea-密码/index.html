@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="">
+<html lang="default">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
 <meta name="generator" content="Hexo 5.4.0">
+
+
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -13,14 +15,15 @@
 <link rel="stylesheet" href="/css/main.css">
 
 
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
 
-<script id="hexo-configurations">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
-
-  <meta name="description" content="一步一步获取Cocos2dx xxtea 密码1.准备工具 Android 手机一部，最好是 32位处理器，必须能root   IDA Pro   cocos apk 确认使用xxtea （cocos new HelloLua -l lua 然后生成apk）   2.电脑环境 win or Mac​    电脑需要能够使用 adb 命令 ，建议安装 apktool （防止apk 没有配置 andr">
+<meta name="description" content="一步一步获取Cocos2dx xxtea 密码1.准备工具 Android 手机一部，最好是 32位处理器，必须能root   IDA Pro   cocos apk 确认使用xxtea （cocos new HelloLua -l lua 然后生成apk）   2.电脑环境 win or Mac​    电脑需要能够使用 adb 命令 ，建议安装 apktool （防止apk 没有配置 andr">
 <meta property="og:type" content="article">
 <meta property="og:title" content="动态调试Android SO 获取 xxtea 密码">
 <meta property="og:url" content="https://waitingchange.github.io/2019/04/11/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95Android-SO-%E8%8E%B7%E5%8F%96-xxtea-%E5%AF%86%E7%A0%81/index.html">
@@ -52,10 +55,11 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://waitingchange.github.io/images/android_tem_1.jpg">
 
+
 <link rel="canonical" href="https://waitingchange.github.io/2019/04/11/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95Android-SO-%E8%8E%B7%E5%8F%96-xxtea-%E5%AF%86%E7%A0%81/">
 
 
-<script id="page-configurations">
+<script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
@@ -64,60 +68,66 @@
     lang   : 'default'
   };
 </script>
-
-  <title>动态调试Android SO 获取 xxtea 密码 | 懒人的胡言乱语</title>
+<title>动态调试Android SO 获取 xxtea 密码 | 懒人的胡言乱语</title>
   
-
-
 
 
 
 
   <noscript>
   <style>
-  .use-motion .brand,
+  body { margin-top: 2rem; }
+
   .use-motion .menu-item,
-  .sidebar-inner,
+  .use-motion .sidebar,
   .use-motion .post-block,
   .use-motion .pagination,
   .use-motion .comments,
   .use-motion .post-header,
   .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
 
   .use-motion .site-title,
-  .use-motion .site-subtitle {
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
     opacity: initial;
     top: initial;
   }
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
   </style>
 </noscript>
 
 </head>
 
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
 
+  <main class="main">
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
     </div>
   </div>
 
   <div class="site-meta">
 
     <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
+      <i class="logo-line"></i>
       <h1 class="site-title">懒人的胡言乱语</h1>
-      <span class="logo-line-after"><i></i></span>
+      <i class="logo-line"></i>
     </a>
   </div>
 
@@ -130,56 +140,101 @@
 
 
 
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
-
-  </li>
-        <li class="menu-item menu-item-tags">
-
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
-
-  </li>
-        <li class="menu-item menu-item-archives">
-
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
-
-  </li>
-  </ul>
-</nav>
-
 
 
 
 </div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E8%8E%B7%E5%8F%96Cocos2dx-xxtea-%E5%AF%86%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">一步一步获取Cocos2dx xxtea 密码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%87%86%E5%A4%87%E5%B7%A5%E5%85%B7"><span class="nav-number">1.1.</span> <span class="nav-text">1.准备工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%94%B5%E8%84%91%E7%8E%AF%E5%A2%83-win-or-Mac"><span class="nav-number">1.2.</span> <span class="nav-text">2.电脑环境 win or Mac</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%85%B7%E4%BD%93%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.</span> <span class="nav-text">3.具体操作步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%AF%86%E7%A0%81%E9%83%A8%E5%88%86%E5%B7%B2%E7%BB%8F%E7%BB%99%E4%BD%A0%E4%BA%86%EF%BC%8C%E5%85%B6%E4%BD%99%E7%9A%84%E5%B0%B1%E8%87%AA%E5%B7%B1%E7%9C%8B%E7%9D%80%E5%8A%9E%E5%90%A7"><span class="nav-number">1.4.</span> <span class="nav-text">4.密码部分已经给你了，其余的就自己看着办吧</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/waiting0313@gmail.com" title="E-Mail → waiting0313@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
     </header>
 
     
-  <div class="back-to-top">
+  <div class="back-to-top" role="button">
     <i class="fa fa-arrow-up"></i>
     <span>0%</span>
   </div>
 
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
 
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
 
-          <div class="content post posts-expand">
-            
+    <div class="main-inner post posts-expand">
 
-    
+
+  
+
+
+<div class="post-block">
   
   
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="default">
     <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2019/04/11/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95Android-SO-%E8%8E%B7%E5%8F%96-xxtea-%E5%AF%86%E7%A0%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -196,33 +251,35 @@
           动态调试Android SO 获取 xxtea 密码
         </h1>
 
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2019-04-11 16:50:51" itemprop="dateCreated datePublished" datetime="2019-04-11T16:50:51+08:00">2019-04-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2019-04-17 15:52:31" itemprop="dateModified" datetime="2019-04-17T15:52:31+08:00">2019-04-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android-%E5%8F%8D%E7%BC%96%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">Android 反编译</span></a>
-                </span>
-            </span>
+      <time title="Created: 2019-04-11 16:50:51" itemprop="dateCreated datePublished" datetime="2019-04-11T16:50:51+08:00">2019-04-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2019-04-17 15:52:31" itemprop="dateModified" datetime="2019-04-17T15:52:31+08:00">2019-04-17</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Android-%E5%8F%8D%E7%BC%96%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">Android 反编译</span></a>
+        </span>
+    </span>
 
-          
+  
+</div>
 
         </div>
       </header>
@@ -231,8 +288,6 @@
     
     
     <div class="post-body" itemprop="articleBody">
-
-      
         <h1 id="一步一步获取Cocos2dx-xxtea-密码"><a href="#一步一步获取Cocos2dx-xxtea-密码" class="headerlink" title="一步一步获取Cocos2dx xxtea 密码"></a>一步一步获取Cocos2dx xxtea 密码</h1><h2 id="1-准备工具"><a href="#1-准备工具" class="headerlink" title="1.准备工具"></a>1.准备工具</h2><ol>
 <li><p>Android 手机一部，最好是 32位处理器，必须能root </p>
 </li>
@@ -241,18 +296,20 @@
 <li><p>cocos apk 确认使用xxtea （cocos new HelloLua -l lua 然后生成apk）</p>
 </li>
 </ol>
-<h2 id="2-电脑环境-win-or-Mac"><a href="#2-电脑环境-win-or-Mac" class="headerlink" title="2.电脑环境 win or Mac"></a>2.电脑环境 win or Mac</h2><p>​    电脑需要能够使用 adb 命令 ，建议安装 apktool （防止apk 没有配置 <em>android:debuggable=”true”</em>，如果apk包不能直接调试请自行查找如何重新打包apk ） ，Android Studio 需要安装 （主要为了分析 manifest 文件 Application 中是否配置<em>android:debuggable=”true”</em>  另外需要使用 sdk 文件夹 tool 下面 monitor  ，win 下面可以使用 ADT Bundle 中 ddms ） 因为个人使用习惯问题，这里讲述如何在mac 系统下面操作。</p>
+<h2 id="2-电脑环境-win-or-Mac"><a href="#2-电脑环境-win-or-Mac" class="headerlink" title="2.电脑环境 win or Mac"></a>2.电脑环境 win or Mac</h2><p>​    电脑需要能够使用 adb 命令 ，建议安装 apktool （防止apk 没有配置 <em>android:debuggable=”true”<em>，如果apk包不能直接调试请自行查找如何重新打包apk ） ，Android Studio 需要安装 （主要为了分析 manifest 文件 Application 中是否配置</em>android:debuggable=”true”</em>  另外需要使用 sdk 文件夹 tool 下面 monitor  ，win 下面可以使用 ADT Bundle 中 ddms ） 因为个人使用习惯问题，这里讲述如何在mac 系统下面操作。</p>
 <h2 id="3-具体操作步骤"><a href="#3-具体操作步骤" class="headerlink" title="3.具体操作步骤"></a>3.具体操作步骤</h2><ol>
 <li><p>Android 手机具有root 权限 而且已经安装被调试的apk包，在pc端 打开终端输入</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">adb shell </span><br><span class="line">su</span><br><span class="line">cd &#x2F;data&#x2F;app      #查看包名文件夹是 为debug 启动 应用做准备</span><br><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+
 <p>在真正启动调试以前需要把 ida pro 提供的 android_server 文件放在 Android手机的 <em>/data/local/tmp</em> 文件夹下，操作方式可以使用 <em>adb push</em> 或者拷贝文件到手机SD 卡中，然后通过命令形式挪动到 <em>/data/local/tmp</em> ，<strong>重要的是android_server 文件需要给与可执行权限， 所以Android 手机需要有Root 权限</strong></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">adb shell </span><br><span class="line">su</span><br><span class="line">cd &#x2F;data&#x2F;local&#x2F;tmp</span><br><span class="line">chmod 777 android_server</span><br><span class="line">.&#x2F;android_server</span><br></pre></td></tr></table></figure>
 <p><img src="/images/android_tem_1.jpg" alt="&quot;执行终端截图&quot;"><br><img src="/images/android_tem_2.jpg" alt="&quot;执行android_server&quot;"></p>
 <p>从截图可以看到已经启动了android_server 端口是 23946 ， 需要使用  adb命令将端口映射至电脑  23946 <strong>为啥是这个端口? Ida Pro 在Attach Android时候默认监听端口是这个</strong><br><img src="/images/android_tem_3.jpg" alt="&quot;adb 转发&quot;"></p>
 <p>准备工作应该差不多了，剩下的就是如何调戏Apk </p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb shell</span><br><span class="line">am start -D -n org.cocos2dx.HelloLua&#x2F;org.cocos2dx.lua.AppActivity   #debug 形式启动apk</span><br></pre></td></tr></table></figure>
+
 <p><img src="/images/android_tem_4.png" alt="&quot;命令启动apk&quot;"></p>
-<p>am start 启动Android Activity  <strong>-D: 允许调试功能 ， -n <COMPONENT>: 指定组件名，格式为{包名}/.{主Activity名}</strong></p>
+<p>am start 启动Android Activity  <strong>-D: 允许调试功能 ， -n <COMPONENT>: 指定组件名，格式为{包名}/.{主Activity名}</COMPONENT></strong></p>
 <p><img src="/images/android_tem_5.png" alt="&quot;App启动后截图&quot;"></p>
 </li>
 <li><p>启动 DDMS (win)  or Monitor (mac)</p>
@@ -271,6 +328,7 @@
 <p>然后就是点击OK<br><img src="/images/android_tem_11.png" alt="&quot;Debug&quot;"></p>
 <p>到现在这个地方才是真正开始准备获取cocos xxtea 密码的位置。 正如前面讲到的，Monitor 中显示 APP Debug 的标识是红色的，meaning 不能调试。 解决这个问题需要一行命令，终端输入如下</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jdb -connect com.sun.jdi.SocketAttach:hostname&#x3D;127.0.0.1,port&#x3D;8700 #如果 8700 不好使 那就试一下 8600  为什么请问Google</span><br></pre></td></tr></table></figure>
+
 <p><img src="/images/android_tem_12.png" alt="&quot;Debug&quot;"></p>
 <p>当执行完命令时候 ，Monitor 中 debug的图标变成了绿色，所以，下一步就是开始反编译</p>
 <p>在准备下一步的时候我们需要考虑，目的到底是什么？ 需要看哪里 ？ 已知：IDA Pro 可以在二进制部分函数中进行打断点单步调试。在 Cocos 中，C++ 中的代码会最终编译到 <strong>libcocos2dlua.so</strong>， 所以需要先定位到 so包，然后再次定位到相应函数，最基本的执行逻辑。IDA Pro 可以进行断点，所以需要再函数执行以前进行打上断点，等执行到断点时候查看内容。问题来了，如何做 ？ 在什么地方打断点？如何判断so包是否被载入？如何判定打断点的函数就是你需要的函数 ？ 如何查看自己想要的值 ？一些列的问号等着解决</p>
@@ -278,8 +336,9 @@
 <li><p>知识补充 如何查找需要debug 的函数</p>
 <p> 目的：拿到 xxtea 解密密码。 目的很明确，所以先找到Cocos 源码部分，找到xxtea.h </p>
  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">char</span> *<span class="title">xxtea_encrypt</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> *data, xxtea_long data_len, <span class="keyword">unsigned</span> <span class="keyword">char</span> *key, xxtea_long key_len, xxtea_long *ret_length)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">char</span> *<span class="title">xxtea_decrypt</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> *data, xxtea_long data_len, <span class="keyword">unsigned</span> <span class="keyword">char</span> *key, xxtea_long key_len, xxtea_long *ret_length)</span></span>;</span><br></pre></td></tr></table></figure>
+
 <p> xxtea_decrypt 多么刺眼，如果，我指的是如果，Cocos 的包开发者没有这块的安全意识，基本上这块的代码应该不会改动。所以，IDA 静态反编译<strong>libcocos2dlua.so</strong> ,在能够列出的函数列表中我们查找 xxtea 字段，万一能够查到我们想要的内容呢 ？</p>
-<p> 我另外开启了一个 IDA  用来静态反编译 <strong> libcocos2dlua.so</strong> ， 在function 列表中查找 <em>xxtea</em> 如下截图<br> ​    <img src="/images/android_tem_13.png" alt="&quot;Debug&quot;"></p>
+<p> 我另外开启了一个 IDA  用来静态反编译 ** libcocos2dlua.so** ， 在function 列表中查找 <em>xxtea</em> 如下截图<br> ​    <img src="/images/android_tem_13.png" alt="&quot;Debug&quot;"></p>
 <p> 有的时候结果就是这么的让人欣喜。能找到这个函数，那么剩下的问题是如何在合适的时间打上断点，然后让APP断在我们想要的位置 ？在这个之前，得先找到什么时候SO 包被载入。所以往下面看。<br>​</p>
 </li>
 <li><p>继续跟踪调试</p>
@@ -292,7 +351,7 @@
 <p> 或者在下面的 Hex View-1 中点击右键 Synchorize with  中选择 R2<br>  <img src="/images/android_tem_19.jpg" alt="&quot;Debug&quot;"></p>
 </li>
 </ol>
-<h2 id="4-密码部分已经给你了，其余的就自己看着办吧"><a href="#4-密码部分已经给你了，其余的就自己看着办吧" class="headerlink" title="4.密码部分已经给你了，其余的就自己看着办吧"></a>4.密码部分已经给你了，其余的就自己看着办吧</h2><p>​    ps. 转载前请先联系我  <a href="mailto:waiting0313@gmail.com">waiting0313@gmail.com</a><br>    提供测试 apk 下载 <a href="/download/HelloLua-debug.apk" title="测试APK下载">点击下载</a></p>
+<h2 id="4-密码部分已经给你了，其余的就自己看着办吧"><a href="#4-密码部分已经给你了，其余的就自己看着办吧" class="headerlink" title="4.密码部分已经给你了，其余的就自己看着办吧"></a>4.密码部分已经给你了，其余的就自己看着办吧</h2><p>​    ps. 转载前请先联系我  <a href="mailto:&#119;&#x61;&#105;&#116;&#x69;&#x6e;&#x67;&#x30;&#51;&#49;&#x33;&#x40;&#103;&#109;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#109;">&#119;&#x61;&#105;&#116;&#x69;&#x6e;&#x67;&#x30;&#51;&#49;&#x33;&#x40;&#103;&#109;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#109;</a><br>    提供测试 apk 下载 <a href="/download/HelloLua-debug.apk" title="测试APK下载">点击下载</a></p>
 
     </div>
 
@@ -300,33 +359,31 @@
     
     
 
-      <footer class="post-footer">
+    <footer class="post-footer">
 
         
 
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2019/01/26/%E6%80%8E%E6%A0%B7%E8%8E%B7%E5%8F%96fir-im%E4%B8%AD%E7%9A%84IPA%E5%8C%85/" rel="prev" title="怎样获取fir.im中的IPA包">
-      <i class="fa fa-chevron-left"></i> 怎样获取fir.im中的IPA包
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2019/07/29/%E7%8E%A9%E5%84%BF%E8%BD%ACCocos-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="next" title="玩儿转Cocos 文件系统">
-      玩儿转Cocos 文件系统 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
-      </footer>
-    
-  </article>
-  
-  
-  
-
-
-
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/01/26/%E6%80%8E%E6%A0%B7%E8%8E%B7%E5%8F%96fir-im%E4%B8%AD%E7%9A%84IPA%E5%8C%85/" rel="prev" title="怎样获取fir.im中的IPA包">
+                  <i class="fa fa-chevron-left"></i> 怎样获取fir.im中的IPA包
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/29/%E7%8E%A9%E5%84%BF%E8%BD%ACCocos-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="next" title="玩儿转Cocos 文件系统">
+                  玩儿转Cocos 文件系统 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
           </div>
-          
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -335,7 +392,7 @@
       activeClass = localStorage.getItem('comments_active') || activeClass;
     }
     if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
       if (activeTab) {
         activeTab.click();
       }
@@ -344,91 +401,19 @@
   if (CONFIG.comments.storage) {
     window.addEventListener('tabs:click', event => {
       if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
+      const commentClass = event.target.classList[1];
       localStorage.setItem('comments_active', commentClass);
     });
   }
 </script>
-
-        </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          Table of Contents
-        </li>
-        <li class="sidebar-nav-overview">
-          Overview
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E8%8E%B7%E5%8F%96Cocos2dx-xxtea-%E5%AF%86%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">一步一步获取Cocos2dx xxtea 密码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%87%86%E5%A4%87%E5%B7%A5%E5%85%B7"><span class="nav-number">1.1.</span> <span class="nav-text">1.准备工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%94%B5%E8%84%91%E7%8E%AF%E5%A2%83-win-or-Mac"><span class="nav-number">1.2.</span> <span class="nav-text">2.电脑环境 win or Mac</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%85%B7%E4%BD%93%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.</span> <span class="nav-text">3.具体操作步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%AF%86%E7%A0%81%E9%83%A8%E5%88%86%E5%B7%B2%E7%BB%8F%E7%BB%99%E4%BD%A0%E4%BA%86%EF%BC%8C%E5%85%B6%E4%BD%99%E7%9A%84%E5%B0%B1%E8%87%AA%E5%B7%B1%E7%9C%8B%E7%9D%80%E5%8A%9E%E5%90%A7"><span class="nav-number">1.4.</span> <span class="nav-text">4.密码部分已经给你了，其余的就自己看着办吧</span></a></li></ol></li></ol></div>
-      </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="change"
-      src="/images/avatar.jpg">
-  <p class="site-author-name" itemprop="name">change</p>
-  <div class="site-description" itemprop="description"></div>
 </div>
-<div class="site-state-wrap motion-element">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives/">
-        
-          <span class="site-state-item-count">28</span>
-          <span class="site-state-item-name">posts</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-            <a href="/categories/">
-        <span class="site-state-item-count">7</span>
-        <span class="site-state-item-name">categories</span></a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="/waiting0313@gmail.com" title="E-Mail → waiting0313@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
-      </span>
-  </div>
+  </main>
 
+  <footer class="footer">
+    <div class="footer-inner">
 
-
-      </div>
-
-    </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
 
 <div class="copyright">
-  
   &copy; 
   <span itemprop="copyrightYear">2021</span>
   <span class="with-love">
@@ -436,36 +421,19 @@
   </span>
   <span class="author" itemprop="copyrightHolder">change</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
   </div>
 
-        
-
-
-
-
-
-
-
-
-      </div>
-    </footer>
-  </div>
+    </div>
+  </footer>
 
   
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
+  
 
 
-<script src="/js/schemes/pisces.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
 
 
 
@@ -475,20 +443,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  
 
 </body>
 </html>
