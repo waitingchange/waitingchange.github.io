@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="课件Websocket 执行流程背景前提： ​    课件的制作是使用的laya 引擎，真正执行语言是JavaScript 语言。好处是，基于JavaScript 或者 AS （最后转JS）我们的课件部分能够在网页端正常运行。 因为使用场景存在老师跟学生实时交互，课件需要跟服务器的长链接通信。最方便的方式是使用 Websocket ，所以就引出了我们需要讲的内容：课件Websocket。 什么是W">
+<meta property="og:type" content="article">
+<meta property="og:title" content="懒人的胡言乱语">
+<meta property="og:url" content="https://waitingchange.github.io/2021/01/14/%E8%AF%BE%E4%BB%B6socket%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="课件Websocket 执行流程背景前提： ​    课件的制作是使用的laya 引擎，真正执行语言是JavaScript 语言。好处是，基于JavaScript 或者 AS （最后转JS）我们的课件部分能够在网页端正常运行。 因为使用场景存在老师跟学生实时交互，课件需要跟服务器的长链接通信。最方便的方式是使用 Websocket ，所以就引出了我们需要讲的内容：课件Websocket。 什么是W">
+<meta property="og:locale">
+<meta property="og:image" content="https://waitingchange.github.io/2021/01/14/socketlog/socketlog1.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/01/14/socketlog/socket.png">
+<meta property="article:published_time" content="2021-01-14T09:25:23.320Z">
+<meta property="article:modified_time" content="2021-01-14T13:11:30.194Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://waitingchange.github.io/2021/01/14/socketlog/socketlog1.png">
+
+<link rel="canonical" href="https://waitingchange.github.io/2021/01/14/%E8%AF%BE%E4%BB%B6socket%E6%B5%81%E7%A8%8B/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'default'
+  };
+</script>
+
+  <title> | 懒人的胡言乱语</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/01/14/%E8%AF%BE%E4%BB%B6socket%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2021-01-14 17:25:23 / Modified: 21:11:30" itemprop="dateCreated datePublished" datetime="2021-01-14T17:25:23+08:00">2021-01-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="课件Websocket-执行流程"><a href="#课件Websocket-执行流程" class="headerlink" title="课件Websocket 执行流程"></a>课件Websocket 执行流程</h1><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>前提：</p>
+<p>​    课件的制作是使用的<strong>laya</strong> 引擎，真正执行语言是<strong>JavaScript</strong> 语言。好处是，基于<strong>JavaScript</strong> 或者 <strong>AS</strong> （最后转<strong>JS</strong>）我们的课件部分能够在网页端正常运行。</p>
+<p>因为使用场景存在老师跟学生实时交互，课件需要跟服务器的长链接通信。最方便的方式是使用 <strong>Websocket</strong> ，所以就引出了我们需要讲的内容：<strong>课件Websocket</strong>。</p>
+<p>什么是<strong>Websocket</strong>：</p>
+<p>​    <strong>WebSocket</strong>是一种在单个<strong>TCP</strong>连接上进行全双工通信的协议。<strong>WebSocket API</strong>也被<strong>W3C</strong>定为标准，是<strong>HTML 5 </strong>中使用广泛的通信协议。</p>
+<p>这里简单介绍一下我们课件中<strong>正课课件</strong>对于网络的处理方式。</p>
+<h3 id="正题"><a href="#正题" class="headerlink" title="正题"></a>正题</h3><p>Websocket 对象什么时候创建？</p>
+<p>我们可以在课件的主页面里面找到这样初始化</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 课件部分调用</span></span><br><span class="line">VipThink.__init__();</span><br><span class="line"><span class="comment">// vipthink init 中执行了下面的调用</span></span><br><span class="line">Klzz.__init__(xxx,xxx);</span><br><span class="line"><span class="comment">// 在 Klzz 的初始化中我们发现了 Websocket 的创建。</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>存在Websocket 对象了之后我们就可以进行连接操作。</p>
+<p>Websocket 开始连接时机</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// PrepareTrans 类 中的</span></span><br><span class="line">__proto.execute=<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">  	<span class="comment">// 设置 socketInfo</span></span><br><span class="line">  	Klzz.socket.hostInfo=socketInfo;</span><br><span class="line">  	<span class="comment">// 这里调用连接</span></span><br><span class="line">  	Klzz.socket.connect();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>执行完连接之后，在socket 部分就有几种网络状态监听，onOpen , onClose, onFail ， onMessage 等， 因为我们要讲述课件内主要网络执行流程，具体实现逻辑我们暂时不跟进。可以先理解为，给了Websocket链接地址，网络状态良好，所以我们存在了一条可以跟服务器通信的链路。于是下面的几个步骤比较关键。</p>
+<p><img src="../socketlog/socketlog1.png" alt="socketlog1" style="zoom: 67%;" /></p>
+<p>留意一下客户端存在的几个收发指令，我们需要的业务执行触发时机会跟以上指令的发送和获取相关。</p>
+<p>我们能够正常的通信大多数是发生在 收到 EnterRoomResult ， 并且是成功的状态之后。那么怎样执行流程会走到 EnterRoom呢 </p>
+<p><img src="../socketlog/socket.png" alt="socket"></p>
+<p>如图，Server 代表我们的sockt 服务器， 我们需要借助socket服务器进行中转才能实现老师跟学生的数据同步。老师和学生会共同使用同一份课件代码，所以执行流程也大致一样，只不过服务端在创建房间部分增加了限制，创建人的身份必须是老师，其余的操作大多数可以一致。</p>
+<p>从流程上看，在上面我们看完代码之后就会发现存在一条完整的网络通路，那么紧接着就是课件发起了发送指令，发送 <strong>cmd</strong> 为 <strong>Login</strong> 的消息。服务端在收到<strong>Login</strong> 消息之后会记录用户的id， 并同时把学生放在<strong>GlobalRoom</strong> 中 RoomID 为 <strong>0</strong> 的房间内（能够监听服务端的广播消息），同时返回Login 的结果 ，于是课件收到了 <strong>cmd</strong> 为 <strong>loginResult</strong> 的消息。</p>
+<p>当课件收到 <strong>LoginResult</strong>的消息之后 课件会继续发送 <strong>cmd</strong> 为 <strong>EnterRoom</strong>的消息指令，等待服务端允许课件进入到预先排好的课程房间内。在这个时候会有一些情况出现。</p>
+<p>第一种，老师没有点击<strong>开始上课按钮</strong> （没有创建房间）</p>
+<p>​    因为只有老师具有创建房间的权限，那么学生或者老师拿着预先排课的房间号去<strong>EnterRoom</strong> ，返回的结果只能是 失败。</p>
+<p>​    所以学生和老师就只能等，等着老师创好房间，然后广播进房的消息。</p>
+<p>​    如果是老师，老师可以点击上课按钮 ， 发送的命令是 “CreateRoom”，那么等待的就是 创建房间成功的消息。</p>
+<p>​    房间创建成功，服务端会广播消息，”cmd”:”BroadCastResult” ， \”action\”:\”EnterRoom\”  ， 如下方的log<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[2021-01-12 10:43:59.940] [   info    ]  [WebsocketMsgSen] &#123;&quot;mark&quot;:1,&quot;cmd&quot;:&quot;Login&quot;,&quot;data&quot;:&#123;&quot;authData&quot;:&#123;&quot;cookie&quot;:&#123;&quot;klzz_ol_home_uid&quot;:&quot;219056997&quot;,&quot;klzz_ol_home_time&quot;:&quot;1609819094&quot;,&quot;klzz_ol_home_token&quot;:&quot;92869018bea216c37aee25be8c4c54debdce84dd&quot;&#125;,&quot;id&quot;:219056997,&quot;name&quot;:&quot;还那么快&quot;,&quot;userdata&quot;:&quot;&#123;\&quot;totalScore\&quot;:0,\&quot;isBanSound\&quot;:false,\&quot;isInvited\&quot;:false,\&quot;answerMsg\&quot;:&#123;\&quot;sumNum\&quot;:0,\&quot;right\&quot;:0,\&quot;error\&quot;:0&#125;,\&quot;parkResult\&quot;:null,\&quot;pageTotalScore\&quot;:&#123;&#125;,\&quot;captureData\&quot;:&#123;&#125;,\&quot;ip\&quot;:\&quot;\&quot;,\&quot;currentRoomId\&quot;:\&quot;\&quot;,\&quot;status\&quot;:0,\&quot;hasScreenPlay\&quot;:0,\&quot;isAuthor\&quot;:false,\&quot;isTP\&quot;:false,\&quot;cookie\&quot;:&#123;\&quot;klzz_ol_home_uid\&quot;:\&quot;219056997\&quot;,\&quot;klzz_ol_home_time\&quot;:\&quot;1609819094\&quot;,\&quot;klzz_ol_home_token\&quot;:\&quot;92869018bea216c37aee25be8c4c54debdce84dd\&quot;&#125;,\&quot;watchers\&quot;:null,\&quot;watchingUser\&quot;:0,\&quot;controlType\&quot;:0,\&quot;id\&quot;:219056997,\&quot;name\&quot;:\&quot;还那么快\&quot;,\&quot;headerImg\&quot;:\&quot;http:&#x2F;&#x2F;uat-edu.vipthink.cn&#x2F;static&#x2F;admin&#x2F;img&#x2F;boy.png\&quot;,\&quot;sex\&quot;:0,\&quot;token\&quot;:\&quot;\&quot;,\&quot;loginTime\&quot;:null,\&quot;userType\&quot;:2&#125;&quot;,&quot;headerimg&quot;:&quot;http:&#x2F;&#x2F;uat-edu.vipthink.cn&#x2F;static&#x2F;admin&#x2F;img&#x2F;boy.png&quot;,&quot;userType&quot;:2,&quot;institution&quot;:&quot;test&quot;,&quot;appType&quot;:1&#125;,&quot;mark&quot;:1&#125;&#125;</span><br><span class="line">[2021-01-12 10:43:59.948] [   info    ]  [WebsocketMsgRec] &#123;&quot;data&quot;:&#123;&quot;msg&quot;:&quot;&quot;,&quot;time&quot;:1610419493878,&quot;state&quot;:0,&quot;userVO&quot;:&#123;&quot;appType&quot;:1,&quot;currentRoomId&quot;:&quot;0&quot;,&quot;ip&quot;:&quot;&#x2F;113.68.193.71:21382&quot;,&quot;name&quot;:&quot;还那么快&quot;,&quot;leftTime&quot;:0,&quot;id&quot;:219056997,&quot;userType&quot;:2,&quot;attribute&quot;:&#123;&#125;,&quot;status&quot;:1,&quot;headerImg&quot;:&quot;http:&#x2F;&#x2F;uat-edu.vipthink.cn&#x2F;static&#x2F;admin&#x2F;img&#x2F;boy.png&quot;&#125;&#125;,&quot;cmd&quot;:&quot;LoginResult&quot;,&quot;mark&quot;:1&#125;</span><br><span class="line">[2021-01-12 10:44:00.006] [   info    ]  [WebsocketMsgSen] &#123;&quot;mark&quot;:2,&quot;cmd&quot;:&quot;EnterRoom&quot;,&quot;data&quot;:&#123;&quot;roomId&quot;:&quot;uat1246202&quot;,&quot;chgCurrentRoomId&quot;:true,&quot;mark&quot;:2&#125;&#125;</span><br><span class="line">[2021-01-12 10:44:00.014] [   info    ]  [WebsocketMsgRec] &#123;&quot;data&quot;:&#123;&quot;msg&quot;:&quot;没有找到对应的房间。&quot;,&quot;roomData&quot;:&quot;&quot;,&quot;state&quot;:2,&quot;roomId&quot;:&quot;uat1246202&quot;&#125;,&quot;cmd&quot;:&quot;EnterRoomResult&quot;,&quot;mark&quot;:2&#125;</span><br><span class="line">[2021-01-12 10:44:15.389] [   info    ]  [WebsocketMsgRec] &#123;&quot;data&quot;:&#123;&quot;msg&quot;:&quot;&quot;,&quot;state&quot;:0,&quot;userId&quot;:6472,&quot;content&quot;:&quot;&#123;\&quot;action\&quot;:\&quot;EnterRoom\&quot;,\&quot;fromId\&quot;:6472,\&quot;roomID\&quot;:\&quot;uat1246202\&quot;&#125;&quot;&#125;,&quot;cmd&quot;:&quot;BroadCastResult&quot;,&quot;mark&quot;:5&#125;</span><br><span class="line">[2021-01-12 10:44:15.432] [   info    ]  [WebsocketMsgSen] &#123;&quot;mark&quot;:3,&quot;cmd&quot;:&quot;EnterRoom&quot;,&quot;data&quot;:&#123;&quot;roomId&quot;:&quot;uat1246202&quot;,&quot;chgCurrentRoomId&quot;:true,&quot;mark&quot;:3&#125;&#125;</span><br><span class="line">[2021-01-12 10:44:15.442] [   info    ]  [WebsocketMsgRec] &#123;&quot;data&quot;:&#123;&quot;msg&quot;:&quot;&quot;,&quot;roomData&quot;:&#123;&quot;creator&quot;:6472,&quot;userList&quot;:[&#123;&quot;appType&quot;:1,&quot;currentRoomId&quot;:&quot;uat1246202&quot;,&quot;ip&quot;:&quot;&#x2F;113.68.193.71:21944&quot;,&quot;name&quot;:&quot;王俊鹏&quot;,&quot;leftTime&quot;:0,&quot;id&quot;:6472,&quot;userType&quot;:1,&quot;attribute&quot;:&#123;&#125;,&quot;status&quot;:1,&quot;headerImg&quot;:&quot;http:&#x2F;&#x2F;uat-edu.vipthink.cn&#x2F;static&#x2F;admin&#x2F;img&#x2F;teacher.png&quot;&#125;,&#123;&quot;appType&quot;:1,&quot;currentRoomId&quot;:&quot;uat1246202&quot;,&quot;ip&quot;:&quot;&#x2F;113.68.193.71:21382&quot;,&quot;name&quot;:&quot;还那么快&quot;,&quot;leftTime&quot;:0,&quot;id&quot;:219056997,&quot;userType&quot;:2,&quot;attribute&quot;:&#123;&#125;,&quot;status&quot;:1,&quot;headerImg&quot;:&quot;http:&#x2F;&#x2F;uat-edu.vipthink.cn&#x2F;static&#x2F;admin&#x2F;img&#x2F;boy.png&quot;&#125;],&quot;createTime&quot;:1610419509221,&quot;creatorName&quot;:&quot;王俊鹏&quot;,&quot;type&quot;:0,&quot;roomId&quot;:&quot;uat1246202&quot;&#125;,&quot;state&quot;:0,&quot;roomId&quot;:&quot;uat1246202&quot;&#125;,&quot;cmd&quot;:&quot;EnterRoomResult&quot;,&quot;mark&quot;:3&#125;</span><br><span class="line">[2021-01-12 10:44:15.445] [   info    ]  [WebsocketMsgRec] &#123;&quot;data&quot;:&#123;&quot;roomId&quot;:&quot;uat1246202&quot;,&quot;userVO&quot;:&#123;&quot;appType&quot;:1,&quot;currentRoomId&quot;:&quot;uat1246202&quot;,&quot;ip&quot;:&quot;&#x2F;113.68.193.71:21382&quot;,&quot;name&quot;:&quot;还那么快&quot;,&quot;leftTime&quot;:0,&quot;id&quot;:219056997,&quot;userType&quot;:2,&quot;attribute&quot;:&#123;&#125;,&quot;status&quot;:1,&quot;headerImg&quot;:&quot;http:&#x2F;&#x2F;uat-edu.vipthink.cn&#x2F;static&#x2F;admin&#x2F;img&#x2F;boy.png&quot;&#125;&#125;,&quot;cmd&quot;:&quot;EnterUser&quot;,&quot;mark&quot;:3&#125;</span><br></pre></td></tr></table></figure></p>
+<p>第二种，老师已经开课</p>
+<p>​    学生和老师都会先 走 login 流程， 然后再走 EnterRoom ， 返回结果为 EnterRoomResult ，是成功进房的。成功之后，客户端会发送GetData 到服务器，服务端返回 GetDataResult 数据给到客户端用于数据刷新。</p>
+<p>大致的执行流程在wiki 里面也有一篇写的比较不错，作者是  <a target="_blank" rel="noopener" href="https://wiki.vipthink.cn/display/~bihao.zhang">张壁浩</a>建议查看。地址是 <a target="_blank" rel="noopener" href="https://wiki.vipthink.cn/pages/viewpage.action?pageId=56666854">https://wiki.vipthink.cn/pages/viewpage.action?pageId=56666854</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/18/OpenCV%20+%20AI%E7%BE%8E%E9%A2%9C%20To%20Electron/" rel="prev" title="">
+      <i class="fa fa-chevron-left"></i> 
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/20/NativeWebsocket%E7%BB%93%E6%9E%84%E5%92%8C%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/" rel="next" title="">
+       <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%BE%E4%BB%B6Websocket-%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">课件Websocket 执行流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.0.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A3%E9%A2%98"><span class="nav-number">1.0.2.</span> <span class="nav-text">正题</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/waiting0313@gmail.com" title="E-Mail → waiting0313@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

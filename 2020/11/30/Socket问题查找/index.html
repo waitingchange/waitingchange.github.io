@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Socket不能进入房间问题查找步骤总体上分为三部分第一步 分析日志首先明确一下，目前使用的Websocket 是HTMLWebsocket，那么在相关日志搜索部分我们先要找到是否是JS 的Socket ，然后根据类型再去做判断。 我们拿JS版本的Websocket 为例子先分析问题 从Android 版本的日志中我们要查询Android 日志文件中的JS log 信息，具体关键字是 [INFO]">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Socket问题查找">
+<meta property="og:url" content="https://waitingchange.github.io/2020/11/30/Socket%E9%97%AE%E9%A2%98%E6%9F%A5%E6%89%BE/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="Socket不能进入房间问题查找步骤总体上分为三部分第一步 分析日志首先明确一下，目前使用的Websocket 是HTMLWebsocket，那么在相关日志搜索部分我们先要找到是否是JS 的Socket ，然后根据类型再去做判断。 我们拿JS版本的Websocket 为例子先分析问题 从Android 版本的日志中我们要查询Android 日志文件中的JS log 信息，具体关键字是 [INFO]">
+<meta property="og:locale">
+<meta property="og:image" content="https://waitingchange.github.io/2020/11/30/socketlog/androidlog1.png">
+<meta property="og:image" content="https://waitingchange.github.io/2020/11/30/socketlog/ioslog1.png">
+<meta property="og:image" content="https://waitingchange.github.io/2020/11/30/socketlog/socket.png">
+<meta property="og:image" content="https://waitingchange.github.io/2020/11/30/socketlog/socketlog1.png">
+<meta property="article:published_time" content="2020-11-30T07:33:36.000Z">
+<meta property="article:modified_time" content="2020-12-02T13:54:21.935Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://waitingchange.github.io/2020/11/30/socketlog/androidlog1.png">
+
+<link rel="canonical" href="https://waitingchange.github.io/2020/11/30/Socket%E9%97%AE%E9%A2%98%E6%9F%A5%E6%89%BE/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'default'
+  };
+</script>
+
+  <title>Socket问题查找 | 懒人的胡言乱语</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="default">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2020/11/30/Socket%E9%97%AE%E9%A2%98%E6%9F%A5%E6%89%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Socket问题查找
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-11-30 15:33:36" itemprop="dateCreated datePublished" datetime="2020-11-30T15:33:36+08:00">2020-11-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-12-02 21:54:21" itemprop="dateModified" datetime="2020-12-02T21:54:21+08:00">2020-12-02</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Socket不能进入房间问题查找步骤"><a href="#Socket不能进入房间问题查找步骤" class="headerlink" title="Socket不能进入房间问题查找步骤"></a>Socket不能进入房间问题查找步骤</h1><h2 id="总体上分为三部分"><a href="#总体上分为三部分" class="headerlink" title="总体上分为三部分"></a>总体上分为三部分</h2><h3 id="第一步-分析日志"><a href="#第一步-分析日志" class="headerlink" title="第一步 分析日志"></a>第一步 分析日志</h3><p>首先明确一下，目前使用的Websocket 是HTMLWebsocket，那么在相关日志搜索部分我们先要找到是否是JS 的Socket ，然后根据类型再去做判断。</p>
+<p>我们拿JS版本的Websocket 为例子先分析问题</p>
+<p>从Android 版本的日志中我们要查询Android 日志文件中的JS log 信息，具体关键字是 <strong>[INFO]  native - [js</strong></p>
+<p>从IOS 的日志内容中，摘取JavaScript 可用的信息可以搜索 <strong>h5_game log:</strong></p>
+<p>从日志部分可以看到，这些信息包含了 socket 连接时候的各种状态。(ios 侧和 Android 侧在约定H5 log 侧没有进行统一化，分析日志略微困难)</p>
+<p><img src="../socketlog/androidlog1.png" alt="androidlog1"></p>
+<p><img src="../socketlog/ioslog1.png" alt="ioslog1"></p>
+<h3 id="第二步-根据已有的设计流程去分析"><a href="#第二步-根据已有的设计流程去分析" class="headerlink" title="第二步 根据已有的设计流程去分析"></a>第二步 根据已有的设计流程去分析</h3><p>根据已知的socket 消息我们去找正确的执行流程，教师端在连接网络时候比学生端多一步<strong>创建房间</strong>操作。</p>
+<p><img src="../socketlog/socket.png" alt="socket"></p>
+<p><strong>socket 连接进入房间流程如图</strong></p>
+<p><img src="../socketlog/socketlog1.png" alt="socketlog1"></p>
+<p><strong>socket 收发消息</strong></p>
+<p>因为学生端和教师端都在共用 BaiyaSDK提供的Websocket， 代码逻辑为一套，那么在分析问题时候两端可以认为是一个客户端，只是权限不一致导致的业务流程不太一样。</p>
+<p>在课件载入完成之后BaiyaSDK 会创建一条Socket 链路，然后去尝试login ，服务端会返回 LoginResult 消息，然后socket 这块儿会去执行EnterRoom 命令，服务端返回 EnterRoomResult 结果，如果房间没有创建，那么教师端会先去创建房间，等待创建房间结果返回之后开始进入房间，同时发送广播消息，让server 端广播cmd：BroadCast  ，action：EnterRoom 的指令。</p>
+<p>在没有收到 cmd：BroadCast  ，action：EnterRoom 之前，学生端会先处于无限等待状态（这类可能会被误报为无法进入房间），一旦收到指令，就会自动拉入到房间，开始执行 EnterRoom  的正常流程，进入房间成功剩下的就交给了具体业务命令。</p>
+<p><strong>关键指令</strong>  login 、 EnterRoom 、BoardCast EnterRoom ， loginResult 、 EnterRoomResult 等</p>
+<p>去查找关键指令，看一些关键步骤是否执行来判断当前APP 运行状态。拿到客户端的异常步骤之后可以跟服务端的关键日志进行比对，用于分析具体问题。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/17/CMake/" rel="prev" title="CMake">
+      <i class="fa fa-chevron-left"></i> CMake
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/01/OpenCV-windows-%E7%BC%96%E8%AF%91/" rel="next" title="OpenCV windows 编译">
+      OpenCV windows 编译 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Socket%E4%B8%8D%E8%83%BD%E8%BF%9B%E5%85%A5%E6%88%BF%E9%97%B4%E9%97%AE%E9%A2%98%E6%9F%A5%E6%89%BE%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.</span> <span class="nav-text">Socket不能进入房间问题查找步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E4%BD%93%E4%B8%8A%E5%88%86%E4%B8%BA%E4%B8%89%E9%83%A8%E5%88%86"><span class="nav-number">1.1.</span> <span class="nav-text">总体上分为三部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5-%E5%88%86%E6%9E%90%E6%97%A5%E5%BF%97"><span class="nav-number">1.1.1.</span> <span class="nav-text">第一步 分析日志</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5-%E6%A0%B9%E6%8D%AE%E5%B7%B2%E6%9C%89%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%B5%81%E7%A8%8B%E5%8E%BB%E5%88%86%E6%9E%90"><span class="nav-number">1.1.2.</span> <span class="nav-text">第二步 根据已有的设计流程去分析</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/waiting0313@gmail.com" title="E-Mail → waiting0313@gmail.com"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
