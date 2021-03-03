@@ -23,20 +23,20 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
-<meta name="description" content="仓库损坏如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。 最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。">
+<meta name="description" content="leetcode 总结  01 两数之和经历了非常严重的一整年加班以后，开始想着不要继续碌碌无为了。算法这些东西，不管是需要找工作临时练手熟悉，或者是学习，总是要有的。 废话不多说。 两数之和给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 的那 两个 整数，并返回它们的数组下标。 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="仓库损坏">
-<meta property="og:url" content="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/index.html">
+<meta property="og:title" content="leetcode 总结  01 两数之和">
+<meta property="og:url" content="https://waitingchange.github.io/2021/03/03/leetcode%2001/index.html">
 <meta property="og:site_name" content="懒人的胡言乱语">
-<meta property="og:description" content="仓库损坏如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。 最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。">
+<meta property="og:description" content="leetcode 总结  01 两数之和经历了非常严重的一整年加班以后，开始想着不要继续碌碌无为了。算法这些东西，不管是需要找工作临时练手熟悉，或者是学习，总是要有的。 废话不多说。 两数之和给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 的那 两个 整数，并返回它们的数组下标。 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。">
 <meta property="og:locale">
-<meta property="article:published_time" content="2021-03-01T06:59:19.000Z">
-<meta property="article:modified_time" content="2021-03-01T07:01:28.694Z">
+<meta property="article:published_time" content="2021-03-03T12:14:34.000Z">
+<meta property="article:modified_time" content="2021-03-03T13:09:02.312Z">
 <meta property="article:author" content="change">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
+<link rel="canonical" href="https://waitingchange.github.io/2021/03/03/leetcode%2001/">
 
 
 <script class="page-configurations">
@@ -48,7 +48,7 @@
     lang   : 'default'
   };
 </script>
-<title>仓库损坏 | 懒人的胡言乱语</title>
+<title>leetcode 总结  01 两数之和 | 懒人的胡言乱语</title>
   
 
 
@@ -147,7 +147,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F"><span class="nav-number">1.</span> <span class="nav-text">仓库损坏</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#leetcode-%E6%80%BB%E7%BB%93-01-%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C"><span class="nav-number">1.</span> <span class="nav-text">leetcode 总结  01 两数之和</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%A4%E6%95%B0%E4%B9%8B%E5%92%8C"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">两数之和</span></a></li></ol></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -215,7 +215,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="default">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2001/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -228,7 +228,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          仓库损坏
+          leetcode 总结  01 两数之和
         </h1>
 
         <div class="post-meta-container">
@@ -240,7 +240,16 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2021-03-01 14:59:19 / Modified: 15:01:28" itemprop="dateCreated datePublished" datetime="2021-03-01T14:59:19+08:00">2021-03-01</time>
+      <time title="Created: 2021-03-03 20:14:34 / Modified: 21:09:02" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+        </span>
     </span>
 
   
@@ -253,8 +262,19 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="仓库损坏"><a href="#仓库损坏" class="headerlink" title="仓库损坏"></a>仓库损坏</h1><p>如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。</p>
-<p>最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。</p>
+        <h1 id="leetcode-总结-01-两数之和"><a href="#leetcode-总结-01-两数之和" class="headerlink" title="leetcode 总结  01 两数之和"></a>leetcode 总结  01 两数之和</h1><p>经历了非常严重的一整年加班以后，开始想着不要继续碌碌无为了。算法这些东西，不管是需要找工作临时练手熟悉，或者是学习，总是要有的。</p>
+<p>废话不多说。</p>
+<h4 id="两数之和"><a href="#两数之和" class="headerlink" title="两数之和"></a>两数之和</h4><p>给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 的那 两个 整数，并返回它们的数组下标。</p>
+<p>你可以假设每种输入只会对应一个答案。但是，数组中同一个元素不能使用两遍。</p>
+<p>你可以按任意顺序返回答案。</p>
+<p>示例 1：</p>
+<p>输入：nums = [2,7,11,15], target = 9<br>输出：[0,1]<br>解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。<br>示例 2：</p>
+<p>输入：nums = [3,2,4], target = 6<br>输出：[1,2]<br>示例 3：</p>
+<p>输入：nums = [3,3], target = 6<br>输出：[0,1]</p>
+<p>提示：</p>
+<p>2 &lt;= nums.length &lt;= 103<br>-109 &lt;= nums[i] &lt;= 109<br>-109 &lt;= target &lt;= 109<br>只会存在一个有效答案</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">twoSum</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">      	<span class="comment">// 两数之和 ， 一个数组 ， 一个 之和 ， 那么 总和减去当前数值 ， 就是需要查找的一个数字 。查看这个数字是否在于这个数组中</span></span><br><span class="line">      	<span class="comment">// 思路：用一个表用于查询第二个数值是否存在， 并且能取出第二个数值在提供数组中的位置 ，那么方便点儿就是 map了 。 key 作为数值 ，value 是索引</span></span><br><span class="line">        <span class="comment">// 构建一个哈希表，用于存放数据和查询 unordered_map  不需要排序</span></span><br><span class="line">        <span class="built_in">unordered_map</span>&lt;<span class="keyword">int</span>, <span class="keyword">int</span>&gt; hashtable;</span><br><span class="line">        <span class="comment">// 一次遍历，从头开始</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.size();i++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//  遍历器查询缺值是否存在当前哈希表中</span></span><br><span class="line">            <span class="keyword">auto</span> it = hashtable.find(target - nums[i]);</span><br><span class="line">            <span class="comment">// 如果存在</span></span><br><span class="line">            <span class="keyword">if</span>(it != hashtable.end())</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 返回，哈希表中存放的匹配值的位置，和当前位置</span></span><br><span class="line">                <span class="keyword">return</span> &#123;it-&gt;second,i&#125;;  <span class="comment">// 注意返回值类型</span></span><br><span class="line">            &#125;<span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 如果不存在，那么放入当前的值和index</span></span><br><span class="line">                hashtable[nums[i]] = i;  <span class="comment">// 第一位是数字 ，第二位是在数组中的位置</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> &#123;&#125;; <span class="comment">// 查不到肯定返回为空</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -268,14 +288,11 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/23/NodeJs%E4%BD%BF%E7%94%A8Buffer/" rel="prev" title="Nodejs 使用Buffer">
-                  <i class="fa fa-chevron-left"></i> Nodejs 使用Buffer
+                <a href="/2021/03/03/leetcode%2003/" rel="prev" title="leetcode 总结  03 多数元素">
+                  <i class="fa fa-chevron-left"></i> leetcode 总结  03 多数元素
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/03/03/leetcode%2002/" rel="next" title="leetcode 总结 02 只出现一次的数字">
-                  leetcode 总结 02 只出现一次的数字 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>

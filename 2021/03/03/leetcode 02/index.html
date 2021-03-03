@@ -23,20 +23,20 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
-<meta name="description" content="仓库损坏如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。 最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。">
+<meta name="description" content="leetcode 总结 02 只出现一次的数字只出现一次的数字给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。 说明： 你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？ 示例 1: 输入: [2,2,1]输出: 1示例 2: 输入: [4,1,2,1,2]输出: 4 作者：力扣 (LeetCode)链接：https:&#x2F;&#x2F;leet">
 <meta property="og:type" content="article">
-<meta property="og:title" content="仓库损坏">
-<meta property="og:url" content="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/index.html">
+<meta property="og:title" content="leetcode 总结 02 只出现一次的数字">
+<meta property="og:url" content="https://waitingchange.github.io/2021/03/03/leetcode%2002/index.html">
 <meta property="og:site_name" content="懒人的胡言乱语">
-<meta property="og:description" content="仓库损坏如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。 最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。">
+<meta property="og:description" content="leetcode 总结 02 只出现一次的数字只出现一次的数字给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。 说明： 你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？ 示例 1: 输入: [2,2,1]输出: 1示例 2: 输入: [4,1,2,1,2]输出: 4 作者：力扣 (LeetCode)链接：https:&#x2F;&#x2F;leet">
 <meta property="og:locale">
-<meta property="article:published_time" content="2021-03-01T06:59:19.000Z">
-<meta property="article:modified_time" content="2021-03-01T07:01:28.694Z">
+<meta property="article:published_time" content="2021-03-03T12:14:34.000Z">
+<meta property="article:modified_time" content="2021-03-03T13:08:52.334Z">
 <meta property="article:author" content="change">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
+<link rel="canonical" href="https://waitingchange.github.io/2021/03/03/leetcode%2002/">
 
 
 <script class="page-configurations">
@@ -48,7 +48,7 @@
     lang   : 'default'
   };
 </script>
-<title>仓库损坏 | 懒人的胡言乱语</title>
+<title>leetcode 总结 02 只出现一次的数字 | 懒人的胡言乱语</title>
   
 
 
@@ -147,7 +147,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F"><span class="nav-number">1.</span> <span class="nav-text">仓库损坏</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#leetcode-%E6%80%BB%E7%BB%93-02-%E5%8F%AA%E5%87%BA%E7%8E%B0%E4%B8%80%E6%AC%A1%E7%9A%84%E6%95%B0%E5%AD%97"><span class="nav-number">1.</span> <span class="nav-text">leetcode 总结 02 只出现一次的数字</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%AA%E5%87%BA%E7%8E%B0%E4%B8%80%E6%AC%A1%E7%9A%84%E6%95%B0%E5%AD%97"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">只出现一次的数字</span></a></li></ol></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -215,7 +215,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="default">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2002/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -228,7 +228,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          仓库损坏
+          leetcode 总结 02 只出现一次的数字
         </h1>
 
         <div class="post-meta-container">
@@ -240,7 +240,16 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2021-03-01 14:59:19 / Modified: 15:01:28" itemprop="dateCreated datePublished" datetime="2021-03-01T14:59:19+08:00">2021-03-01</time>
+      <time title="Created: 2021-03-03 20:14:34 / Modified: 21:08:52" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+        </span>
     </span>
 
   
@@ -253,8 +262,14 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="仓库损坏"><a href="#仓库损坏" class="headerlink" title="仓库损坏"></a>仓库损坏</h1><p>如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。</p>
-<p>最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。</p>
+        <h1 id="leetcode-总结-02-只出现一次的数字"><a href="#leetcode-总结-02-只出现一次的数字" class="headerlink" title="leetcode 总结 02 只出现一次的数字"></a>leetcode 总结 02 只出现一次的数字</h1><h4 id="只出现一次的数字"><a href="#只出现一次的数字" class="headerlink" title="只出现一次的数字"></a>只出现一次的数字</h4><p>给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。</p>
+<p>说明：</p>
+<p>你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？</p>
+<p>示例 1:</p>
+<p>输入: [2,2,1]<br>输出: 1<br>示例 2:</p>
+<p>输入: [4,1,2,1,2]<br>输出: 4</p>
+<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions/xm0u83/">https://leetcode-cn.com/leetbook/read/top-interview-questions/xm0u83/</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 最开始考虑是不是先要排序，然后相邻的进行比较 ， 但是不需要额外空间这个要求就一定会有诡异，所以查了一下解题技巧，果然很有一套</span></span><br><span class="line"><span class="comment">// 技巧就是  0  异或 任何数字 都是另外的数字</span></span><br><span class="line"><span class="comment">// 相同的数字异或本身 刚好为 0 </span></span><br><span class="line"><span class="comment">// 那么 数组中的每一位都进行异或运算，得出的就是出现单次的数字</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">singleNumber</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> singleNum = <span class="number">0</span>; <span class="comment">// 定义需要return 的数字， 先赋值为 0</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span>;i &lt; nums.size();i++ ) <span class="comment">// 根据长度进行一次遍历</span></span><br><span class="line">        &#123;</span><br><span class="line">            singleNum = singleNum ^ nums[i]; <span class="comment">// 执行异或逻辑</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> singleNum; <span class="comment">// 返回需要的单一数字</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -268,13 +283,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/23/NodeJs%E4%BD%BF%E7%94%A8Buffer/" rel="prev" title="Nodejs 使用Buffer">
-                  <i class="fa fa-chevron-left"></i> Nodejs 使用Buffer
+                <a href="/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/" rel="prev" title="仓库损坏">
+                  <i class="fa fa-chevron-left"></i> 仓库损坏
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/03/03/leetcode%2002/" rel="next" title="leetcode 总结 02 只出现一次的数字">
-                  leetcode 总结 02 只出现一次的数字 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/03/03/leetcode%2003/" rel="next" title="leetcode 总结  03 多数元素">
+                  leetcode 总结  03 多数元素 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>

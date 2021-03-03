@@ -23,20 +23,20 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
-<meta name="description" content="仓库损坏如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。 最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。">
+<meta name="description" content="leetcode 总结 03 多数元素多数元素给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n&#x2F;2 ⌋ 的元素。 你可以假设数组是非空的，并且给定的数组总是存在多数元素。 示例 1： 输入：[3,2,3]输出：3示例 2： 输入：[2,2,1,1,1,2,2]输出：2 进阶： 尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。 作者">
 <meta property="og:type" content="article">
-<meta property="og:title" content="仓库损坏">
-<meta property="og:url" content="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/index.html">
+<meta property="og:title" content="leetcode 总结  03 多数元素">
+<meta property="og:url" content="https://waitingchange.github.io/2021/03/03/leetcode%2003/index.html">
 <meta property="og:site_name" content="懒人的胡言乱语">
-<meta property="og:description" content="仓库损坏如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。 最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。">
+<meta property="og:description" content="leetcode 总结 03 多数元素多数元素给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n&#x2F;2 ⌋ 的元素。 你可以假设数组是非空的，并且给定的数组总是存在多数元素。 示例 1： 输入：[3,2,3]输出：3示例 2： 输入：[2,2,1,1,1,2,2]输出：2 进阶： 尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。 作者">
 <meta property="og:locale">
-<meta property="article:published_time" content="2021-03-01T06:59:19.000Z">
-<meta property="article:modified_time" content="2021-03-01T07:01:28.694Z">
+<meta property="article:published_time" content="2021-03-03T12:14:34.000Z">
+<meta property="article:modified_time" content="2021-03-03T14:00:14.444Z">
 <meta property="article:author" content="change">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
+<link rel="canonical" href="https://waitingchange.github.io/2021/03/03/leetcode%2003/">
 
 
 <script class="page-configurations">
@@ -48,7 +48,7 @@
     lang   : 'default'
   };
 </script>
-<title>仓库损坏 | 懒人的胡言乱语</title>
+<title>leetcode 总结  03 多数元素 | 懒人的胡言乱语</title>
   
 
 
@@ -147,7 +147,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F"><span class="nav-number">1.</span> <span class="nav-text">仓库损坏</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#leetcode-%E6%80%BB%E7%BB%93-03-%E5%A4%9A%E6%95%B0%E5%85%83%E7%B4%A0"><span class="nav-number">1.</span> <span class="nav-text">leetcode 总结 03 多数元素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E6%95%B0%E5%85%83%E7%B4%A0"><span class="nav-number">1.0.1.</span> <span class="nav-text">多数元素</span></a></li></ol></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -215,7 +215,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="default">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2003/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -228,7 +228,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          仓库损坏
+          leetcode 总结  03 多数元素
         </h1>
 
         <div class="post-meta-container">
@@ -240,7 +240,16 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2021-03-01 14:59:19 / Modified: 15:01:28" itemprop="dateCreated datePublished" datetime="2021-03-01T14:59:19+08:00">2021-03-01</time>
+      <time title="Created: 2021-03-03 20:14:34 / Modified: 22:00:14" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+        </span>
     </span>
 
   
@@ -253,8 +262,16 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="仓库损坏"><a href="#仓库损坏" class="headerlink" title="仓库损坏"></a>仓库损坏</h1><p>如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。</p>
-<p>最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。</p>
+        <h1 id="leetcode-总结-03-多数元素"><a href="#leetcode-总结-03-多数元素" class="headerlink" title="leetcode 总结 03 多数元素"></a>leetcode 总结 03 多数元素</h1><h3 id="多数元素"><a href="#多数元素" class="headerlink" title="多数元素"></a>多数元素</h3><p>给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。</p>
+<p>你可以假设数组是非空的，并且给定的数组总是存在多数元素。</p>
+<p>示例 1：</p>
+<p>输入：[3,2,3]<br>输出：3<br>示例 2：</p>
+<p>输入：[2,2,1,1,1,2,2]<br>输出：2</p>
+<p>进阶：</p>
+<p>尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。</p>
+<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions/xm77tm/">https://leetcode-cn.com/leetbook/read/top-interview-questions/xm77tm/</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 解题思路：找到数量最多的数字 </span></span><br><span class="line"><span class="comment">// 1. 可以用map ， 放进去每一个元素，然后更新这个元素的个数，最后查找map 中元素的第二位数值。（肯定可行，但是 时间复杂度 控件复杂度不合适）</span></span><br><span class="line"><span class="comment">// 如果只需要一次遍历 ， 就得找一个数值用来记录最大的数量，还得有一个标识，用来记录当前这个最大数量指向的是哪个数值</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">majorityElement</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> resultNum = nums[<span class="number">0</span>]; <span class="comment">// 保存当前最大的数值，默认第一位就是最多的    [1,2,3,4,2,2,3]</span></span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>; <span class="comment">// 保存最多的数据被记录了多少次</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.size(); i++) <span class="comment">// 正常遍历操作</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[i] == resultNum)  <span class="comment">// 如果相等，那么 计数器加一</span></span><br><span class="line">            &#123;</span><br><span class="line">                count ++;</span><br><span class="line">            &#125;<span class="keyword">else</span>  <span class="comment">// 如果不相等</span></span><br><span class="line">            &#123;</span><br><span class="line">                count --;  <span class="comment">// 计数器减少 一</span></span><br><span class="line">                <span class="keyword">if</span>(count == <span class="number">0</span>)  <span class="comment">//当计数器归零的时候，更换一下最多的记录</span></span><br><span class="line">                &#123;</span><br><span class="line">                    resultNum = nums[i];  <span class="comment">// 认为当前的是最多的</span></span><br><span class="line">                    count ++;  <span class="comment">// 计数器自增</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> resultNum;  <span class="comment">// 返回当前认为记录最多的</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -268,13 +285,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/23/NodeJs%E4%BD%BF%E7%94%A8Buffer/" rel="prev" title="Nodejs 使用Buffer">
-                  <i class="fa fa-chevron-left"></i> Nodejs 使用Buffer
+                <a href="/2021/03/03/leetcode%2002/" rel="prev" title="leetcode 总结 02 只出现一次的数字">
+                  <i class="fa fa-chevron-left"></i> leetcode 总结 02 只出现一次的数字
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/03/03/leetcode%2002/" rel="next" title="leetcode 总结 02 只出现一次的数字">
-                  leetcode 总结 02 只出现一次的数字 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/03/03/leetcode%2001/" rel="next" title="leetcode 总结  01 两数之和">
+                  leetcode 总结  01 两数之和 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>

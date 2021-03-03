@@ -157,13 +157,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">18</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
   </nav>
@@ -200,6 +200,341 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2019/04/11/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95Android-SO-%E8%8E%B7%E5%8F%96-xxtea-%E5%AF%86%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/04/11/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95Android-SO-%E8%8E%B7%E5%8F%96-xxtea-%E5%AF%86%E7%A0%81/" class="post-title-link" itemprop="url">动态调试Android SO 获取 xxtea 密码</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2019-04-11 16:50:51" itemprop="dateCreated datePublished" datetime="2019-04-11T16:50:51+08:00">2019-04-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2019-04-17 15:52:31" itemprop="dateModified" datetime="2019-04-17T15:52:31+08:00">2019-04-17</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Android-%E5%8F%8D%E7%BC%96%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">Android 反编译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="一步一步获取Cocos2dx-xxtea-密码"><a href="#一步一步获取Cocos2dx-xxtea-密码" class="headerlink" title="一步一步获取Cocos2dx xxtea 密码"></a>一步一步获取Cocos2dx xxtea 密码</h1><h2 id="1-准备工具"><a href="#1-准备工具" class="headerlink" title="1.准备工具"></a>1.准备工具</h2><ol>
+<li><p>Android 手机一部，最好是 32位处理器，必须能root </p>
+</li>
+<li><p>IDA Pro </p>
+</li>
+<li><p>cocos apk 确认使用xxtea （cocos new HelloLua -l lua 然后生成apk）</p>
+</li>
+</ol>
+<h2 id="2-电脑环境-win-or-Mac"><a href="#2-电脑环境-win-or-Mac" class="headerlink" title="2.电脑环境 win or Mac"></a>2.电脑环境 win or Mac</h2><p>​    电脑需要能够使用 adb 命令 ，建议安装 apktool （防止apk 没有配置 <em>android:debuggable=”true”<em>，如果apk包不能直接调试请自行查找如何重新打包apk ） ，Android Studio 需要安装 （主要为了分析 manifest 文件 Application 中是否配置</em>android:debuggable=”true”</em>  另外需要使用 sdk 文件夹 tool 下面 monitor  ，win 下面可以使用 ADT Bundle 中 ddms ） 因为个人使用习惯问题，这里讲述如何在mac 系统下面操作。</p>
+<h2 id="3-具体操作步骤"><a href="#3-具体操作步骤" class="headerlink" title="3.具体操作步骤"></a>3.具体操作步骤</h2><ol>
+<li><p>Android 手机具有root 权限 而且已经安装被调试的apk包，在pc端 打开终端输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">adb shell </span><br><span class="line">su</span><br><span class="line">cd &#x2F;data&#x2F;app      #查看包名文件夹是 为debug 启动 应用做准备</span><br><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+
+<p>在真正启动调试以前需要把 ida pro 提供的 android_server 文件放在 Android手机的 <em>/data/local/tmp</em> 文件夹下，操作方式可以使用 <em>adb push</em> 或者拷贝文件到手机SD 卡中，然后通过命令形式挪动到 <em>/data/local/tmp</em> ，<strong>重要的是android_server 文件需要给与可执行权限， 所以Android 手机需要有Root 权限</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">adb shell </span><br><span class="line">su</span><br><span class="line">cd &#x2F;data&#x2F;local&#x2F;tmp</span><br><span class="line">chmod 777 android_server</span><br><span class="line">.&#x2F;android_server</span><br></pre></td></tr></table></figure>
+<p><img src="/images/android_tem_1.jpg" alt="&quot;执行终端截图&quot;"><br><img src="/images/android_tem_2.jpg" alt="&quot;执行android_server&quot;"></p>
+<p>从截图可以看到已经启动了android_server 端口是 23946 ， 需要使用  adb命令将端口映射至电脑  23946 <strong>为啥是这个端口? Ida Pro 在Attach Android时候默认监听端口是这个</strong><br><img src="/images/android_tem_3.jpg" alt="&quot;adb 转发&quot;"></p>
+<p>准备工作应该差不多了，剩下的就是如何调戏Apk </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb shell</span><br><span class="line">am start -D -n org.cocos2dx.HelloLua&#x2F;org.cocos2dx.lua.AppActivity   #debug 形式启动apk</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/android_tem_4.png" alt="&quot;命令启动apk&quot;"></p>
+<p>am start 启动Android Activity  <strong>-D: 允许调试功能 ， -n <COMPONENT>: 指定组件名，格式为{包名}/.{主Activity名}</COMPONENT></strong></p>
+<p><img src="/images/android_tem_5.png" alt="&quot;App启动后截图&quot;"></p>
+</li>
+<li><p>启动 DDMS (win)  or Monitor (mac)</p>
+<p>也许会在想，为啥是DDMS ?  自己粗略的理解，为了查看App debug 信息（不一定正确，如果有确定的答案麻烦通知我）。 在Devices 里面能够看到等待调试的app信息，包名，端口等  但是发现debug 的标识还是红色，意思是暂时还不能调试，所以监视器已经被启动，剩下操作如何使用IDA 连接手机然后调试<br><img src="/images/android_tem_6.png" alt="&quot;DDMS能看到的内容&quot;"></p>
+</li>
+<li><p>IDA 部分操作<br>准备工作和启动APP 已经结束了，剩下的是需要借助 IDA 这货来获取我们想要的内容。好戏才刚刚开始~<br>我在使用 Mac 版本 IDA Pro 7.0 ，具体下载地址暂时不提供，毕竟业余水平的我也买不起。</p>
+<p>IDA Pro 一直存在 两个可执行文件， 32 位和 64 位之分。区别在于 32 位可以使用 F5 把二进制中函数部分难以理解的汇编转化为稍微容易可读的 C 语言。 推荐暂时使用 32 位，所以 也推荐使用 32 位处理器的 Android 手机（2019 年的今天已经很难找到，我的测试机器是A0001, 骁龙 801 处理器 64位 ,尴尬的笑脸），细心的同学们会发现在 IDA 提供的 android_server 文件在 dbgsrv 文件夹下面包含两个， 另外一个文件是 android_server64 （使用这个文件的时候请打开 IDA Pro 64）。啰嗦到此为止，我们已经打开了 IDA Pro ,需要操作的是 Attach  Android 设备。</p>
+<p><img src="/images/android_tem_7.png" alt="&quot;IDA Attach&quot;"></p>
+<p>点击 Remote ARMLinux / Android Debugger</p>
+<p><img src="/images/android_tem_8.png" alt="&quot;Set Debugger&quot;"></p>
+<p>然后点击 Debug options</p>
+<p><img src="/images/android_tem_9.png" alt="&quot;Debug options&quot;"></p>
+<p>请根据我的设置进行配置，如果你想要别的功能，那么请自行设置，然后点击确定。</p>
+<p>回到Debugg application setup 界面， Hostname 请写localhost 或者 127.0.0.1 端口号默认 23946 然后点击OK</p>
+<p>在新弹出的页面请点击seach 然后输入你需要调戏的包名（可以输入部分关键字进行查找）<br><img src="/images/android_tem_10.png" alt="&quot;Debug options&quot;"></p>
+<p>然后就是点击OK<br><img src="/images/android_tem_11.png" alt="&quot;Debug&quot;"></p>
+<p>到现在这个地方才是真正开始准备获取cocos xxtea 密码的位置。 正如前面讲到的，Monitor 中显示 APP Debug 的标识是红色的，meaning 不能调试。 解决这个问题需要一行命令，终端输入如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jdb -connect com.sun.jdi.SocketAttach:hostname&#x3D;127.0.0.1,port&#x3D;8700 #如果 8700 不好使 那就试一下 8600  为什么请问Google</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/android_tem_12.png" alt="&quot;Debug&quot;"></p>
+<p>当执行完命令时候 ，Monitor 中 debug的图标变成了绿色，所以，下一步就是开始反编译</p>
+<p>在准备下一步的时候我们需要考虑，目的到底是什么？ 需要看哪里 ？ 已知：IDA Pro 可以在二进制部分函数中进行打断点单步调试。在 Cocos 中，C++ 中的代码会最终编译到 <strong>libcocos2dlua.so</strong>， 所以需要先定位到 so包，然后再次定位到相应函数，最基本的执行逻辑。IDA Pro 可以进行断点，所以需要再函数执行以前进行打上断点，等执行到断点时候查看内容。问题来了，如何做 ？ 在什么地方打断点？如何判断so包是否被载入？如何判定打断点的函数就是你需要的函数 ？ 如何查看自己想要的值 ？一些列的问号等着解决</p>
+</li>
+<li><p>知识补充 如何查找需要debug 的函数</p>
+<p> 目的：拿到 xxtea 解密密码。 目的很明确，所以先找到Cocos 源码部分，找到xxtea.h </p>
+ <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">char</span> *<span class="title">xxtea_encrypt</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> *data, xxtea_long data_len, <span class="keyword">unsigned</span> <span class="keyword">char</span> *key, xxtea_long key_len, xxtea_long *ret_length)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">char</span> *<span class="title">xxtea_decrypt</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> *data, xxtea_long data_len, <span class="keyword">unsigned</span> <span class="keyword">char</span> *key, xxtea_long key_len, xxtea_long *ret_length)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p> xxtea_decrypt 多么刺眼，如果，我指的是如果，Cocos 的包开发者没有这块的安全意识，基本上这块的代码应该不会改动。所以，IDA 静态反编译<strong>libcocos2dlua.so</strong> ,在能够列出的函数列表中我们查找 xxtea 字段，万一能够查到我们想要的内容呢 ？</p>
+<p> 我另外开启了一个 IDA  用来静态反编译 ** libcocos2dlua.so** ， 在function 列表中查找 <em>xxtea</em> 如下截图<br> ​    <img src="/images/android_tem_13.png" alt="&quot;Debug&quot;"></p>
+<p> 有的时候结果就是这么的让人欣喜。能找到这个函数，那么剩下的问题是如何在合适的时间打上断点，然后让APP断在我们想要的位置 ？在这个之前，得先找到什么时候SO 包被载入。所以往下面看。<br>​</p>
+</li>
+<li><p>继续跟踪调试</p>
+<p> 回到我们使用IDA Pro 连接好的准备调试界面，我们在IDA 的debug 选项中选择了加载so包的时候断住，但是在我的测试中发现貌似我这个在载入<strong>libcocos2dlua.so</strong><br> 并没有断住。同时也发现暂时并没有载入 <strong>libcocos2dlua.so</strong> 。所以开始想办法，如何去断点调试。IDA Pro 提供了 <em>F8 单步调试</em> ， <em>F9 继续执行</em>。在右侧的 Modules 中 <em>ctrl + f 查找 cocos</em> 发现没有内容。使用比较粗糙的方法，<em>F8 一下一下的嗯，遇到弹框就点击继续一直到libcocos2dlua.so载入成功</em>  在SO 载入成功以后，Modules 里面也出现了我们想要的 SO 包。赞！</p>
+<p> <img src="/images/android_tem_14.jpg" alt="&quot;Debug&quot;"></p>
+<p> 双击 Modules 中 libcocos2dx.so ,然后查找 <em>xxtea</em><br> ​      <img src="/images/android_tem_15.jpg" alt="&quot;Debug&quot;"></p>
+<p> 在这里打完断点以后可以使用 <strong>F9 让App 执行到断点位置</strong><br> 我们在断点位置摁一下F5 会怎样 ？(如果使用了 64 位的IDA ，那么貌似暂时不支持)<br>  <img src="/images/android_tem_16.jpg" alt="&quot;Debug&quot;"></p>
+<p> 我们看到汇编语言版本的代码被ida 转化为了 略微熟悉的 C 语言， 根据我们xxtea_decrypt 源码我们发现，第三个只才是我们需要的 key 。 胜利在望,我们移动鼠标放在 a3 上面，发现 r2 寄存器才是我们要查找的内容<br>  <img src="/images/android_tem_17.png" alt="&quot;Debug&quot;"></p>
+<p> 双击一下 a3 会如何 ？<br>   <img src="/images/android_tem_18.jpg" alt="&quot;Debug&quot;"></p>
+<p> 或者在下面的 Hex View-1 中点击右键 Synchorize with  中选择 R2<br>  <img src="/images/android_tem_19.jpg" alt="&quot;Debug&quot;"></p>
+</li>
+</ol>
+<h2 id="4-密码部分已经给你了，其余的就自己看着办吧"><a href="#4-密码部分已经给你了，其余的就自己看着办吧" class="headerlink" title="4.密码部分已经给你了，其余的就自己看着办吧"></a>4.密码部分已经给你了，其余的就自己看着办吧</h2><p>​    ps. 转载前请先联系我  <a href="mailto:&#119;&#x61;&#105;&#116;&#x69;&#x6e;&#x67;&#x30;&#51;&#49;&#x33;&#x40;&#103;&#109;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#109;">&#119;&#x61;&#105;&#116;&#x69;&#x6e;&#x67;&#x30;&#51;&#49;&#x33;&#x40;&#103;&#109;&#x61;&#x69;&#108;&#x2e;&#99;&#111;&#109;</a><br>    提供测试 apk 下载 <a href="/download/HelloLua-debug.apk" title="测试APK下载">点击下载</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2019/01/26/%E6%80%8E%E6%A0%B7%E8%8E%B7%E5%8F%96fir-im%E4%B8%AD%E7%9A%84IPA%E5%8C%85/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2019/01/26/%E6%80%8E%E6%A0%B7%E8%8E%B7%E5%8F%96fir-im%E4%B8%AD%E7%9A%84IPA%E5%8C%85/" class="post-title-link" itemprop="url">怎样获取fir.im中的IPA包</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2019-01-26 11:01:44" itemprop="dateCreated datePublished" datetime="2019-01-26T11:01:44+08:00">2019-01-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2019-02-14 19:20:49" itemprop="dateModified" datetime="2019-02-14T19:20:49+08:00">2019-02-14</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%85%B6%E4%BB%96/" itemprop="url" rel="index"><span itemprop="name">其他</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="述求如题，怎样获取托管网站中分发的iOS安装包-？"><a href="#述求如题，怎样获取托管网站中分发的iOS安装包-？" class="headerlink" title="述求如题，怎样获取托管网站中分发的iOS安装包 ？"></a>述求如题，怎样获取托管网站中分发的iOS安装包 ？</h1><p>&emsp;&emsp;百度搜索，关键字 fir.im iOS安装包 ，第一篇，使用抓包。鉴于我不太会使用，所以暂时先放弃，其余的，跟关键字似乎无关。只有抓包才好使 ？保持怀疑。。。</p>
+<p>&emsp;&emsp;先把如何获取到放在一边，尝试了解一下需要下载的是什么。企业签名包如何制作，继续百度关键字，出现的结果都是多少多少钱，吐槽弃用。作为一个技术，我自己主要的搜索是Google，从这里我们可以找到相对满意的答案。比如我查到的结果 <a target="_blank" rel="noopener" href="https://www.goodbarber.com/blog/distribute-your-ios-app-out-of-the-store-with-the-apple-developer-enterprise-program-a871/">企业签名如何制作</a>。企业签名包在最后会生成一个plist文件，提供链接给ios设备Safari ，然后就可以自动安装。</p>
+<p>&emsp;&emsp;回归主题，汇总知道，需要下载plist ， 需要使用Safari。所以我们需要去fir.im 中去猜想他们是如何操作的的。</p>
+<p>&emsp;&emsp;1.首先我们需要一个fir.im 中对于APP 的一个下载地址，比如：<a target="_blank" rel="noopener" href="https://fir.im/2cra">https://fir.im/2cra</a> （网上资源，如果侵权请联系删除）</p>
+<p>&emsp;&emsp;2.iPad 或者 iPhone中使用 Safari 打开链接。</p>
+<p>&emsp;&emsp;3.手机中开启 Safari中高级设置 –&gt; Web Inspector </p>
+<p>&emsp;&emsp;4.手机连接电脑，打开Safari ，Developer –&gt; ipad —&gt; fir.im/2cra  如图</p>
+<p><img src="/images/safari_inspect.png" alt="&quot;inspect 截图&quot;"> 查看网页源码，根据文件名字，最感兴趣的应该是download.js 。 所以我们查看文本内容。根据我们获取的信息知道plist下载链接前面需要有 <em>itms-services://?action=download-manifest&amp;url=</em> 所以，我们查找之后的截图如下</p>
+<p><img src="/images/safari_plist_url_code.png" alt="&quot;plist链接如图&quot;"> 匹配到的函数是 plistUrl  和  iosSchema</p>
+<p>Safari 提供断点跟踪，所以，开始搞事情！！！</p>
+<p><img src="/images/safari_plist_url_value.png" alt="&quot;plist真实链接&quot;"> 貌似拿到了下载链接，如何验证呢 ？</p>
+<p>&emsp;&emsp;chrome 里面装上一个插件，使用iPad 访问链接，比如 <em>User-Agent Switcher for Chrome</em> 在头部加上http://   扔到浏览器访问，直接出来下载的plist   文件名字叫做 <strong>install</strong>  我们使用文本工具查看文件内容<img src="/images/safari_plist_install_content.jpg" alt="&quot;install 文件&quot;"></p>
+<p>&emsp;&emsp;<em><a target="_blank" rel="noopener" href="https://ali-fir-pro-binary.fir.im/fe5b21535e0c908bb95adc7560c8ab8db9a914fa?auth_key=1548583391-0-0-73f83a6c4d6151baba81747148ff0f8b">https://ali-fir-pro-binary.fir.im/fe5b21535e0c908bb95adc7560c8ab8db9a914fa?auth_key=1548583391-0-0-73f83a6c4d6151baba81747148ff0f8b</a></em> 链接地址就是ipa下载地址，丢到浏览器，完事儿。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2018/12/23/Cocos%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/12/23/Cocos%E6%96%87%E4%BB%B6%E7%AE%A1%E7%90%86/" class="post-title-link" itemprop="url">Cocos文件管理</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-12-23 15:00:31" itemprop="dateCreated datePublished" datetime="2018-12-23T15:00:31+08:00">2018-12-23</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2019-01-13 12:48:31" itemprop="dateModified" datetime="2019-01-13T12:48:31+08:00">2019-01-13</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Cocos/" itemprop="url" rel="index"><span itemprop="name">Cocos</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="Cocos-中脚本文件是如何被载入和执行"><a href="#Cocos-中脚本文件是如何被载入和执行" class="headerlink" title="Cocos 中脚本文件是如何被载入和执行"></a>Cocos 中脚本文件是如何被载入和执行</h1><p>&emsp;&emsp;Cocos 是可以执行 lua 和 js 的，lua 和 js 都可以认为是解释性语言，不涉及编译和链接步骤，那么文件是如何在Cocos中被载入到内存中并且被执行呢 ？</p>
+<p>&emsp;&emsp;前提，我们知道不管是IOS 系统还是 Android 系统，Cocos 的执行流程都是需要把MainLoop 执行起来。如果这个流程不太清楚，请参看我上一个帖子   <strong>Cocos 代码执行流程</strong></p>
+<p>&emsp;&emsp;以Cocos lua 为例，前面的代码部分已经解释了，在执行MainLoop 之前，AppDelegate::applicationDidFinishLaunching 函数中会先执行lua 虚拟机的初始化 和 设定 脚本执行的入口文件，我们继续跟踪代码执行，去发现Cocos 在文件操作方面是具有如何的特点。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">engine-&gt;executeScriptFile(<span class="string">&quot;src/main.lua&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;对于main.lua 我们很熟悉，cocos-lua 中lua脚本执行入口文件。我们知道硬盘可以容纳很多的文件内容，但是这些文件内容在没有被计算机读取的时候就仅仅是存放而已，真正有效是在载入到内存以后被cpu处理的时候，话外题，先pass。我们继续回到main.lua ，同样，在入口的时候一定会先将文件载入到内存，那么文件的IO操作一定少不了。因为使用lua语言编写的，所以lua解释器需要介入和解释文本内容。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//猜想执行流程</span></span><br><span class="line"><span class="keyword">if</span>(isFileExistence)&#123;</span><br><span class="line">    <span class="comment">//执行文本IO 根据文本类型读取内容</span></span><br><span class="line">        FILE *fp = fopen(fullPath.c_str(), mode);</span><br><span class="line">        fseek(fp,<span class="number">0</span>,SEEK_END);</span><br><span class="line">    <span class="comment">//获取长度</span></span><br><span class="line">        *size = ftell(fp);</span><br><span class="line">        fseek(fp,<span class="number">0</span>,SEEK_SET);</span><br><span class="line">    <span class="comment">//获取文本内容 放入内存</span></span><br><span class="line">        buffer = (<span class="keyword">unsigned</span> <span class="keyword">char</span>*)<span class="built_in">malloc</span>(*size);</span><br><span class="line">        *size = fread(buffer,<span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">char</span>), *size,fp);</span><br><span class="line">        fclose(fp);</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">//判断如果文本是经过 xxtea 加密</span></span><br><span class="line">    <span class="comment">//拿到加密的buffer 进行解密 返回原始内容</span></span><br><span class="line">    <span class="comment">//拿到原始内容以后进行解释执行</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;如果这里没其他需求，最简单和直接的思路应该是这样的，所以我们转向看下Cocos 的代码部分。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> BYTECODE_FILE_EXT    = <span class="string">&quot;.luac&quot;</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> NOT_BYTECODE_FILE_EXT = <span class="string">&quot;.lua&quot;</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">LuaStack::executeScriptFile</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* filename)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::<span class="built_in">string</span> <span class="title">buf</span><span class="params">(filename)</span></span>;</span><br><span class="line">    <span class="comment">// remove .lua or .luac</span></span><br><span class="line">   	...</span><br><span class="line">    FileUtils *utils = FileUtils::getInstance();</span><br><span class="line">    <span class="comment">// 1. check .lua suffix 2. check .luac suffix</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> tmpfilename = buf + NOT_BYTECODE_FILE_EXT;</span><br><span class="line">    <span class="keyword">if</span> (utils-&gt;isFileExist(tmpfilename))&#123;</span><br><span class="line">        buf = tmpfilename;  <span class="comment">// .lua file</span></span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        tmpfilename = buf + BYTECODE_FILE_EXT;</span><br><span class="line">        <span class="keyword">if</span> (utils-&gt;isFileExist(tmpfilename))&#123;</span><br><span class="line">            buf = tmpfilename;  <span class="comment">// .luac file</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//获取全路径</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> fullPath = utils-&gt;fullPathForFilename(buf);</span><br><span class="line">    Data data = utils-&gt;getDataFromFile(fullPath); <span class="comment">//获取buffer</span></span><br><span class="line">    <span class="keyword">int</span> rn = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!data.isNull())&#123;</span><br><span class="line">        <span class="comment">//载入lua buffer</span></span><br><span class="line">        <span class="keyword">if</span> (luaLoadBuffer(_state, (<span class="keyword">const</span> <span class="keyword">char</span>*)data.getBytes(), (<span class="keyword">int</span>)data.getSize(), fullPath.c_str()) == <span class="number">0</span>)&#123;</span><br><span class="line">            rn = executeFunction(<span class="number">0</span>); <span class="comment">//执行栈顶 func</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> rn;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;跟Cocos 这边进行对比发现基本逻辑实现好像差不多（所以我们也可以按照自己意愿封装自己的引擎了）。文本最终执行到了lua虚拟机然后进行函数执行。解释到这里似乎基本上已经完事儿了，是确定这样的吗？会有好奇心想要知道文本如何高效率精准被找到的吗？</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取全路径   如何做到的 ？</span></span><br><span class="line">   <span class="built_in">std</span>::<span class="built_in">string</span> fullPath = utils-&gt;fullPathForFilename(buf);</span><br><span class="line">   Data data = utils-&gt;getDataFromFile(fullPath); <span class="comment">//获取buffer 有什么其他要注意的吗 ？</span></span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;在我们的FileUtils 中有对外暴露的  setSearchPaths 函数，直面翻译函数名字叫做设置文件搜索路径。在我们不知道内部如何实现的时候我们可以尝试使用自己的思路进行猜测别人的逻辑如何实现，如果最后发现很接近，这样是不是很开心？如果发现不太一样，我们是不是能学到一些别人优秀的设计思想 ？继续回归代码层面，我们先做设想。设置进来的是文件路径数组，那么数组有两个目的，第一临时存储，第二方便遍历。所以从方便遍历的角度来讲进行文件查找，我们推测。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(isFileNameExistence)&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span>;i &lt; arry.length;i++)&#123;</span><br><span class="line">        <span class="comment">//1.取出每一个字符串中的内容 + 传递进入的文件名字</span></span><br><span class="line">        <span class="comment">//2.判断  isFileExist(tmpfilename) 存在的话就返回拼接后的字符串，</span></span><br><span class="line">    &#125;</span><br><span class="line">   	<span class="comment">//在最后如果没找到就返回没找到标识</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;我们看下源码实现部分</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="built_in">std</span>::<span class="built_in">string</span> <span class="title">FileUtils::fullPathForFilename</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> &amp;filename)</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (filename.empty())&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;  <span class="comment">//空字符串监测</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (isAbsolutePath(filename))&#123;</span><br><span class="line">        <span class="keyword">return</span> filename; <span class="comment">//绝对路径直接返回 优化的点</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Already Cached ?  加入了缓存机制  _fullPathCache</span></span><br><span class="line">    <span class="keyword">auto</span> cacheIter = _fullPathCache.find(filename);</span><br><span class="line">    <span class="keyword">if</span>(cacheIter != _fullPathCache.end())&#123;</span><br><span class="line">        <span class="keyword">return</span> cacheIter-&gt;second;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// Get the new file name. 缓存机制中使用了字典，所以字典两边都需要进行监测是否已经存在</span></span><br><span class="line">    <span class="function"><span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span> <span class="title">newFilename</span><span class="params">( getNewFilename(filename) )</span></span>;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> fullpath;</span><br><span class="line">	<span class="comment">//    遍历搜索路径</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; searchIt : _searchPathArray) &#123;</span><br><span class="line">        <span class="comment">//这里有一个分辨率搜索顺序的Vector 如果有多套分辨率 下面的资源和脚本路径结构一样可以进行设置，默认为空字符串</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; resolutionIt : _searchResolutionsOrderArray)&#123;</span><br><span class="line">            <span class="comment">//拼接内容 获取字符串内容 同时判断文件是否存在 存在返回全路径</span></span><br><span class="line">            fullpath = <span class="keyword">this</span>-&gt;getPathForFilename(newFilename, resolutionIt, searchIt);</span><br><span class="line">            <span class="keyword">if</span> (!fullpath.empty())&#123;</span><br><span class="line">                <span class="comment">// Using the filename passed in as key. 全路径不为空插入缓存 map 方便下次查找使用</span></span><br><span class="line">                _fullPathCache.insert(<span class="built_in">std</span>::<span class="built_in">make_pair</span>(filename, fullpath));</span><br><span class="line">                <span class="keyword">return</span> fullpath;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span>(isPopupNotify())&#123;</span><br><span class="line">        CCLOG(<span class="string">&quot;cocos2d: fullPathForFilename: No file found at %s. Possible missing file.&quot;</span>, filename.c_str());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// The file wasn&#x27;t found, return empty string. 找不到返回空字符串</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&emsp;&emsp;所以看下执行的逻辑和顺序，思考一下别人巧妙的思想。鉴于cocos脚本和资源部分大多数都要走fileUtils ，是不是我们可以做一些更巧妙的东西加入到cocos 的源码中 ？</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
