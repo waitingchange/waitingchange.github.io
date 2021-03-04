@@ -23,20 +23,20 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
-<meta name="description" content="仓库损坏如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。 最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。">
+<meta name="description" content="leetcode 06 存在重复元素给定一个整数数组，判断是否存在重复元素。 如果存在一值在数组中出现至少两次，函数返回 true 。如果数组中每个元素都不相同，则返回 false 。 示例 1: 输入: [1,2,3,1]输出: true示例 2: 输入: [1,2,3,4]输出: false示例 3: 输入: [1,1,1,3,3,4,3,2,4,2]输出: true 作者：力扣 (LeetC">
 <meta property="og:type" content="article">
-<meta property="og:title" content="仓库损坏">
-<meta property="og:url" content="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/index.html">
+<meta property="og:title" content="leetcode 总结  06 存在重复元素">
+<meta property="og:url" content="https://waitingchange.github.io/2021/03/03/leetcode%2006/index.html">
 <meta property="og:site_name" content="懒人的胡言乱语">
-<meta property="og:description" content="仓库损坏如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。 最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。">
+<meta property="og:description" content="leetcode 06 存在重复元素给定一个整数数组，判断是否存在重复元素。 如果存在一值在数组中出现至少两次，函数返回 true 。如果数组中每个元素都不相同，则返回 false 。 示例 1: 输入: [1,2,3,1]输出: true示例 2: 输入: [1,2,3,4]输出: false示例 3: 输入: [1,1,1,3,3,4,3,2,4,2]输出: true 作者：力扣 (LeetC">
 <meta property="og:locale">
-<meta property="article:published_time" content="2021-03-01T06:59:19.000Z">
-<meta property="article:modified_time" content="2021-03-01T07:01:28.694Z">
+<meta property="article:published_time" content="2021-03-03T12:14:34.000Z">
+<meta property="article:modified_time" content="2021-03-04T10:04:05.121Z">
 <meta property="article:author" content="change">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
+<link rel="canonical" href="https://waitingchange.github.io/2021/03/03/leetcode%2006/">
 
 
 <script class="page-configurations">
@@ -48,7 +48,7 @@
     lang   : 'default'
   };
 </script>
-<title>仓库损坏 | 懒人的胡言乱语</title>
+<title>leetcode 总结  06 存在重复元素 | 懒人的胡言乱语</title>
   
 
 
@@ -147,7 +147,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F"><span class="nav-number">1.</span> <span class="nav-text">仓库损坏</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#leetcode-06-%E5%AD%98%E5%9C%A8%E9%87%8D%E5%A4%8D%E5%85%83%E7%B4%A0"><span class="nav-number">1.</span> <span class="nav-text">leetcode 06 存在重复元素</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -215,7 +215,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="default">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2006/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -228,7 +228,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          仓库损坏
+          leetcode 总结  06 存在重复元素
         </h1>
 
         <div class="post-meta-container">
@@ -238,9 +238,24 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2021-03-01 14:59:19 / Modified: 15:01:28" itemprop="dateCreated datePublished" datetime="2021-03-01T14:59:19+08:00">2021-03-01</time>
+      <time title="Created: 2021-03-03 20:14:34" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-04 18:04:05" itemprop="dateModified" datetime="2021-03-04T18:04:05+08:00">2021-03-04</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+        </span>
     </span>
 
   
@@ -253,8 +268,15 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h1 id="仓库损坏"><a href="#仓库损坏" class="headerlink" title="仓库损坏"></a>仓库损坏</h1><p>如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。</p>
-<p>最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。</p>
+        <h1 id="leetcode-06-存在重复元素"><a href="#leetcode-06-存在重复元素" class="headerlink" title="leetcode 06 存在重复元素"></a>leetcode 06 存在重复元素</h1><p>给定一个整数数组，判断是否存在重复元素。</p>
+<p>如果存在一值在数组中出现至少两次，函数返回 true 。如果数组中每个元素都不相同，则返回 false 。</p>
+<p>示例 1:</p>
+<p>输入: [1,2,3,1]<br>输出: true<br>示例 2:</p>
+<p>输入: [1,2,3,4]<br>输出: false<br>示例 3:</p>
+<p>输入: [1,1,1,3,3,4,3,2,4,2]<br>输出: true</p>
+<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x248f5/">https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x248f5/</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//解题思路：一开始在没看清楚题目的时候就直接去写了， 因为看到类似的题目，另外一个是需要得到数组中存在最多的数字，但是忽略了一个点，没法记录多少次</span></span><br><span class="line"><span class="comment">// 回来继续考虑，因为知道map 存在两个数据 ，第一个可以作为key ， 第二个用来存放存在的数量，当然对于本题来讲，返回True 就可以了。于是代码如下</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">containsDuplicate</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.size() &lt;= <span class="number">1</span>) <span class="comment">// 如果只有一个，或者这个数组就没内容，那么必须没有重复的</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">map</span> &lt;<span class="keyword">int</span> ,<span class="keyword">int</span>&gt; myMap; <span class="comment">// 定义用来存放的map  key 作为 数值 value 作为出现的次数</span></span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;::iterator it;  <span class="comment">// 定义it ，服务于map</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.size();i++) <span class="comment">// 一次遍历</span></span><br><span class="line">        &#123;</span><br><span class="line">            it = myMap.find(nums[i]); <span class="comment">// 查询是否存在</span></span><br><span class="line">            <span class="keyword">if</span>(it != myMap.end()) <span class="comment">// 如果已经存在 ， 那么肯定这次是重复的</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                myMap[nums[i]] = <span class="number">1</span>; <span class="comment">// 这里用来存放次数，这里是错误的，主要有用的是key</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -268,13 +290,13 @@
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/02/23/NodeJs%E4%BD%BF%E7%94%A8Buffer/" rel="prev" title="Nodejs 使用Buffer">
-                  <i class="fa fa-chevron-left"></i> Nodejs 使用Buffer
+                <a href="/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/" rel="prev" title="仓库损坏">
+                  <i class="fa fa-chevron-left"></i> 仓库损坏
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/03/03/leetcode%2006/" rel="next" title="leetcode 总结  06 存在重复元素">
-                  leetcode 总结  06 存在重复元素 <i class="fa fa-chevron-right"></i>
+                <a href="/2021/03/03/leetcode%2005/" rel="next" title="leetcode 总结  05 旋转数组">
+                  leetcode 总结  05 旋转数组 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>

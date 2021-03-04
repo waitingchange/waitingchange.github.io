@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">20</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -640,6 +640,94 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2006/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/03/leetcode%2006/" class="post-title-link" itemprop="url">leetcode 总结  06 存在重复元素</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-03-03 20:14:34" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-04 18:04:05" itemprop="dateModified" datetime="2021-03-04T18:04:05+08:00">2021-03-04</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="leetcode-06-存在重复元素"><a href="#leetcode-06-存在重复元素" class="headerlink" title="leetcode 06 存在重复元素"></a>leetcode 06 存在重复元素</h1><p>给定一个整数数组，判断是否存在重复元素。</p>
+<p>如果存在一值在数组中出现至少两次，函数返回 true 。如果数组中每个元素都不相同，则返回 false 。</p>
+<p>示例 1:</p>
+<p>输入: [1,2,3,1]<br>输出: true<br>示例 2:</p>
+<p>输入: [1,2,3,4]<br>输出: false<br>示例 3:</p>
+<p>输入: [1,1,1,3,3,4,3,2,4,2]<br>输出: true</p>
+<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x248f5/">https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x248f5/</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//解题思路：一开始在没看清楚题目的时候就直接去写了， 因为看到类似的题目，另外一个是需要得到数组中存在最多的数字，但是忽略了一个点，没法记录多少次</span></span><br><span class="line"><span class="comment">// 回来继续考虑，因为知道map 存在两个数据 ，第一个可以作为key ， 第二个用来存放存在的数量，当然对于本题来讲，返回True 就可以了。于是代码如下</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">containsDuplicate</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.size() &lt;= <span class="number">1</span>) <span class="comment">// 如果只有一个，或者这个数组就没内容，那么必须没有重复的</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">map</span> &lt;<span class="keyword">int</span> ,<span class="keyword">int</span>&gt; myMap; <span class="comment">// 定义用来存放的map  key 作为 数值 value 作为出现的次数</span></span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;::iterator it;  <span class="comment">// 定义it ，服务于map</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.size();i++) <span class="comment">// 一次遍历</span></span><br><span class="line">        &#123;</span><br><span class="line">            it = myMap.find(nums[i]); <span class="comment">// 查询是否存在</span></span><br><span class="line">            <span class="keyword">if</span>(it != myMap.end()) <span class="comment">// 如果已经存在 ， 那么肯定这次是重复的</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                myMap[nums[i]] = <span class="number">1</span>; <span class="comment">// 这里用来存放次数，这里是错误的，主要有用的是key</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1075,136 +1163,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2020/08/12/%E4%BD%BF%E7%94%A8vscode-%E8%BF%9B%E8%A1%8C%E8%B0%83%E8%AF%95Node%20&C++/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="change">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="懒人的胡言乱语">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/08/12/%E4%BD%BF%E7%94%A8vscode-%E8%BF%9B%E8%A1%8C%E8%B0%83%E8%AF%95Node%20&C++/" class="post-title-link" itemprop="url">使用vscode 进行调试Node + C++ </a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-08-12 14:51:47" itemprop="dateCreated datePublished" datetime="2020-08-12T14:51:47+08:00">2020-08-12</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-03-01 14:42:41" itemprop="dateModified" datetime="2021-03-01T14:42:41+08:00">2021-03-01</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Nodejs/" itemprop="url" rel="index"><span itemprop="name">Nodejs</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="如何使用vscode-调试-nodejs-C"><a href="#如何使用vscode-调试-nodejs-C" class="headerlink" title="如何使用vscode 调试 nodejs + C++"></a>如何使用vscode 调试 nodejs + C++</h1><h3 id="先讲遇到的问题"><a href="#先讲遇到的问题" class="headerlink" title="先讲遇到的问题"></a>先讲遇到的问题</h3><p>Electron 部分发新版本，windows包，在一些设备上出现了崩溃，没有堆栈，没有可用信息，怀疑的点有一大堆。</p>
-<p>以上是问题，解决思路是从git提交记录进行比对找出一些最怀疑的点进行日志跟踪，尝试找出崩溃发生前最后日志出现位置，推测上下文。</p>
-<p>如何定位问题先不细讲，最后大致定位在native log日志部分，比如表现，在一些机器上关掉调用就可以正常，打开调用就会崩溃。</p>
-<p>确定了崩溃发生的位置，因为在不同的机器上才会有不同的表现，所以崩溃发生的原因还是不太详细，而且初始化调用的顺序是js端先调用node文件c++暴露的接口，传递需要初始化的完整路径，node 文件将加工后的路径交给log日志系统进行业务的初始化。因为出现问题，所以整个环节都是可以怀疑的地方。</p>
-<h3 id="如何缩小怀疑范围"><a href="#如何缩小怀疑范围" class="headerlink" title="如何缩小怀疑范围"></a>如何缩小怀疑范围</h3><p>比如从语言层面来讲，C++ 内部的相互调用机制这个基本可以排除怀疑，所以基本大概率怀疑的点应该是语言之间的交互部分，nodejs 提供的C++ Addon 部分就是怀疑对象的重点。</p>
-<p>从结构来分，设计方案来讲，C++核心业务方是独立的模块儿，内部的逻辑和调用规则非常清晰，大概率问题不大。从语言交互部分来讲，如果按照规则使用问题也应该很少，对于整块儿业务来讲，这里出问题了，需要去排查，逐个排除。</p>
-<p>发现规律应该能够减少更多的怀疑部分，比如这次遇到问题的时候发现在开发的机器上面没有任何问题，在用户的机器上面就能必现。不同的点就是用户的home 文件夹是使用中文的，开发和测试侧使用的是英文，开发侧有足够的依赖库可以正常使用，用户侧不确定是否全部包含。</p>
-<p>目标锁定为中文是因为日志系统测试阶段没有考虑过中文路径，在开发时候会发现日志系统在windows 有额外处理部分，比如正反斜杠。</p>
-<h3 id="验证猜测"><a href="#验证猜测" class="headerlink" title="验证猜测"></a>验证猜测</h3><p>C++ 核心功能部分被编译为了静态库，先编译debug 静态库，然后新建console 工程 载入和使用，打断点就能确认是否好使。确认传入的中文路径在日志初始化状态没有任何问题。这块儿基本排除了因为C++  的可能性。所以下一步测试从JavaScript 层传入中文路径，看Node 文件在接收参数之后传递给C++ 的值到底会是什么。带来一个新的问题，如何调试，如何断点。单一的打log并不能很直接的跟踪定位到问题所在，个人经验，跟踪log来解决手头问题令人抓狂又很低效。</p>
-<h3 id="调试需要用的工具"><a href="#调试需要用的工具" class="headerlink" title="调试需要用的工具"></a>调试需要用的工具</h3><p>我们拿到关键字去搜索发现，可以debug C++ ，vscode 有插件儿  <a target="_blank" rel="noopener" href="https://github.com/vadimcn/vscode-lldb">CodeLLDB</a> ,因为需要调试C++ ，所以 <a target="_blank" rel="noopener" href="https://github.com/microsoft/vscode-cpptools">C++ 调试插件</a>  不可少，需要调试node ，nodejs 系统安装也需要必备。</p>
-<ul>
-<li><p>Debugging on Linux (x64 or ARM), macOS and Windows*,</p>
-</li>
-<li><p>Conditional breakpoints, function breakpoints, data breakpoints, logpoints,</p>
-</li>
-<li><p>Launch debuggee in integrated or external terminal,</p>
-</li>
-</ul>
-<p>上面是<strong>CodeLLDB</strong> 的介绍，可以在不同的平台方面提供断点等debug 功能。</p>
-<p> **C/C++ **插件儿不多解释，需要断点C或者C++ 不是。</p>
-<p>至于 <strong>Nodejs</strong> ，今天需要讲的重点，断点需要调试的就是 Nodejs addon，从JavaScript 启动可以断点js ，也可以断点到执行到的C++ 部分。</p>
-<h3 id="怎么做"><a href="#怎么做" class="headerlink" title="怎么做"></a>怎么做</h3><p>先讲怎么做，然后再说为什么。</p>
-<div style="position: relative; width: 100%; height: 0; padding-bottom: 75%;"><iframe src="/vidoes/调试nodejs c++.mp4" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="position: absolute; width: 100%; 
-height: 100%; left: 0; top: 0;"> </iframe></div>
-
-
-
-<h3 id="讲一下为什么"><a href="#讲一下为什么" class="headerlink" title="讲一下为什么"></a>讲一下为什么</h3><p>需求是需要跨平台 debug nodejs 和c++ 部分，编辑器是vscode。从vscode 的插件儿开始入手。C++ 和 Nodejs 属于必备，关心的重点就是CodeLLDB。</p>
-<p>如何使用CodeLLDB，比如他们快速开始。</p>
-<p><img src="/images/codelldb/CodeLLDB_quick_start.png" alt="&quot;CodeLLDB_quick_start&quot;"></p>
-<p><strong>name</strong> Launch configuration name. 明显是指的标识，type 应该是告诉vscode 需要执行哪一类调试。</p>
-<p><strong>request</strong>： The <code>request</code> property of the configuration chooses how it will be done。 可以暂时理解为目的。</p>
-<p><strong>program</strong>:Path to the debuggee executable.  需要launch执行的路径。</p>
-<p><strong>args</strong>: Command line parameters. If this is a string, it will be split using shell-like syntax.  执行时候需要传递的参数</p>
-<p><strong>cwd</strong>: Current Working directory.   当前工作路径</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">      <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;lldb&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;request&quot;</span>: <span class="string">&quot;launch&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;lldb:node&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;program&quot;</span>: <span class="string">&quot;node&quot;</span>,</span><br><span class="line">      <span class="attr">&quot;args&quot;</span>: [<span class="string">&quot;--inspect-brk&quot;</span>, <span class="string">&quot;--expose-gc&quot;</span>,<span class="string">&quot;main.js&quot;</span>], <span class="comment">// --inspect-brk  参看nodejs  , node --expose-gc  main.js 可以手动代码执行gc()</span></span><br><span class="line">      <span class="attr">&quot;cwd&quot;</span>: <span class="string">&quot;$&#123;workspaceFolder&#125;&quot;</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>上面的这边在使用的lldb launch 配置。</p>
-<p><img src="/images/codelldb/nodeinspect.png" alt="&quot;nodeinspect&quot;"></p>
-<p>在使用launch的时候我们使用了inspect 的参数，于是当我们真正调试的时候，需要监听的端口号为9229。</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">&quot;type&quot;</span>: <span class="string">&quot;node&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;request&quot;</span>: <span class="string">&quot;attach&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;node:attach&quot;</span>,</span><br><span class="line">    <span class="attr">&quot;port&quot;</span>: <span class="number">9229</span>,</span><br><span class="line">    <span class="attr">&quot;skipFiles&quot;</span>: [</span><br><span class="line">      <span class="string">&quot;&lt;node_internals&gt;/**&quot;</span></span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>有了上面的基本介绍，这里的一些参数似乎显得就是很自然的一些内容。<a target="_blank" rel="noopener" href="https://code.visualstudio.com/docs/nodejs/nodejs-debugging">skipFiles vscode nodejs debug介绍</a>  </p>
-<p>因为需要经历两个步骤，先launch 需要debug 的内容，然后attach 住正在执行的内容，才能够达到debug 的目的。</p>
-<p><strong>compounds</strong>: vscode 提供了这个字段，很明显是为了大家执行方便，让逻辑按照执行顺序去执行。</p>
-<p><strong>preLaunchTask</strong>字段，从字面意思就能了解是在做一些列操作之前可以先执行某种动作。</p>
-<p><img src="/images/codelldb/compounds.png" alt="compounds"></p>
-<p>演示的视频是在Mac 下面做的，在windows下面配置部分会略微不同，但是流程是一样的，需要先launch ，然后在attach node 文件，进而在需要的地方进行断点。</p>
-<p>附加： ：<a href="git@github.com:waitingchange/vscode_debug_nodejs_cpp.git">视频中用于测试的Demo 工程 Git 地址</a>      <a href="mailto:&#103;&#x69;&#116;&#64;&#x67;&#105;&#116;&#104;&#117;&#98;&#x2e;&#99;&#111;&#x6d;">&#103;&#x69;&#116;&#64;&#x67;&#105;&#116;&#104;&#117;&#98;&#x2e;&#99;&#111;&#x6d;</a>:waitingchange/vscode_debug_nodejs_cpp.git</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
