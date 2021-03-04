@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -200,6 +200,126 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2020/09/17/CMake/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2020/09/17/CMake/" class="post-title-link" itemprop="url">CMake</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2020-09-17 20:35:08" itemprop="dateCreated datePublished" datetime="2020-09-17T20:35:08+08:00">2020-09-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-01 14:57:05" itemprop="dateModified" datetime="2021-03-01T14:57:05+08:00">2021-03-01</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/CMake/" itemprop="url" rel="index"><span itemprop="name">CMake</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="为什么要使用CMake"><a href="#为什么要使用CMake" class="headerlink" title="为什么要使用CMake"></a>为什么要使用CMake</h1><p>嗯，考虑到能看到这里的基本都会对CMake 有一定了解，所以先不讲这东西是啥，问题是为啥要用这东西。</p>
+<p>我们这边有一些需求，目的是基础功能保持稳定性，又因为涉及到多个类型的客户端（IOS、Android、Windows、Mac），那么共用的内容C++使用就是一种必然，同时考虑到后期的可维护性，CMake 的使用就应该是一种必然。</p>
+<p>因为是要做公共基础内容，最直接的思考是提供静态库给各方使用，这也就间接回答了CMake 的用途，用来把源码生成二进制文件。</p>
+<p>按照正常的流程，先给一个开胃菜，提供一个Demo。</p>
+<p>推荐一个软件 <em>CLine</em> </p>
+<p><img src="/images/CMake/CLineDemo.png" alt="CLineDemo"></p>
+<p>刚好能够提供C++ 静态库和动态库。</p>
+<p>因为我需要优先做Android 的内容，所以我一步到位直接使用了AndroidStudio。</p>
+<p><img src="/images/CMake/AndroidCmake.png" alt="AndroidCmake"></p>
+<p>上面是简单的创建工程，咱们接着往下面。</p>
+<p>以CLine 为例子</p>
+<p><img src="/images/CMake/ClineCMake.png" alt="ClineCMake"></p>
+<p>CMake 文本的写法就是 需要设置 CMake version  然后给出一个 project(<strong>name</strong>)  name 为生成静态库名字 ，设置C11 ,然后就是给这个project 添加需要编译的CPP文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">├── CMakeLists.txt</span><br><span class="line">├── build</span><br><span class="line">├── library.cpp</span><br><span class="line">└── library.h</span><br></pre></td></tr></table></figure>
+
+<p>文件结构大致是这样，需要有**source file ** 、 <strong>build</strong> 文件夹（我不太喜欢CLine 默认的 cmake-build-debug，自己更改了）、和必需品 <strong>CMakeLists.txt</strong></p>
+<p>不依赖工具，可以在终端进入到当前文件夹下面的build 文件夹 然后执行 <strong>cmake ..</strong></p>
+<p>执行<strong>cmake 命令</strong>之后，需要生成库文件需要在当前命令行再次执行 <strong>make</strong> ， 等命令执行完毕，库文件就会出现在build 文件夹。</p>
+<p>依靠CLine 就相对容易，直接点击右上角的debug 标志即可。</p>
+<p>如果一切运行正常，在build 文件夹下面就会出现需要的 CmakeDemo 这个名字的二进制文件，因为我们需要的是静态库，那么到现在为止这个静态库可以被拿来使用了。</p>
+<h2 id="如何检验是否为自己需要的二进制静态库"><a href="#如何检验是否为自己需要的二进制静态库" class="headerlink" title="如何检验是否为自己需要的二进制静态库"></a>如何检验是否为自己需要的二进制静态库</h2><p>我们想要提供出去稳定可靠的二进制库，那么自测是必须不可少的一环。讲一下我这边比较常用的方式，我会去创建一个适合的console 工程，或者如果使用xcode ， 我会创建一个可视化的对应平台APP，把库文件暴露的接口交给新建demo 工程，按照正常使用的流程，载入编译出来的库文件。</p>
+<p>那么开搞。</p>
+<p>因为这里打算先提供一下简单的demo ， 只演示一下如何使用CMake ，创建静态库和使用静态库，这里简单替换原来的打印名言<strong>Hello,world!</strong> 更改为 **”Hello, from static lib !” **</p>
+<p>在进入build 文件夹执行过最后的 <strong>make</strong> 命令后，能够拿到库文件 <strong>libCmakeDemo.a</strong></p>
+<p>我们放入到consoleDemo 工程中 然后文件结构是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">├── CMakeLists.txt</span><br><span class="line">├── cmake-build-debug</span><br><span class="line">├── libCmakeDemo.a</span><br><span class="line">├── library.h</span><br><span class="line">└── main.cpp</span><br></pre></td></tr></table></figure>
+
+<p>更改CMakeLists.txt  内容如下</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#设置cmake version</span></span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.17</span>)</span><br><span class="line"><span class="comment">#设置变量名字</span></span><br><span class="line"><span class="keyword">set</span>(APP_NAME ConsoleDemo)</span><br><span class="line"><span class="comment"># 国际惯例 project name</span></span><br><span class="line"><span class="keyword">project</span>(<span class="variable">$&#123;APP_NAME&#125;</span>)</span><br><span class="line"><span class="comment">#C11</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">11</span>)</span><br><span class="line"><span class="comment"># 这里需要链接静态库</span></span><br><span class="line"><span class="keyword">link_libraries</span>(<span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/libCmakeDemo.a)</span><br><span class="line"><span class="comment">#正常编译需要的 添加source 文件</span></span><br><span class="line"><span class="keyword">add_executable</span>(<span class="variable">$&#123;APP_NAME&#125;</span> main.cpp library.h)</span><br></pre></td></tr></table></figure>
+
+<p>我这边比较懒，就直接搬运了静态库中使用的头文件，因为属于函数定义，并且没有特殊要求，这里就直接可以拿来使用。</p>
+<p>看下<strong>main</strong>函数中的修改</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;library.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    hello();</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;Hello, World!&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>这里就很简单了，直接引入头文件，然后在合适的地方进行执行。</p>
+<p>结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hello, from static lib !</span><br><span class="line">Hello, World!</span><br></pre></td></tr></table></figure>
+
+<p>如预期</p>
+<p>先写到这里，下次可以讲一下全平台的一些东西，比如一些难点，如果从C++ 通过nodejs 异步回调给JavaScript（可不是正常设置进去一个回调然后等执行后就从C++那边执行到JavaScript ，这样就没有技术含量）使用libuv 可以多次从C++ 回调给JavaScript，下次讲讲如何实现。</p>
+<p>惯例，使用的demo 地址  <a target="_blank" rel="noopener" href="https://github.com/waitingchange/cmakeDemo">Demo 地址</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1150,99 +1270,6 @@ height: 100%; left: 0; top: 0;"> </iframe></div>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeRender</span><span class="params">(JNIEnv* env)</span> </span>&#123;</span><br><span class="line">    cocos2d::Director::getInstance()-&gt;mainLoop();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><img src="/images/cocos_android.png" alt="&quot;IOS 执行流程&quot;"></p>
 <p>当IOS 和Android 部分执行到Mainloop ， 启动的差异就已经被屏蔽了</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2017/08/22/c-%E8%B0%83%E7%94%A8objectC-%E5%92%8C-c-%E8%B0%83%E7%94%A8java/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="change">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="懒人的胡言乱语">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2017/08/22/c-%E8%B0%83%E7%94%A8objectC-%E5%92%8C-c-%E8%B0%83%E7%94%A8java/" class="post-title-link" itemprop="url">C++调用objectC 和 C++调用java</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2017-08-22 17:23:54" itemprop="dateCreated datePublished" datetime="2017-08-22T17:23:54+08:00">2017-08-22</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2018-12-23 14:56:43" itemprop="dateModified" datetime="2018-12-23T14:56:43+08:00">2018-12-23</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/Cocos/" itemprop="url" rel="index"><span itemprop="name">Cocos</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>讲讲c++如何统一不同平台的接口吧</p>
-<h2 id="c-如何调用objectC"><a href="#c-如何调用objectC" class="headerlink" title="c++如何调用objectC"></a>c++如何调用objectC</h2><p>ios中 c++ 的文件可以用 .cpp 和 .mm 来结尾<br>区别是：<br>.mm ：带有这种扩展名的源代码文件，除了可以包含objective-c和C代码以外还可以包含C++代码。<br>.cpp：只能编译C++ </p>
-<p>所以，如果要从c++ 中调用 ios 底层的内容， .mm 文件必不可少。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line">.h 文件</span><br><span class="line">	<span class="comment">#ifndef Test_hpp</span></span><br><span class="line">	<span class="comment">#define Test_hpp</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">#include&quot;cocos2d.h&quot;</span></span><br><span class="line">	<span class="comment">#include &lt;stdio.h&gt;</span></span><br><span class="line">	class TestFun &#123;</span><br><span class="line">	public:</span><br><span class="line">	    TestFun();</span><br><span class="line">	    ~TestFun();</span><br><span class="line">	    std::string getStrFromOC();</span><br><span class="line">	&#125;;</span><br><span class="line">	<span class="comment">#endif /* Test_hpp */</span></span><br><span class="line">.mm 文件</span><br><span class="line"></span><br><span class="line">	<span class="comment">#include &quot;Test.hpp&quot;</span></span><br><span class="line">	<span class="comment">#import &quot;AppController.h&quot;</span></span><br><span class="line"></span><br><span class="line">	TestFun::<span class="function"><span class="title">TestFun</span></span>()&#123;</span><br><span class="line">	    cocos2d::<span class="built_in">log</span>(<span class="string">&quot;TestFun create&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	TestFun::~<span class="function"><span class="title">TestFun</span></span>()&#123;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line">	// .mm 文件是可以直接调用 oc 中的方法的</span><br><span class="line">	std::string TestFun::<span class="function"><span class="title">getStrFromOC</span></span>()&#123;</span><br><span class="line">	    <span class="built_in">return</span> [[AppController myTestFun] UTF8String];</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">//AppController.mm 文件添加内容</span><br><span class="line"></span><br><span class="line">	+ (NSString *)myTestFun</span><br><span class="line">	&#123;</span><br><span class="line">	    <span class="built_in">return</span> @<span class="string">&quot;TestStr from AppController.h&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">//调用部分在 AppDelegate</span><br><span class="line"></span><br><span class="line">	LuaStack* stack = engine-&gt;getLuaStack();</span><br><span class="line">	stack-&gt;setXXTEAKeyAndSign(<span class="string">&quot;2dxLua&quot;</span>, strlen(<span class="string">&quot;2dxLua&quot;</span>), <span class="string">&quot;XXTEA&quot;</span>, strlen(<span class="string">&quot;XXTEA&quot;</span>));</span><br><span class="line">	    </span><br><span class="line">	auto testClass = new TestFun();</span><br><span class="line">	std::string str = testClass-&gt;getStrFromOC();</span><br><span class="line">	cocos2d::<span class="built_in">log</span>(<span class="string">&quot;fun call after is %s&quot;</span>,str.c_str());</span><br><span class="line"></span><br><span class="line">//打印 <span class="built_in">log</span></span><br><span class="line"></span><br><span class="line">	TestFun create</span><br><span class="line">	fun call after is TestStr from AppController.h</span><br><span class="line">	[LUA-print] </span><br><span class="line">	********** </span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>由此可见 c++ 调用object-C 比较容易，更改后缀为.mm 就可以使用</p>
-<h2 id="c-如何调用java"><a href="#c-如何调用java" class="headerlink" title="c++如何调用java"></a>c++如何调用java</h2><p>既然是懒人，那就直接使用Test class 来做</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line">.h 文件</span><br><span class="line">	<span class="comment">#ifndef Test_hpp</span></span><br><span class="line">	<span class="comment">#define Test_hpp</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">#include&quot;cocos2d.h&quot;</span></span><br><span class="line"></span><br><span class="line">	class TestFun &#123;</span><br><span class="line">	    </span><br><span class="line">	public:</span><br><span class="line">	    TestFun();</span><br><span class="line">	    ~TestFun();</span><br><span class="line">	    std::string getStrFromOC();</span><br><span class="line">	    //添加获取bunleId 的函数</span><br><span class="line">	    std::string getBundleID();</span><br><span class="line">	&#125;;</span><br><span class="line">	<span class="comment">#endif /* Test_hpp */</span></span><br><span class="line"></span><br><span class="line">.mm 文件</span><br><span class="line">&lt;!-- 添加新的函数 getBundleID--&gt;</span><br><span class="line">	std::string TestFun::<span class="function"><span class="title">getBundleID</span></span>()&#123;</span><br><span class="line">    std::string bundleId = <span class="string">&quot;&quot;</span>;</span><br><span class="line">	<span class="comment">#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)</span></span><br><span class="line">	&lt;!-- 获取ios的上面已经写过了这里就不啰嗦了 --&gt;</span><br><span class="line">	    bundleId = <span class="string">&quot;&quot;</span>;</span><br><span class="line">	<span class="comment">#endif</span></span><br><span class="line">	    </span><br><span class="line">	<span class="comment">#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)</span></span><br><span class="line">	&lt;!-- 添加宏 判断平台 --&gt;</span><br><span class="line">	<span class="comment">#include &quot;platform/android/jni/JniHelper.h&quot;</span></span><br><span class="line">		&lt;!-- 引入头java native interface 需要使用的文件 --&gt;</span><br><span class="line">	    cocos2d::JniMethodInfo t; //jni 方法结构体 下面的使用需要这个结构体</span><br><span class="line">	    <span class="keyword">if</span>(cocos2d::JniHelper::getStaticMethodInfo(t, <span class="string">&quot;org/cocos2dx/lua/AppActivity&quot;</span>, <span class="string">&quot;getBundleID&quot;</span>, <span class="string">&quot;()Ljava/lang/String;&quot;</span>))&#123;</span><br><span class="line">	    	&lt;!-- getBundleID 传递参数为空 返回string 类型 --&gt;</span><br><span class="line">	        jstring bundle = (jstring) t.env-&gt;CallStaticObjectMethod(t.classID, t.methodID);</span><br><span class="line">	        &lt;!-- 需要把返回的jstring 转化为 string --&gt;</span><br><span class="line">	        bundleId = cocos2d::JniHelper::jstring2string(bundle);</span><br><span class="line">	    &#125;</span><br><span class="line">	<span class="comment">#endif</span></span><br><span class="line">	    <span class="built_in">return</span> bundleId;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	&lt;!-- 查看了下jni 的写法  --&gt;</span><br><span class="line">	typedef struct JniMethodInfo_</span><br><span class="line">	&#123;</span><br><span class="line">	    JNIEnv *    env;</span><br><span class="line">	    jclass      classID;</span><br><span class="line">	    jmethodID   methodID;</span><br><span class="line">	&#125; JniMethodInfo;</span><br><span class="line">	这个是jni 方法的结构体</span><br><span class="line"></span><br><span class="line">	getStaticMethodInfo 方法内容</span><br><span class="line">	1.判断是否传递参数</span><br><span class="line">	2.获取jni 环境</span><br><span class="line">	3.获取所要调用的class 的id</span><br><span class="line">	4.获取所需要调用静态函数的id</span><br><span class="line">	5.把所有的信息插入到结构体中</span><br><span class="line">	6.返回 <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">java文件</span><br><span class="line">	public static String <span class="function"><span class="title">getBundleID</span></span>() &#123;</span><br><span class="line">        String packageName = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        try &#123;</span><br><span class="line">            // ---get the package info---</span><br><span class="line">            packageName = myContext.getPackageName();</span><br><span class="line">            <span class="keyword">if</span> (packageName == null || packageName.length() &lt;= 0) &#123;</span><br><span class="line">                <span class="built_in">return</span> <span class="string">&quot;&quot;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; catch (Exception e) &#123;</span><br><span class="line">            Log.e(<span class="string">&quot;VersionInfo&quot;</span>, <span class="string">&quot;Exception&quot;</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">return</span> packageName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">c++调用部分</span><br><span class="line">	AppDelegate 文件 （不要忘记引用头文件）</span><br><span class="line">	<span class="comment">#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)</span></span><br><span class="line">	    auto myClass = new TestFun();</span><br><span class="line">	    std::string myStr =  myClass-&gt;getBundleID();</span><br><span class="line">	    cocos2d::<span class="built_in">log</span>(<span class="string">&quot;bundle id is %s&quot;</span>,myStr.c_str());  </span><br><span class="line">	<span class="comment">#endif</span></span><br><span class="line"></span><br><span class="line">	Android.mk 文件 需要在 LOCAL_SRC_FILES 中添加 </span><br><span class="line">	../../Classes/Test.mm \</span><br><span class="line"></span><br><span class="line">	执行编译</span><br><span class="line"></span><br><span class="line">	然而编译不过。。。</span><br><span class="line"></span><br><span class="line">	jni/../../Classes/AppDelegate.cpp:79: error: undefined reference to <span class="string">&#x27;TestFun::TestFun()&#x27;</span></span><br><span class="line">	jni/../../Classes/AppDelegate.cpp:80: error: undefined reference to <span class="string">&#x27;TestFun::getBundleID()&#x27;</span></span><br><span class="line">	jni/../../Classes/AppDelegate.cpp:83: error: undefined reference to <span class="string">&#x27;TestFun::getStringWithParams()&#x27;</span></span><br><span class="line">	collect2: error: ld returned 1 <span class="built_in">exit</span> status</span><br><span class="line"></span><br><span class="line">	更改Test.mm 为 Test.cpp  更改Android.mk 文件中写入的为 </span><br><span class="line">	../../Classes/Test.cpp \</span><br><span class="line"></span><br><span class="line">	再次编译，，过了 完美</span><br><span class="line"></span><br><span class="line">	D/cocos2d-x debug info( 1794): TestFun create</span><br><span class="line">	D/cocos2d-x debug info( 1794): bundle id is org.cocos2dx.Hello</span><br><span class="line"></span><br><span class="line">	adb logcat 中日志文件</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>上面我们写了一个获取java 字符串的函数，如果我们想向java 中传递函数呢 ？<br>接着来</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">.h 文件</span><br><span class="line">	<span class="comment">#ifndef Test_hpp</span></span><br><span class="line">	<span class="comment">#define Test_hpp</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">#include&quot;cocos2d.h&quot;</span></span><br><span class="line"></span><br><span class="line">	class TestFun &#123;</span><br><span class="line">	    </span><br><span class="line">	public:</span><br><span class="line">	    TestFun();</span><br><span class="line">	    ~TestFun();</span><br><span class="line">	    std::string getStrFromOC();</span><br><span class="line">	    std::string getBundleID();</span><br><span class="line">	    &lt;!-- 添加传递参数的函数 --&gt;</span><br><span class="line">	    std::string getStringWithParams();</span><br><span class="line">	&#125;;</span><br><span class="line">	<span class="comment">#endif /* Test_hpp */</span></span><br><span class="line"></span><br><span class="line">.cpp 文件</span><br><span class="line">	&lt;!-- 实现部分比上面多了 getStringWithParams --&gt;</span><br><span class="line">	std::string TestFun::<span class="function"><span class="title">getStringWithParams</span></span>()&#123;</span><br><span class="line">	    std::string returnStr = <span class="string">&quot;&quot;</span>;</span><br><span class="line">	<span class="comment">#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)</span></span><br><span class="line">	<span class="comment">#include &quot;platform/android/jni/JniHelper.h&quot;</span></span><br><span class="line">	    cocos2d::JniMethodInfo t;</span><br><span class="line">	    <span class="keyword">if</span>(cocos2d::JniHelper::getStaticMethodInfo(t, <span class="string">&quot;org/cocos2dx/lua/AppActivity&quot;</span>, <span class="string">&quot;getMyString&quot;</span>, <span class="string">&quot;(Ljava/lang/String;)Ljava/lang/String;&quot;</span>))&#123;</span><br><span class="line">	        cocos2d::<span class="built_in">log</span>(<span class="string">&quot;getStringWithParams from c++&quot;</span>);</span><br><span class="line">	        &lt;!-- 需要传递给java的字符串 --&gt;</span><br><span class="line">	        std::string toJavaStr = <span class="string">&quot;from c++ params&quot;</span>;</span><br><span class="line">	        &lt;!-- 需要转化为 jstring jni需要类型 --&gt;</span><br><span class="line">	        jstring stringArg1 = t.env-&gt;NewStringUTF(toJavaStr.c_str());</span><br><span class="line">	        &lt;!-- CallStaticObjectMethod 函数 第三个是需要传递的数据 --&gt;</span><br><span class="line">	        jstring myString = (jstring) t.env-&gt;CallStaticObjectMethod(t.classID, t.methodID,stringArg1);</span><br><span class="line">	        returnStr = cocos2d::JniHelper::jstring2string(myString);</span><br><span class="line">	    &#125;</span><br><span class="line">	<span class="comment">#endif</span></span><br><span class="line">	    <span class="built_in">return</span> returnStr;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">AppDelegate 文件中修改</span><br><span class="line">	<span class="comment">#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)</span></span><br><span class="line">	    auto myClass = new TestFun();</span><br><span class="line">	    std::string myStr =  myClass-&gt;getBundleID();</span><br><span class="line">	    cocos2d::<span class="built_in">log</span>(<span class="string">&quot;bundle id is %s&quot;</span>,myStr.c_str()); </span><br><span class="line">	     &lt;!-- 新添加  getStringWithParams --&gt;</span><br><span class="line">	    std::string returnStr =  myClass-&gt;getStringWithParams();</span><br><span class="line">    	cocos2d::<span class="built_in">log</span>(<span class="string">&quot;return str  is %s&quot;</span>,returnStr.c_str());</span><br><span class="line">	<span class="comment">#endif</span></span><br><span class="line"></span><br><span class="line">java 文件添加函数</span><br><span class="line"></span><br><span class="line">    public static String getMyString(String s) &#123;</span><br><span class="line">        Log.d(<span class="string">&quot;c++ call getMyString params is &quot;</span>,s);</span><br><span class="line">        <span class="built_in">return</span> <span class="string">&quot;return form java &quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Android.mk 文件</span><br><span class="line">	依然依旧 </span><br><span class="line">	../../Classes/Test.cpp \</span><br><span class="line"></span><br><span class="line">编译通过</span><br><span class="line"></span><br><span class="line">adb logcat</span><br><span class="line">	c++ call getMyString params is   ----&gt; java 文件内容</span><br><span class="line">	std::string toJavaStr = <span class="string">&quot;from c++ params&quot;</span>; ----&gt; c++文件传递给java</span><br><span class="line">	D/c++ call getMyString params is ( 1794): from c++ params</span><br><span class="line">	D/cocos2d-x debug info( 1794): <span class="built_in">return</span> str  is <span class="built_in">return</span> form java </span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>如上，通过.mm 文件可以直接调用oc 中函数，在cpp 文件中通过jni 可以调用java 也可以相互传递值</p>
-<p>假如还想知道怎样从java 中调用c++ 该如何 ？？？好累，下次再写。。。</p>
 
       
     </div>

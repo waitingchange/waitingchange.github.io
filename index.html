@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -728,6 +728,97 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2007/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/03/leetcode%2007/" class="post-title-link" itemprop="url">leetcode 总结  07 加一</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-03-03 20:14:34" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-04 18:50:39" itemprop="dateModified" datetime="2021-03-04T18:50:39+08:00">2021-03-04</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="leetcode-07-加一"><a href="#leetcode-07-加一" class="headerlink" title="leetcode 07 加一"></a>leetcode 07 加一</h1><p>给定一个由 整数 组成的 非空 数组所表示的非负整数，在该数的基础上加一。</p>
+<p>最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。</p>
+<p>你可以假设除了整数 0 之外，这个整数不会以零开头。</p>
+<p>示例 1：</p>
+<p>输入：digits = [1,2,3]<br>输出：[1,2,4]<br>解释：输入数组表示数字 123。<br>示例 2：</p>
+<p>输入：digits = [4,3,2,1]<br>输出：[4,3,2,2]<br>解释：输入数组表示数字 4321。<br>示例 3：</p>
+<p>输入：digits = [0]<br>输出：[1]</p>
+<p>提示：</p>
+<p>1 &lt;= digits.length &lt;= 100<br>0 &lt;= digits[i] &lt;= 9</p>
+<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x2cv1c/">https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x2cv1c/</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//解题思路：因为是从后面往前开始去处理 ， 竟然还是写了 i++  ， 真的是头大了。</span></span><br><span class="line"><span class="comment">// 解题思路是 ， 从最后一位开始，如果是 9，那么 设置数值为0，再往前遍历，如果数字小于 9 ， 那么自增，然后直接返回数组</span></span><br><span class="line"><span class="comment">// 对于最后的，如果变成了 00000 , 那么需要用一个新vector ，放入 当前的内容和最头部的 1</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">plusOne</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; digits)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> m_size = digits.size();</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = m_size - <span class="number">1</span>; i &gt;= <span class="number">0</span> ; i--)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(digits[i] != <span class="number">9</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                digits[i] += <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">return</span> digits;</span><br><span class="line">            &#125;</span><br><span class="line">            digits[i] = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">vec</span><span class="params">(m_size + <span class="number">1</span>)</span></span>;</span><br><span class="line">        vec[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">return</span> vec;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1025,126 +1116,6 @@
 <p>会很耗时间，但是总好过完全不知道错误原因</p>
 <h4 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h4><p>OK 到此为止，从C++ 获取OpenCV 数据 到 Electron 中经过 Canvas 渲染，最终能把画面呈现到 Electron 上面。</p>
 <p>Demo 地址： 先等等，需要配置出包环境。</p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2020/09/17/CMake/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="change">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="懒人的胡言乱语">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2020/09/17/CMake/" class="post-title-link" itemprop="url">CMake</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2020-09-17 20:35:08" itemprop="dateCreated datePublished" datetime="2020-09-17T20:35:08+08:00">2020-09-17</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-03-01 14:57:05" itemprop="dateModified" datetime="2021-03-01T14:57:05+08:00">2021-03-01</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/CMake/" itemprop="url" rel="index"><span itemprop="name">CMake</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="为什么要使用CMake"><a href="#为什么要使用CMake" class="headerlink" title="为什么要使用CMake"></a>为什么要使用CMake</h1><p>嗯，考虑到能看到这里的基本都会对CMake 有一定了解，所以先不讲这东西是啥，问题是为啥要用这东西。</p>
-<p>我们这边有一些需求，目的是基础功能保持稳定性，又因为涉及到多个类型的客户端（IOS、Android、Windows、Mac），那么共用的内容C++使用就是一种必然，同时考虑到后期的可维护性，CMake 的使用就应该是一种必然。</p>
-<p>因为是要做公共基础内容，最直接的思考是提供静态库给各方使用，这也就间接回答了CMake 的用途，用来把源码生成二进制文件。</p>
-<p>按照正常的流程，先给一个开胃菜，提供一个Demo。</p>
-<p>推荐一个软件 <em>CLine</em> </p>
-<p><img src="/images/CMake/CLineDemo.png" alt="CLineDemo"></p>
-<p>刚好能够提供C++ 静态库和动态库。</p>
-<p>因为我需要优先做Android 的内容，所以我一步到位直接使用了AndroidStudio。</p>
-<p><img src="/images/CMake/AndroidCmake.png" alt="AndroidCmake"></p>
-<p>上面是简单的创建工程，咱们接着往下面。</p>
-<p>以CLine 为例子</p>
-<p><img src="/images/CMake/ClineCMake.png" alt="ClineCMake"></p>
-<p>CMake 文本的写法就是 需要设置 CMake version  然后给出一个 project(<strong>name</strong>)  name 为生成静态库名字 ，设置C11 ,然后就是给这个project 添加需要编译的CPP文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">├── CMakeLists.txt</span><br><span class="line">├── build</span><br><span class="line">├── library.cpp</span><br><span class="line">└── library.h</span><br></pre></td></tr></table></figure>
-
-<p>文件结构大致是这样，需要有**source file ** 、 <strong>build</strong> 文件夹（我不太喜欢CLine 默认的 cmake-build-debug，自己更改了）、和必需品 <strong>CMakeLists.txt</strong></p>
-<p>不依赖工具，可以在终端进入到当前文件夹下面的build 文件夹 然后执行 <strong>cmake ..</strong></p>
-<p>执行<strong>cmake 命令</strong>之后，需要生成库文件需要在当前命令行再次执行 <strong>make</strong> ， 等命令执行完毕，库文件就会出现在build 文件夹。</p>
-<p>依靠CLine 就相对容易，直接点击右上角的debug 标志即可。</p>
-<p>如果一切运行正常，在build 文件夹下面就会出现需要的 CmakeDemo 这个名字的二进制文件，因为我们需要的是静态库，那么到现在为止这个静态库可以被拿来使用了。</p>
-<h2 id="如何检验是否为自己需要的二进制静态库"><a href="#如何检验是否为自己需要的二进制静态库" class="headerlink" title="如何检验是否为自己需要的二进制静态库"></a>如何检验是否为自己需要的二进制静态库</h2><p>我们想要提供出去稳定可靠的二进制库，那么自测是必须不可少的一环。讲一下我这边比较常用的方式，我会去创建一个适合的console 工程，或者如果使用xcode ， 我会创建一个可视化的对应平台APP，把库文件暴露的接口交给新建demo 工程，按照正常使用的流程，载入编译出来的库文件。</p>
-<p>那么开搞。</p>
-<p>因为这里打算先提供一下简单的demo ， 只演示一下如何使用CMake ，创建静态库和使用静态库，这里简单替换原来的打印名言<strong>Hello,world!</strong> 更改为 **”Hello, from static lib !” **</p>
-<p>在进入build 文件夹执行过最后的 <strong>make</strong> 命令后，能够拿到库文件 <strong>libCmakeDemo.a</strong></p>
-<p>我们放入到consoleDemo 工程中 然后文件结构是</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">├── CMakeLists.txt</span><br><span class="line">├── cmake-build-debug</span><br><span class="line">├── libCmakeDemo.a</span><br><span class="line">├── library.h</span><br><span class="line">└── main.cpp</span><br></pre></td></tr></table></figure>
-
-<p>更改CMakeLists.txt  内容如下</p>
-<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#设置cmake version</span></span><br><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.17</span>)</span><br><span class="line"><span class="comment">#设置变量名字</span></span><br><span class="line"><span class="keyword">set</span>(APP_NAME ConsoleDemo)</span><br><span class="line"><span class="comment"># 国际惯例 project name</span></span><br><span class="line"><span class="keyword">project</span>(<span class="variable">$&#123;APP_NAME&#125;</span>)</span><br><span class="line"><span class="comment">#C11</span></span><br><span class="line"><span class="keyword">set</span>(CMAKE_CXX_STANDARD <span class="number">11</span>)</span><br><span class="line"><span class="comment"># 这里需要链接静态库</span></span><br><span class="line"><span class="keyword">link_libraries</span>(<span class="variable">$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span>/libCmakeDemo.a)</span><br><span class="line"><span class="comment">#正常编译需要的 添加source 文件</span></span><br><span class="line"><span class="keyword">add_executable</span>(<span class="variable">$&#123;APP_NAME&#125;</span> main.cpp library.h)</span><br></pre></td></tr></table></figure>
-
-<p>我这边比较懒，就直接搬运了静态库中使用的头文件，因为属于函数定义，并且没有特殊要求，这里就直接可以拿来使用。</p>
-<p>看下<strong>main</strong>函数中的修改</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;library.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    hello();</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;Hello, World!&quot;</span> &lt;&lt; <span class="built_in">std</span>::<span class="built_in">endl</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p>这里就很简单了，直接引入头文件，然后在合适的地方进行执行。</p>
-<p>结果如下：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hello, from static lib !</span><br><span class="line">Hello, World!</span><br></pre></td></tr></table></figure>
-
-<p>如预期</p>
-<p>先写到这里，下次可以讲一下全平台的一些东西，比如一些难点，如果从C++ 通过nodejs 异步回调给JavaScript（可不是正常设置进去一个回调然后等执行后就从C++那边执行到JavaScript ，这样就没有技术含量）使用libuv 可以多次从C++ 回调给JavaScript，下次讲讲如何实现。</p>
-<p>惯例，使用的demo 地址  <a target="_blank" rel="noopener" href="https://github.com/waitingchange/cmakeDemo">Demo 地址</a></p>
 
       
     </div>
