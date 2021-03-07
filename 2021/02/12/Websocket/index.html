@@ -23,17 +23,18 @@
     var NexT = window.NexT || {};
     var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
   </script>
-<meta name="description" content="Websocket整理一下Websocket，方便以后问题查找 什么是Websocket ？Websocket 是基于TCP  的一种网络通信协议，主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。 HTTP 也是基于TCP 的一种">
+<meta name="description" content="Websocket整理一下Websocket，方便以后问题查找 什么是Websocket ？Websocket 是在TCP协议上封装的另一种应用层协议,主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。 HTTP 也是基于TCP 的">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Websocket">
 <meta property="og:url" content="https://waitingchange.github.io/2021/02/12/Websocket/index.html">
 <meta property="og:site_name" content="懒人的胡言乱语">
-<meta property="og:description" content="Websocket整理一下Websocket，方便以后问题查找 什么是Websocket ？Websocket 是基于TCP  的一种网络通信协议，主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。 HTTP 也是基于TCP 的一种">
+<meta property="og:description" content="Websocket整理一下Websocket，方便以后问题查找 什么是Websocket ？Websocket 是在TCP协议上封装的另一种应用层协议,主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。 HTTP 也是基于TCP 的">
 <meta property="og:locale">
 <meta property="og:image" content="https://waitingchange.github.io/images/Websocket/tcp.gif">
 <meta property="og:image" content="https://waitingchange.github.io/images/Websocket/tcp_handshake.gif">
+<meta property="og:image" content="https://waitingchange.github.io/images/Websocket/websocket_handshake.webp">
 <meta property="article:published_time" content="2021-02-12T05:24:13.000Z">
-<meta property="article:modified_time" content="2021-03-06T10:51:04.874Z">
+<meta property="article:modified_time" content="2021-03-07T03:29:53.200Z">
 <meta property="article:author" content="change">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://waitingchange.github.io/images/Websocket/tcp.gif">
@@ -249,7 +250,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-03-06 18:51:04" itemprop="dateModified" datetime="2021-03-06T18:51:04+08:00">2021-03-06</time>
+        <time title="Modified: 2021-03-07 11:29:53" itemprop="dateModified" datetime="2021-03-07T11:29:53+08:00">2021-03-07</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -272,7 +273,7 @@
     
     <div class="post-body" itemprop="articleBody">
         <h1 id="Websocket"><a href="#Websocket" class="headerlink" title="Websocket"></a>Websocket</h1><p>整理一下Websocket，方便以后问题查找</p>
-<h4 id="什么是Websocket-？"><a href="#什么是Websocket-？" class="headerlink" title="什么是Websocket ？"></a>什么是Websocket ？</h4><p><code>Websocket</code> 是基于TCP  的一种网络通信协议，主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。</p>
+<h4 id="什么是Websocket-？"><a href="#什么是Websocket-？" class="headerlink" title="什么是Websocket ？"></a>什么是Websocket ？</h4><p><code>Websocket</code> 是在TCP协议上封装的另一种应用层协议,主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。</p>
 <p><code>HTTP</code> 也是基于TCP 的一种常见的协议，是一个基于请求与响应模式的、无状态的、应用层的协议，常基于TCP的连接方式。正是因为这些特性，Web开发中的大多数网络请求走的是Http 的协议，走的是短链接形式。</p>
 <p>既然Websocket 是基于TCP的，那么可以先了解一下TCP 工作的方式。</p>
 <h4 id="TCP-的握手方式"><a href="#TCP-的握手方式" class="headerlink" title="TCP 的握手方式"></a>TCP 的握手方式</h4><p><img src="/images/Websocket/tcp.gif"></p>
@@ -281,7 +282,9 @@
 <p><strong>第一次握手</strong>：客户端发送请求报文将<code>SYN = 1</code>同步序列号和初始化序列号<code>seq = x</code>发送给服务端，发送完之后客户端处于<code>SYN_Send</code>状态。</p>
 <p><strong>第二次握手</strong>：服务端受到<code>SYN</code>请求报文之后，如果同意连接，会以自己的同步序列号<code>SYN(服务端) = 1</code>、初始化序列号<code>seq = y</code>和确认序列号（期望下次收到的数据包）<code>ack = x+ 1</code>以及确认号<code>ACK = 1</code>报文作为应答，服务器为<code>SYN_Receive</code>状态。</p>
 <p><strong>第三次握手</strong>： 客户端接收到服务端的<code>SYN + ACK</code>之后，知道可以下次可以发送了下一序列的数据包了，然后发送同步序列号<code>ack = y + 1</code>和数据包的序列号<code>seq = x + 1</code>以及确认号<code>ACK = 1</code>确认包作为应答，客户端转为<code>established</code>状态。</p>
-<h4 id="回归正题，继续讲解Websocket"><a href="#回归正题，继续讲解Websocket" class="headerlink" title="回归正题，继续讲解Websocket"></a>回归正题，继续讲解Websocket</h4><p>因为 Websocket 已经被作为了标准，主流的浏览器都已经支持，在使用方面也已经成熟。来看一下Http 和 Websocket 在发起连接的报文区别.</p>
+<h4 id="回归正题，继续讲解Websocket"><a href="#回归正题，继续讲解Websocket" class="headerlink" title="回归正题，继续讲解Websocket"></a>回归正题，继续讲解Websocket</h4><p>对于握手，Websocket 需要多一次，先经过三次握手，建立连接，然后再发送<code>Upgrade</code></p>
+<p><img src="/images/Websocket/websocket_handshake.webp" alt="websocket_handshake"></p>
+<p>因为 Websocket 已经被作为了标准，主流的浏览器都已经支持，在使用方面也已经成熟。来看一下Http 和 Websocket 在发起连接的报文区别.</p>
 <p>Websocket 请求头</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F; HTTP&#x2F;1.1</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Host: example.com</span><br><span class="line">Origin: http:&#x2F;&#x2F;example.com</span><br><span class="line">Sec-WebSocket-Key: sN9cRrP&#x2F;n9NdMgdcy2VJFQ&#x3D;&#x3D;</span><br><span class="line">Sec-WebSocket-Version: 13</span><br></pre></td></tr></table></figure>
 

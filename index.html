@@ -295,6 +295,87 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2002/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/03/leetcode%2002/" class="post-title-link" itemprop="url">leetcode 总结 02 只出现一次的数字</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2021-03-03 20:14:34 / Modified: 21:08:52" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="leetcode-总结-02-只出现一次的数字"><a href="#leetcode-总结-02-只出现一次的数字" class="headerlink" title="leetcode 总结 02 只出现一次的数字"></a>leetcode 总结 02 只出现一次的数字</h1><h4 id="只出现一次的数字"><a href="#只出现一次的数字" class="headerlink" title="只出现一次的数字"></a>只出现一次的数字</h4><p>给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。</p>
+<p>说明：</p>
+<p>你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？</p>
+<p>示例 1:</p>
+<p>输入: [2,2,1]<br>输出: 1<br>示例 2:</p>
+<p>输入: [4,1,2,1,2]<br>输出: 4</p>
+<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions/xm0u83/">https://leetcode-cn.com/leetbook/read/top-interview-questions/xm0u83/</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 最开始考虑是不是先要排序，然后相邻的进行比较 ， 但是不需要额外空间这个要求就一定会有诡异，所以查了一下解题技巧，果然很有一套</span></span><br><span class="line"><span class="comment">// 技巧就是  0  异或 任何数字 都是另外的数字</span></span><br><span class="line"><span class="comment">// 相同的数字异或本身 刚好为 0 </span></span><br><span class="line"><span class="comment">// 那么 数组中的每一位都进行异或运算，得出的就是出现单次的数字</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">singleNumber</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> singleNum = <span class="number">0</span>; <span class="comment">// 定义需要return 的数字， 先赋值为 0</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span>;i &lt; nums.size();i++ ) <span class="comment">// 根据长度进行一次遍历</span></span><br><span class="line">        &#123;</span><br><span class="line">            singleNum = singleNum ^ nums[i]; <span class="comment">// 执行异或逻辑</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> singleNum; <span class="comment">// 返回需要的单一数字</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2003/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -352,87 +433,6 @@
 <p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions/xm77tm/">https://leetcode-cn.com/leetbook/read/top-interview-questions/xm77tm/</a></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 解题思路：找到数量最多的数字 </span></span><br><span class="line"><span class="comment">// 1. 可以用map ， 放进去每一个元素，然后更新这个元素的个数，最后查找map 中元素的第二位数值。（肯定可行，但是 时间复杂度 控件复杂度不合适）</span></span><br><span class="line"><span class="comment">// 如果只需要一次遍历 ， 就得找一个数值用来记录最大的数量，还得有一个标识，用来记录当前这个最大数量指向的是哪个数值</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">majorityElement</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> resultNum = nums[<span class="number">0</span>]; <span class="comment">// 保存当前最大的数值，默认第一位就是最多的    [1,2,3,4,2,2,3]</span></span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>; <span class="comment">// 保存最多的数据被记录了多少次</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.size(); i++) <span class="comment">// 正常遍历操作</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[i] == resultNum)  <span class="comment">// 如果相等，那么 计数器加一</span></span><br><span class="line">            &#123;</span><br><span class="line">                count ++;</span><br><span class="line">            &#125;<span class="keyword">else</span>  <span class="comment">// 如果不相等</span></span><br><span class="line">            &#123;</span><br><span class="line">                count --;  <span class="comment">// 计数器减少 一</span></span><br><span class="line">                <span class="keyword">if</span>(count == <span class="number">0</span>)  <span class="comment">//当计数器归零的时候，更换一下最多的记录</span></span><br><span class="line">                &#123;</span><br><span class="line">                    resultNum = nums[i];  <span class="comment">// 认为当前的是最多的</span></span><br><span class="line">                    count ++;  <span class="comment">// 计数器自增</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> resultNum;  <span class="comment">// 返回当前认为记录最多的</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2002/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="change">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="懒人的胡言乱语">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/03/leetcode%2002/" class="post-title-link" itemprop="url">leetcode 总结 02 只出现一次的数字</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-      
-
-      <time title="Created: 2021-03-03 20:14:34 / Modified: 21:08:52" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="leetcode-总结-02-只出现一次的数字"><a href="#leetcode-总结-02-只出现一次的数字" class="headerlink" title="leetcode 总结 02 只出现一次的数字"></a>leetcode 总结 02 只出现一次的数字</h1><h4 id="只出现一次的数字"><a href="#只出现一次的数字" class="headerlink" title="只出现一次的数字"></a>只出现一次的数字</h4><p>给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。</p>
-<p>说明：</p>
-<p>你的算法应该具有线性时间复杂度。 你可以不使用额外空间来实现吗？</p>
-<p>示例 1:</p>
-<p>输入: [2,2,1]<br>输出: 1<br>示例 2:</p>
-<p>输入: [4,1,2,1,2]<br>输出: 4</p>
-<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions/xm0u83/">https://leetcode-cn.com/leetbook/read/top-interview-questions/xm0u83/</a></p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 最开始考虑是不是先要排序，然后相邻的进行比较 ， 但是不需要额外空间这个要求就一定会有诡异，所以查了一下解题技巧，果然很有一套</span></span><br><span class="line"><span class="comment">// 技巧就是  0  异或 任何数字 都是另外的数字</span></span><br><span class="line"><span class="comment">// 相同的数字异或本身 刚好为 0 </span></span><br><span class="line"><span class="comment">// 那么 数组中的每一位都进行异或运算，得出的就是出现单次的数字</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">singleNumber</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> singleNum = <span class="number">0</span>; <span class="comment">// 定义需要return 的数字， 先赋值为 0</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i =<span class="number">0</span>;i &lt; nums.size();i++ ) <span class="comment">// 根据长度进行一次遍历</span></span><br><span class="line">        &#123;</span><br><span class="line">            singleNum = singleNum ^ nums[i]; <span class="comment">// 执行异或逻辑</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> singleNum; <span class="comment">// 返回需要的单一数字</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -1044,7 +1044,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">Edited on</span>
-        <time title="Modified: 2021-03-06 18:51:04" itemprop="dateModified" datetime="2021-03-06T18:51:04+08:00">2021-03-06</time>
+        <time title="Modified: 2021-03-07 11:29:53" itemprop="dateModified" datetime="2021-03-07T11:29:53+08:00">2021-03-07</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -1067,7 +1067,7 @@
     
     <div class="post-body" itemprop="articleBody">
           <h1 id="Websocket"><a href="#Websocket" class="headerlink" title="Websocket"></a>Websocket</h1><p>整理一下Websocket，方便以后问题查找</p>
-<h4 id="什么是Websocket-？"><a href="#什么是Websocket-？" class="headerlink" title="什么是Websocket ？"></a>什么是Websocket ？</h4><p><code>Websocket</code> 是基于TCP  的一种网络通信协议，主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。</p>
+<h4 id="什么是Websocket-？"><a href="#什么是Websocket-？" class="headerlink" title="什么是Websocket ？"></a>什么是Websocket ？</h4><p><code>Websocket</code> 是在TCP协议上封装的另一种应用层协议,主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。</p>
 <p><code>HTTP</code> 也是基于TCP 的一种常见的协议，是一个基于请求与响应模式的、无状态的、应用层的协议，常基于TCP的连接方式。正是因为这些特性，Web开发中的大多数网络请求走的是Http 的协议，走的是短链接形式。</p>
 <p>既然Websocket 是基于TCP的，那么可以先了解一下TCP 工作的方式。</p>
 <h4 id="TCP-的握手方式"><a href="#TCP-的握手方式" class="headerlink" title="TCP 的握手方式"></a>TCP 的握手方式</h4><p><img src="/images/Websocket/tcp.gif"></p>
@@ -1076,7 +1076,9 @@
 <p><strong>第一次握手</strong>：客户端发送请求报文将<code>SYN = 1</code>同步序列号和初始化序列号<code>seq = x</code>发送给服务端，发送完之后客户端处于<code>SYN_Send</code>状态。</p>
 <p><strong>第二次握手</strong>：服务端受到<code>SYN</code>请求报文之后，如果同意连接，会以自己的同步序列号<code>SYN(服务端) = 1</code>、初始化序列号<code>seq = y</code>和确认序列号（期望下次收到的数据包）<code>ack = x+ 1</code>以及确认号<code>ACK = 1</code>报文作为应答，服务器为<code>SYN_Receive</code>状态。</p>
 <p><strong>第三次握手</strong>： 客户端接收到服务端的<code>SYN + ACK</code>之后，知道可以下次可以发送了下一序列的数据包了，然后发送同步序列号<code>ack = y + 1</code>和数据包的序列号<code>seq = x + 1</code>以及确认号<code>ACK = 1</code>确认包作为应答，客户端转为<code>established</code>状态。</p>
-<h4 id="回归正题，继续讲解Websocket"><a href="#回归正题，继续讲解Websocket" class="headerlink" title="回归正题，继续讲解Websocket"></a>回归正题，继续讲解Websocket</h4><p>因为 Websocket 已经被作为了标准，主流的浏览器都已经支持，在使用方面也已经成熟。来看一下Http 和 Websocket 在发起连接的报文区别.</p>
+<h4 id="回归正题，继续讲解Websocket"><a href="#回归正题，继续讲解Websocket" class="headerlink" title="回归正题，继续讲解Websocket"></a>回归正题，继续讲解Websocket</h4><p>对于握手，Websocket 需要多一次，先经过三次握手，建立连接，然后再发送<code>Upgrade</code></p>
+<p><img src="/images/Websocket/websocket_handshake.webp" alt="websocket_handshake"></p>
+<p>因为 Websocket 已经被作为了标准，主流的浏览器都已经支持，在使用方面也已经成熟。来看一下Http 和 Websocket 在发起连接的报文区别.</p>
 <p>Websocket 请求头</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F; HTTP&#x2F;1.1</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Host: example.com</span><br><span class="line">Origin: http:&#x2F;&#x2F;example.com</span><br><span class="line">Sec-WebSocket-Key: sN9cRrP&#x2F;n9NdMgdcy2VJFQ&#x3D;&#x3D;</span><br><span class="line">Sec-WebSocket-Version: 13</span><br></pre></td></tr></table></figure>
 
