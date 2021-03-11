@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -200,6 +200,86 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2018/12/01/TexurePacker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2018/12/01/TexurePacker/" class="post-title-link" itemprop="url">TexurePacker</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2018-12-01 23:06:11" itemprop="dateCreated datePublished" datetime="2018-12-01T23:06:11+08:00">2018-12-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%87%92%E4%BA%BA%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">懒人工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>  设想一下，一个游戏有N多图片资源，分为M个文件夹，手动使用TexurePacker打图实在是一个体力活，同时还有忙中出乱的风险。使用脚本批量处理是不二的选择（当前环境为mac）</p>
+<h3 id="1-安装-TexturePacker-然后安装-TexturePacker-Command-Line-Tool"><a href="#1-安装-TexturePacker-然后安装-TexturePacker-Command-Line-Tool" class="headerlink" title="1.安装 TexturePacker 然后安装 TexturePacker Command Line Tool"></a>1.安装 TexturePacker 然后安装 TexturePacker Command Line Tool</h3><p><img src="/images/texurepacker_install.png" alt="&quot;install图片&quot;"><br>如上图所示，安装 TexturePacker Command Line Tool</p>
+<h3 id="2-打开Teminal-输入-TexturePacker"><a href="#2-打开Teminal-输入-TexturePacker" class="headerlink" title="2.打开Teminal  输入 TexturePacker"></a>2.打开Teminal  输入 TexturePacker</h3><p><img src="/images/texurepacker_teminal.png" alt="&quot;Teminal图片&quot;"><br>​    1.检查是否安装成功<br>​    2.细看 Options:内容的 Output:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">--sheet &lt;filename&gt;   要输出的文件的名字       Name of the sheet to write, see texture-format <span class="keyword">for</span> formats available</span><br><span class="line">--texture-format &lt;id&gt;  要输出的图片格式   png、pvr2、pvr2gz、jpg 等   Sets the format <span class="keyword">for</span> the textures.</span><br><span class="line">--data &lt;filename&gt;      plist文件的名字     Name of the data file to write</span><br><span class="line">--format &lt;format&gt;   类型 cocos2d 、unity 等        Format to write, default is cocos2d</span><br><span class="line">--force-publish   忽略hash_key 每次都强制从新输出      Ignore smart update <span class="built_in">hash</span> and force re-publishing of the files</span><br><span class="line">--texturepath &lt;path&gt; 输出路径    Adds the path to the texture file name stored <span class="keyword">in</span> the data file.</span><br><span class="line"> 	--border-padding &lt;int&gt;    图片之间间隔  Sets a padding around each the border, value is <span class="keyword">in</span> pixels, default is 2</span><br><span class="line">--shape-padding &lt;int&gt;   图片形状间隔    Sets a padding around each shape, value is <span class="keyword">in</span> pixels, default is 2</span><br><span class="line">--trim-mode &lt;value&gt; 删除透明像素恢复原始大小，加快渲染 Remove transparent parts of a sprite to shrink atlas size and speed up rendering</span><br><span class="line">                                            None - Keep transparent pixels</span><br><span class="line">                                            Trim - Remove transparent pixels, use original size.</span><br><span class="line">                                            Crop - Remove transparent pixels, use trimmed size, flush position.</span><br><span class="line">                                     CropKeepPos - Remove transparent pixels, use trimmed size, keep position.</span><br><span class="line"></span><br><span class="line">	--basic-sort-by    图片排序     Sort order <span class="keyword">for</span> the sprite list</span><br><span class="line">                                            Best - Best</span><br><span class="line">                                            Name - Name</span><br><span class="line">                                           Width - Width</span><br><span class="line">                                          Height - Height</span><br><span class="line">                                            Area - Area</span><br><span class="line">                                   Circumference - Circumference</span><br><span class="line">--basic-order      方向排序     Sorting direction</span><br><span class="line">                                       Ascending - Ascending</span><br><span class="line">                                      Descending - Descending</span><br><span class="line">--scale &lt;<span class="built_in">float</span>&gt;   缩放          Scales all images before creating the sheet. E.g. use 0.5 <span class="keyword">for</span> half size</span><br><span class="line"> --max-size &lt;int&gt;  最大的尺寸        Sets the maximum width and height <span class="keyword">for</span> the texture <span class="keyword">in</span> auto size mode, default is 2048</span><br><span class="line"> --size-constraints &lt;value&gt; 结纹理进行大小格式化，AnySize 任何大小 POT 使用2次幂  Restrict sizes</span><br><span class="line">                                             POT - Power of 2 (2,4,8,16,32,...)</span><br><span class="line">                                         AnySize - Minimum size</span><br><span class="line">                                            NPOT - Any size but power of 2</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="3-知道限定条件，那么命令也大概能知道了"><a href="#3-知道限定条件，那么命令也大概能知道了" class="headerlink" title="3.知道限定条件，那么命令也大概能知道了"></a>3.知道限定条件，那么命令也大概能知道了</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Examples:</span><br><span class="line">  TexturePacker assets/*.png</span><br><span class="line">        creates out.plist and out.png from all png files <span class="keyword">in</span> assets</span><br><span class="line">        trimming all files and creating a texture with max. 2048x2048px</span><br><span class="line"></span><br><span class="line">  TexturePacker --data main-hd.plist --format cocos2d --sheet main-hd.png assets/*.png</span><br><span class="line">        creates main-hd.plist and main-hd.png from all png files <span class="keyword">in</span> assets</span><br><span class="line">        trimming all files and creating a texture with max. 2048x2048px</span><br><span class="line"></span><br><span class="line">  TexturePacker --scale 0.5 --max-size 1024 --data main-sd.plist --format cocos2d --sheet main-sd.png assets/*.png</span><br><span class="line">        creates main-sd.plist and main-sd.png from all png files <span class="keyword">in</span> assets</span><br><span class="line">        scaling all images to 50%, trimming all files and creating</span><br><span class="line">        a texture with max. 1024x1024px</span><br></pre></td></tr></table></figure>
+<h3 id="4-模板有了之后，剩下的就是实现了"><a href="#4-模板有了之后，剩下的就是实现了" class="headerlink" title="4.模板有了之后，剩下的就是实现了"></a>4.模板有了之后，剩下的就是实现了</h3><p>我自己随便写了个脚本，地址  : <a target="_blank" rel="noopener" href="https://github.com/waitingchange/Texurepacker">地址</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 

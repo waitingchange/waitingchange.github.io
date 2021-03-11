@@ -157,7 +157,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">23</span>
+          <span class="site-state-item-count">24</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -200,6 +200,146 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/02/12/Websocket/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/02/12/Websocket/" class="post-title-link" itemprop="url">Websocket</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2021-02-12 13:24:13" itemprop="dateCreated datePublished" datetime="2021-02-12T13:24:13+08:00">2021-02-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">Edited on</span>
+        <time title="Modified: 2021-03-11 19:11:59" itemprop="dateModified" datetime="2021-03-11T19:11:59+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Websocket/" itemprop="url" rel="index"><span itemprop="name">Websocket</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="Websocket"><a href="#Websocket" class="headerlink" title="Websocket"></a>Websocket</h1><p>整理一下Websocket，方便以后问题查找</p>
+<h4 id="什么是Websocket-？"><a href="#什么是Websocket-？" class="headerlink" title="什么是Websocket ？"></a>什么是Websocket ？</h4><p><code>Websocket</code> 是在TCP协议上封装的另一种应用层协议,主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。</p>
+<p><code>HTTP</code> 也是基于TCP 的一种常见的协议，是一个基于请求与响应模式的、无状态的、应用层的协议，常基于TCP的连接方式。正是因为这些特性，Web开发中的大多数网络请求走的是Http 的协议，走的是短链接形式。</p>
+<p>既然Websocket 是基于TCP的，那么可以先了解一下TCP 工作的方式。</p>
+<h4 id="TCP-的握手方式"><a href="#TCP-的握手方式" class="headerlink" title="TCP 的握手方式"></a>TCP 的握手方式</h4><p><img src="/images/Websocket/tcp.gif"></p>
+<p>直观的以gif 为例，建立连接需要三次握手</p>
+<p><img src="/images/Websocket/tcp_handshake.gif" alt="tcp_handshake"></p>
+<p><strong>第一次握手</strong>：客户端发送请求报文将<code>SYN = 1</code>同步序列号和初始化序列号<code>seq = x</code>发送给服务端，发送完之后客户端处于<code>SYN_Send</code>状态。</p>
+<p><strong>第二次握手</strong>：服务端受到<code>SYN</code>请求报文之后，如果同意连接，会以自己的同步序列号<code>SYN(服务端) = 1</code>、初始化序列号<code>seq = y</code>和确认序列号（期望下次收到的数据包）<code>ack = x+ 1</code>以及确认号<code>ACK = 1</code>报文作为应答，服务器为<code>SYN_Receive</code>状态。</p>
+<p><strong>第三次握手</strong>： 客户端接收到服务端的<code>SYN + ACK</code>之后，知道可以下次可以发送了下一序列的数据包了，然后发送同步序列号<code>ack = y + 1</code>和数据包的序列号<code>seq = x + 1</code>以及确认号<code>ACK = 1</code>确认包作为应答，客户端转为<code>established</code>状态。</p>
+<h4 id="回归正题，继续讲解Websocket"><a href="#回归正题，继续讲解Websocket" class="headerlink" title="回归正题，继续讲解Websocket"></a>回归正题，继续讲解Websocket</h4><p><img src="/images/Websocket/websocket_connect.gif" alt="websocket_connect"></p>
+<p>对于握手，Websocket 需要多一次，先经过三次握手，建立连接，然后再发送<code>Upgrade</code></p>
+<p><img src="/images/Websocket/websocket_handshake.webp" alt="websocket_handshake"></p>
+<p>因为 Websocket 已经被作为了标准，主流的浏览器都已经支持，在使用方面也已经成熟。来看一下Http 和 Websocket 在发起连接的报文区别.</p>
+<p>Websocket 请求头</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F; HTTP&#x2F;1.1</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Host: example.com</span><br><span class="line">Origin: http:&#x2F;&#x2F;example.com</span><br><span class="line">Sec-WebSocket-Key: sN9cRrP&#x2F;n9NdMgdcy2VJFQ&#x3D;&#x3D;</span><br><span class="line">Sec-WebSocket-Version: 13</span><br></pre></td></tr></table></figure>
+
+<p>Http 请求头</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;hello.txt HTTP&#x2F;1.1</span><br><span class="line">User-Agent: curl&#x2F;7.16.3 libcurl&#x2F;7.16.3 OpenSSL&#x2F;0.9.7l zlib&#x2F;1.2.3</span><br><span class="line">Host: www.example.com</span><br><span class="line">Accept-Language: en, mi</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 这两个是Websocket 与 Http 不同的部分 用来标识是使用Websocket 协议</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br></pre></td></tr></table></figure>
+
+<p><code>Sec-WebSocket-Key</code> 是由浏览器随机生成的，提供基本的防护，防止恶意或者无意的连接。</p>
+<p><code>Sec-WebSocket-Version</code> 表示 WebSocket 的版本，最初 WebSocket 协议太多，不同厂商都有自己的协议版本，不过现在已经定下来了。如果服务端不支持该版本，需要返回一个 <code>Sec-WebSocket-Versionheader</code>，里面包含服务端支持的版本号。</p>
+<p><strong>对于返回包</strong></p>
+<p>Websocket 返回包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HTTP&#x2F;1.1 101 Switching Protocols</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk&#x3D;</span><br><span class="line">Sec-WebSocket-Protocol: chat</span><br></pre></td></tr></table></figure>
+
+<p>Http 返回包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP&#x2F;1.1 200 OK</span><br><span class="line">Date: Mon, 27 Jul 2009 12:28:53 GMT</span><br><span class="line">Server: Apache</span><br><span class="line">Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT</span><br><span class="line">ETag: &quot;34aa387-d-1568eb00&quot;</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 51</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text&#x2F;plain</span><br></pre></td></tr></table></figure>
+<p>对于Websocket 返回包</p>
+<ol>
+<li>首先，101 状态码表示服务器已经理解了客户端的请求，并将通过 <code>Upgrade</code> 消息头通知客户端采用不同的协议来完成这个请求；</li>
+<li>然后， <code>Sec-WebSocket-Accept</code> 这个则是经过服务器确认，并且加密过后的 <code>Sec-WebSocket-Key</code>；</li>
+<li>最后， <code>Sec-WebSocket-Protocol</code> 则是表示最终使用的协议。</li>
+</ol>
+<p><code>Sec-WebSocket-Accept</code> 的计算方法：</p>
+<ol>
+<li>将 <code>Sec-WebSocket-Key</code> 跟 258EAFA5-E914-47DA-95CA-C5AB0DC85B11 拼接；</li>
+<li>通过 SHA1 计算出摘要，并转成 base64 字符串。</li>
+</ol>
+<p>注意： <code>Sec-WebSocket-Key</code>/ <code>Sec-WebSocket-Accept</code> 的换算，只能带来基本的保障，但连接是否安全、数据是否安全、客户端 / 服务端是否合法的 ws 客户端、ws 服务端，其实并没有实际性的保证</p>
+<h4 id="Websocket-跟HTTP-进行比较"><a href="#Websocket-跟HTTP-进行比较" class="headerlink" title="Websocket 跟HTTP 进行比较"></a>Websocket 跟HTTP 进行比较</h4><p>共同点：</p>
+<ol>
+<li>Websocket使用和 HTTP 相同的 TCP 端口，可以绕过大多数防火墙的限制。默认情况下，Websocket协议使用80端口；运行在TLS之上时，默认使用443端口。</li>
+<li>两者都基于TCP ，提供可靠连接。</li>
+</ol>
+<p>不同点：</p>
+<ol>
+<li>较少的控制开销。在连接创建后，服务器和客户端之间交换数据时，用于协议控制的数据包头部相对较小。在不包含扩展的情况下，对于服务器到客户端的内容，此头部大小只有2至10字节（和数据包长度有关）；对于客户端到服务器的内容，此头部还需要加上额外的4字节的掩码。相对于HTTP请求每次都要携带完整的头部，此项开销显著减少了。</li>
+<li>更强的实时性。由于协议是全双工的，所以服务器可以随时主动给客户端下发数据。相对于HTTP请求需要等待客户端发起请求服务端才能响应，延迟明显更少；即使是和Comet等类似的长轮询比较，其也能在短时间内更多次地传递数据。</li>
+<li>保持连接状态。于HTTP不同的是，Websocket需要先创建连接，这就使得其成为一种有状态的协议，之后通信时可以省略部分状态信息。而HTTP请求可能需要在每个请求都携带状态信息（如身份认证等）。</li>
+<li>更好的二进制支持。Websocket定义了二进制帧，相对HTTP，可以更轻松地处理二进制内容。</li>
+<li>可以支持扩展。Websocket定义了扩展，用户可以扩展协议、实现部分自定义的子协议。如部分浏览器支持压缩等。</li>
+<li>更好的压缩效果。相对于HTTP压缩，Websocket在适当的扩展支持下，可以沿用之前内容的上下文，在传递类似的数据时，可以显著地提高压缩率。</li>
+</ol>
+<p>Websocket 通过 HTTP/1.1 协议的<strong>101</strong>状态码进行握手。 为了创建Websocket连接，需要通过客户端发出请求，之后服务器进行回应，这个过程通常称为“握手”。</p>
+<h4 id="常见问题如何分析"><a href="#常见问题如何分析" class="headerlink" title="常见问题如何分析"></a>常见问题如何分析</h4><p>如果 返回码不是 <strong>101</strong> 那么出现的错误就是  <strong>Invalid HTTP status.</strong></p>
+<p>如果是 回包消息中没有 <code>Upgrade</code> 、 <code>Connection</code>、 <code>Sec-WebSocket-Key</code> 、<code>Sec-WebSocket-Accept</code>  没有这几个货，错误消息是 <strong>A required HTTP header is missing</strong></p>
+<p>然后Websocket 内部就会自动走关闭connection 逻辑，执行 <code>handle_terminate</code>  , 根据之前的错误类型，就会执行回调给到 <code>on_fail</code> 或者是 <code>on_close</code></p>
+<p>同时会携带错误代码 ， 比如 异常退出 1006， 正常退出 1000 等</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1162,86 +1302,6 @@ height: 100%; left: 0; top: 0;"> </iframe></div>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">source &#x3D; tinify.from_url(&quot;https:&#x2F;&#x2F;cdn.tinypng.com&#x2F;images&#x2F;panda-happy.png&quot;)</span><br><span class="line">source.to_file(&quot;outPut_Panda_Imag.jpg&quot;)</span><br></pre></td></tr></table></figure>
 <p>常用的就这样三种类型，当然如果需要压缩同时更改图片尺寸的话可以翻看官网用法</p>
 <h3 id="提供一个可用脚本"><a href="#提供一个可用脚本" class="headerlink" title="提供一个可用脚本"></a>提供一个可用脚本</h3><p><a target="_blank" rel="noopener" href="https://github.com/waitingchange/tinypng">脚本下载地址</a></p>
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2018/12/01/TexurePacker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="change">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="懒人的胡言乱语">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2018/12/01/TexurePacker/" class="post-title-link" itemprop="url">TexurePacker</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">Posted on</span>
-
-      <time title="Created: 2018-12-01 23:06:11" itemprop="dateCreated datePublished" datetime="2018-12-01T23:06:11+08:00">2018-12-01</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">In</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%87%92%E4%BA%BA%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">懒人工具</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>  设想一下，一个游戏有N多图片资源，分为M个文件夹，手动使用TexurePacker打图实在是一个体力活，同时还有忙中出乱的风险。使用脚本批量处理是不二的选择（当前环境为mac）</p>
-<h3 id="1-安装-TexturePacker-然后安装-TexturePacker-Command-Line-Tool"><a href="#1-安装-TexturePacker-然后安装-TexturePacker-Command-Line-Tool" class="headerlink" title="1.安装 TexturePacker 然后安装 TexturePacker Command Line Tool"></a>1.安装 TexturePacker 然后安装 TexturePacker Command Line Tool</h3><p><img src="/images/texurepacker_install.png" alt="&quot;install图片&quot;"><br>如上图所示，安装 TexturePacker Command Line Tool</p>
-<h3 id="2-打开Teminal-输入-TexturePacker"><a href="#2-打开Teminal-输入-TexturePacker" class="headerlink" title="2.打开Teminal  输入 TexturePacker"></a>2.打开Teminal  输入 TexturePacker</h3><p><img src="/images/texurepacker_teminal.png" alt="&quot;Teminal图片&quot;"><br>​    1.检查是否安装成功<br>​    2.细看 Options:内容的 Output:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">--sheet &lt;filename&gt;   要输出的文件的名字       Name of the sheet to write, see texture-format <span class="keyword">for</span> formats available</span><br><span class="line">--texture-format &lt;id&gt;  要输出的图片格式   png、pvr2、pvr2gz、jpg 等   Sets the format <span class="keyword">for</span> the textures.</span><br><span class="line">--data &lt;filename&gt;      plist文件的名字     Name of the data file to write</span><br><span class="line">--format &lt;format&gt;   类型 cocos2d 、unity 等        Format to write, default is cocos2d</span><br><span class="line">--force-publish   忽略hash_key 每次都强制从新输出      Ignore smart update <span class="built_in">hash</span> and force re-publishing of the files</span><br><span class="line">--texturepath &lt;path&gt; 输出路径    Adds the path to the texture file name stored <span class="keyword">in</span> the data file.</span><br><span class="line"> 	--border-padding &lt;int&gt;    图片之间间隔  Sets a padding around each the border, value is <span class="keyword">in</span> pixels, default is 2</span><br><span class="line">--shape-padding &lt;int&gt;   图片形状间隔    Sets a padding around each shape, value is <span class="keyword">in</span> pixels, default is 2</span><br><span class="line">--trim-mode &lt;value&gt; 删除透明像素恢复原始大小，加快渲染 Remove transparent parts of a sprite to shrink atlas size and speed up rendering</span><br><span class="line">                                            None - Keep transparent pixels</span><br><span class="line">                                            Trim - Remove transparent pixels, use original size.</span><br><span class="line">                                            Crop - Remove transparent pixels, use trimmed size, flush position.</span><br><span class="line">                                     CropKeepPos - Remove transparent pixels, use trimmed size, keep position.</span><br><span class="line"></span><br><span class="line">	--basic-sort-by    图片排序     Sort order <span class="keyword">for</span> the sprite list</span><br><span class="line">                                            Best - Best</span><br><span class="line">                                            Name - Name</span><br><span class="line">                                           Width - Width</span><br><span class="line">                                          Height - Height</span><br><span class="line">                                            Area - Area</span><br><span class="line">                                   Circumference - Circumference</span><br><span class="line">--basic-order      方向排序     Sorting direction</span><br><span class="line">                                       Ascending - Ascending</span><br><span class="line">                                      Descending - Descending</span><br><span class="line">--scale &lt;<span class="built_in">float</span>&gt;   缩放          Scales all images before creating the sheet. E.g. use 0.5 <span class="keyword">for</span> half size</span><br><span class="line"> --max-size &lt;int&gt;  最大的尺寸        Sets the maximum width and height <span class="keyword">for</span> the texture <span class="keyword">in</span> auto size mode, default is 2048</span><br><span class="line"> --size-constraints &lt;value&gt; 结纹理进行大小格式化，AnySize 任何大小 POT 使用2次幂  Restrict sizes</span><br><span class="line">                                             POT - Power of 2 (2,4,8,16,32,...)</span><br><span class="line">                                         AnySize - Minimum size</span><br><span class="line">                                            NPOT - Any size but power of 2</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="3-知道限定条件，那么命令也大概能知道了"><a href="#3-知道限定条件，那么命令也大概能知道了" class="headerlink" title="3.知道限定条件，那么命令也大概能知道了"></a>3.知道限定条件，那么命令也大概能知道了</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Examples:</span><br><span class="line">  TexturePacker assets/*.png</span><br><span class="line">        creates out.plist and out.png from all png files <span class="keyword">in</span> assets</span><br><span class="line">        trimming all files and creating a texture with max. 2048x2048px</span><br><span class="line"></span><br><span class="line">  TexturePacker --data main-hd.plist --format cocos2d --sheet main-hd.png assets/*.png</span><br><span class="line">        creates main-hd.plist and main-hd.png from all png files <span class="keyword">in</span> assets</span><br><span class="line">        trimming all files and creating a texture with max. 2048x2048px</span><br><span class="line"></span><br><span class="line">  TexturePacker --scale 0.5 --max-size 1024 --data main-sd.plist --format cocos2d --sheet main-sd.png assets/*.png</span><br><span class="line">        creates main-sd.plist and main-sd.png from all png files <span class="keyword">in</span> assets</span><br><span class="line">        scaling all images to 50%, trimming all files and creating</span><br><span class="line">        a texture with max. 1024x1024px</span><br></pre></td></tr></table></figure>
-<h3 id="4-模板有了之后，剩下的就是实现了"><a href="#4-模板有了之后，剩下的就是实现了" class="headerlink" title="4.模板有了之后，剩下的就是实现了"></a>4.模板有了之后，剩下的就是实现了</h3><p>我自己随便写了个脚本，地址  : <a target="_blank" rel="noopener" href="https://github.com/waitingchange/Texurepacker">地址</a></p>
 
       
     </div>
