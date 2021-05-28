@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="default">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
@@ -21,7 +21,7 @@
 
 <script class="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"}};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
   </script>
 <meta name="description" content="WebSocket CPP 的设计部分先讲一讲为啥要有C++ 版本的Websocket首先什么是Websocket ，是socket，可以提供与服务器进行双工通信，具有建立连接的概念，Http 只能由客服端发起通信，服务端无法知道客户端的状态。 为什么要用底层Websocket，原因是现有框架结构是js版本的Websocket ，使用起来需要收到js环境的限制，更深层次的业务无法实现，而且性能方面">
 <meta property="og:type" content="website">
@@ -29,7 +29,7 @@
 <meta property="og:url" content="https://waitingchange.github.io/C++%E5%B1%82Websocket%E8%AE%BE%E8%AE%A1.html">
 <meta property="og:site_name" content="懒人的胡言乱语">
 <meta property="og:description" content="WebSocket CPP 的设计部分先讲一讲为啥要有C++ 版本的Websocket首先什么是Websocket ，是socket，可以提供与服务器进行双工通信，具有建立连接的概念，Http 只能由客服端发起通信，服务端无法知道客户端的状态。 为什么要用底层Websocket，原因是现有框架结构是js版本的Websocket ，使用起来需要收到js环境的限制，更深层次的业务无法实现，而且性能方面">
-<meta property="og:locale">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://waitingchange.github.io/images/Websocket/%E4%BA%A4%E4%BA%92%E6%97%B6%E5%BA%8F%E5%9B%BE.png">
 <meta property="og:image" content="https://waitingchange.github.io/images/Websocket/%E6%8E%A5%E5%8F%A3%E7%BB%93%E6%9E%84.png">
 <meta property="og:image" content="https://waitingchange.github.io/images/Websocket/%E8%AE%BE%E8%AE%A1%E7%BB%93%E6%9E%84.png">
@@ -49,7 +49,7 @@
     sidebar: "",
     isHome : false,
     isPost : false,
-    lang   : 'default'
+    lang   : 'zh-CN'
   };
 </script>
 <title>c++层Websocket设计 | 懒人的胡言乱语
@@ -103,7 +103,7 @@
     <header class="header" itemscope itemtype="http://schema.org/WPHeader">
       <div class="header-inner"><div class="site-brand-container">
   <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+    <div class="toggle" aria-label="切换导航栏" role="button">
     </div>
   </div>
 
@@ -142,10 +142,10 @@
     <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
-          Table of Contents
+          文章目录
         </li>
         <li class="sidebar-nav-overview">
-          Overview
+          站点概览
         </li>
       </ul>
 
@@ -161,20 +161,20 @@
     <img class="site-author-image" itemprop="image" alt="change"
       src="/images/avatar.jpg">
   <p class="site-author-name" itemprop="name">change</p>
-  <div class="site-description" itemprop="description"></div>
+  <div class="site-description" itemprop="description">东西没这么少，只是仓库坏了</div>
 </div>
 <div class="site-state-wrap site-overview-item animated">
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">24</span>
-          <span class="site-state-item-name">posts</span>
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
         <span class="site-state-item-count">8</span>
-        <span class="site-state-item-name">categories</span></a>
+        <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
 </div>
@@ -215,7 +215,7 @@
     
     
     
-    <div class="post-block" lang="default"><header class="post-header">
+    <div class="post-block" lang="zh-CN"><header class="post-header">
 
 <h1 class="post-title" itemprop="name headline">c++层Websocket设计
 </h1>
@@ -295,7 +295,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">change</span>
 </div>
-  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
 
     </div>
