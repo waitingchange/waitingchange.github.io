@@ -159,13 +159,13 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-count">27</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
   </nav>
@@ -202,6 +202,150 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="东西没这么少，只是仓库坏了">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/" class="post-title-link" itemprop="url">iOS 内存分析</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-18 14:05:09" itemprop="dateCreated datePublished" datetime="2021-06-18T14:05:09+08:00">2021-06-18</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-07-06 18:08:06" itemprop="dateModified" datetime="2021-07-06T18:08:06+08:00">2021-07-06</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">内存优化</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="iOS-内存分析"><a href="#iOS-内存分析" class="headerlink" title="iOS 内存分析"></a>iOS 内存分析</h1><img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/Memary Guage increase.png" alt="Memary Guage increase" style="zoom:67%;">        
+
+<p>​        最近在做关于APP 内存方面的分析,去尽量优化iOS 侧 APP 的内存。原本使用的是之前自己掌握的方式，比如 <code>Memory leaks , Memory Allocations</code> 每一项工具都有针对性的内容，在进一步优化的时候发现了原来可以使用终端方式来查询问题。一个对于自己全新的领域。</p>
+<p>​        引述一下关键字：<strong>iOS Memory Deep Dive</strong>      <a target="_blank" rel="noopener" href="https://developer.apple.com/videos/play/wwdc2018/416/">WWDC2018</a> </p>
+<p>​        WWDC2018 ， 2018年 。大概如果是苹果开发铁杆粉都已经悉数掌握。但是很多开发者似乎对这块儿知识都了解较少，如何具体使用也不一定都能掌握。我这儿整理一下对自己查找问题中的一些相关性，也顺带做一下总结，提醒一下自己。</p>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>​        利用自己在实际开发中遇到的相关问题来具体讲解如何在iOS中做内存分析，怎样去针对性优化。</p>
+<ul>
+<li><p>怎样去观察内存占用</p>
+</li>
+<li><p>需要卸载掉哪些内存</p>
+</li>
+</ul>
+<h4 id="怎样观察内存"><a href="#怎样观察内存" class="headerlink" title="怎样观察内存"></a>怎样观察内存</h4><p>​        大家都在Xcode 下经常开发，<strong>Xcode Memory gauge</strong> 这个界面大家应该都不会陌生</p>
+<img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/Memary Guage.png" alt="Memary Guage" style="zoom: 67%;">
+
+<p>​        在当前界面，能够提供数字，百分比，内存使用危险程度的通用观察界面。针对于平常查看内存占用大小比较方便，但是对于内存问题，这块儿能提供的内容相当有限。但是能够提示开发者内存占用的波动，从而引起关注。</p>
+<pre><code>     **iOS Memory Deep Dive** 讲了关于iOS 在内存方面的使用和统计方式。提到了在iOS 操作系统中，内存的统计方式是按照分页的方式。内存又会被细分为 物理内存 和虚拟内存。 APP 的运行是一定要基于内存之上的，物理内存和虚拟内存的主要作用如下。
+</code></pre>
+<p>​        <strong>物理内存</strong>：设备运行时为操作系统和各种程序提供临时储存空间</p>
+<p>​        <strong>虚拟内存</strong>：为每一个进程提供了一个<strong>一致的、私有的地址空间</strong>；其主要作用是：保护了每个进程的地址空间不会被其他进程破坏，降低内存管理的复杂性。 虚拟内存是进程运行时所有内存空间的总和，并且可能有一部分不在物理内存中。</p>
+<p>​        iOS系统是按页分配内存的，每个page通常是16KB</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Memory in use &#x3D; Number of pages * Page size</span><br></pre></td></tr></table></figure>
+
+<p>​        iOS内存可以分为clean memory和dirty memory。当用户(也就是程序员)申请分配内存时，系统只会对这块内存进行标记，这时只会分配虚拟内存，而不会分配物理内存，此时内存是clean memory。当对这块内存进行数据填充时，才会分配物理内存，内存变为dirty memory。</p>
+<img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/dirty_memory.png" alt="dirty_memory" style="zoom:67%;">
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Memory Footprint &#x3D; Dirty Memory + Compressed Memory</span><br></pre></td></tr></table></figure>
+
+<p>针对内存问题，我们考虑的重点也是去减少 <code>Dirty Memory</code></p>
+<p>根据已知的信息，尝试去实践一下如何查找内存消耗，这次使用命令行方式。</p>
+<p>以第一张图 27.8M 为例。首先修改 iOS Scheme ， 勾选 <code>Malloc Stack Logging</code> 并选中为 <code>Live Aloocations Only</code></p>
+<img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/ios_scheme.png" alt="ios_scheme" style="zoom:50%;">
+
+<p>然后就是运行中等待时机到来，点击<code>Debug Memory Graph</code> 得到内存图。可以通过 <code>File  --&gt;  Export Memory Graph</code>到处文件到指定位置。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#终端执行下面代码</span><br><span class="line">$  vmmap -summary memory.memgraph   # 首先获取内存分配的概况，使用这条命令可以获得</span><br></pre></td></tr></table></figure>
+
+<img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/vmmap_summary.png" alt="vmmap_summary" style="zoom:50%;">
+
+<p>从我们已知的信息可以知道 ， Dirty Memory 是我们关注的重点。于是发现了 REGION TYPE 是 MALLOC_LARGE</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ vmmap -verbose memory.memgraph | grep &quot;MALLOC_LARGE&quot;  #获取详细的关于内存分配的 在归属于 “MALLOC_LARGE” 这里的内容</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/vmmap_verbose.png" alt="vmmap_verbose"></p>
+<p>从图中我们可以容易的发现，内存地址为 0x1146e4000 。 在这样的情况下，我们可以借助于另外一个命令 <code>malloc_history</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ malloc_history memory.memgraph -fullStacks 0x1146e4000   # 获取地址块儿的堆栈信息</span><br></pre></td></tr></table></figure>
+
+<img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/malloc_history.png" alt="malloc_history" style="zoom:50%;">
+
+<p>根据我们查到的调用堆栈，我们发现是因为 new 操作，导致了内存分配，源头应该在于 InstanceDemo 这个类的构造函数。</p>
+<img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/source_code.png" alt="source_code" style="zoom: 50%;">        
+
+<p>贴上源码，是这里引起的内存分配无疑。我们同时也发现，Dirty memory 也是 9.8M.   如果我们不给数组赋值呢？</p>
+<p>我们注释掉数组赋值，重新走一遍儿上面的流程。</p>
+<img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/vmmap_summary_new.png" alt="vmmap_summary_new" style="zoom:50%;">
+
+<p>于是发现了，同样 <code>MALLOC_LARGE</code> 中的 VIRTUAL SIZE 是 10M ， 但是DIRTY SIZE 只剩下了 208K</p>
+<p>如果我们细跟入进去会发现</p>
+<img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/malloc_history_new.png" alt="malloc_history_new" style="zoom:50%;">
+
+<p>是同样能够查到内存分配的位置。但是因为只有内存申请，没有使用，分配的区域被放在了虚拟内存，所以Dirty MEMARY 并没有相应标记。</p>
+<p>在查询内存问题的时候还有另外一个命令可以使用，就是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ leaks -traceTree  0x1118cc000 memory_new.memgraph</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/leaks_tool.png" alt="leaks_tool"></p>
+<p>通过这个命令可以知道 m_instance 被持有引用，可能会出现内存泄漏。</p>
+<p>Demo 依旧会提供，主要对内存如何分析和查找可能性提出一些方法。 我们同时还可以通过Xcode 提供的 VM Tracker 等工具用来具体指向我们怀疑的点。一般来讲，图片资源占用的内存会比较大，如果作为优化的方向，首选见效处理就是规范化图片资源。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -555,6 +699,89 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2003/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="东西没这么少，只是仓库坏了">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/03/03/leetcode%2003/" class="post-title-link" itemprop="url">leetcode 总结  03 多数元素</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-03-03 20:14:34 / 修改时间：22:00:14" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="leetcode-总结-03-多数元素"><a href="#leetcode-总结-03-多数元素" class="headerlink" title="leetcode 总结 03 多数元素"></a>leetcode 总结 03 多数元素</h1><h3 id="多数元素"><a href="#多数元素" class="headerlink" title="多数元素"></a>多数元素</h3><p>给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。</p>
+<p>你可以假设数组是非空的，并且给定的数组总是存在多数元素。</p>
+<p>示例 1：</p>
+<p>输入：[3,2,3]<br>输出：3<br>示例 2：</p>
+<p>输入：[2,2,1,1,1,2,2]<br>输出：2</p>
+<p>进阶：</p>
+<p>尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。</p>
+<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions/xm77tm/">https://leetcode-cn.com/leetbook/read/top-interview-questions/xm77tm/</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 解题思路：找到数量最多的数字 </span></span><br><span class="line"><span class="comment">// 1. 可以用map ， 放进去每一个元素，然后更新这个元素的个数，最后查找map 中元素的第二位数值。（肯定可行，但是 时间复杂度 控件复杂度不合适）</span></span><br><span class="line"><span class="comment">// 如果只需要一次遍历 ， 就得找一个数值用来记录最大的数量，还得有一个标识，用来记录当前这个最大数量指向的是哪个数值</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">majorityElement</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> resultNum = nums[<span class="number">0</span>]; <span class="comment">// 保存当前最大的数值，默认第一位就是最多的    [1,2,3,4,2,2,3]</span></span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>; <span class="comment">// 保存最多的数据被记录了多少次</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.size(); i++) <span class="comment">// 正常遍历操作</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[i] == resultNum)  <span class="comment">// 如果相等，那么 计数器加一</span></span><br><span class="line">            &#123;</span><br><span class="line">                count ++;</span><br><span class="line">            &#125;<span class="keyword">else</span>  <span class="comment">// 如果不相等</span></span><br><span class="line">            &#123;</span><br><span class="line">                count --;  <span class="comment">// 计数器减少 一</span></span><br><span class="line">                <span class="keyword">if</span>(count == <span class="number">0</span>)  <span class="comment">//当计数器归零的时候，更换一下最多的记录</span></span><br><span class="line">                &#123;</span><br><span class="line">                    resultNum = nums[i];  <span class="comment">// 认为当前的是最多的</span></span><br><span class="line">                    count ++;  <span class="comment">// 计数器自增</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> resultNum;  <span class="comment">// 返回当前认为记录最多的</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2004/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -619,89 +846,6 @@
 <p>// 在函数里修改输入数组对于调用者是可见的。<br>// 根据你的函数返回的长度, 它会打印出数组中该长度范围内的所有元素。<br>for (int i = 0; i &lt; len; i++) {<br>    print(nums[i]);<br>}</p>
 <p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x2gy9m/">https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x2gy9m/</a></p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//解题思路：删除重复 ， 索引 index ， 然后判断下一个是不是跟当前的相同，如果相同，就不管，如果不相同 ，索引向后移动一位，当前放在当前的位置 </span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">removeDuplicates</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> length = nums.size(); <span class="comment">// 获得长度</span></span><br><span class="line">        <span class="keyword">if</span>(length &lt;= <span class="number">1</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> length; <span class="comment">// 小于等于 1 ，肯定就返回了</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> i = <span class="number">0</span>; <span class="comment">// 索引</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">1</span> ; j &lt; nums.size();++j) <span class="comment">// 遍历</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[i] != nums[j]) <span class="comment">// 如果不相同</span></span><br><span class="line">            &#123;</span><br><span class="line">                i++; <span class="comment">// 索引后移动</span></span><br><span class="line">                nums[i] = nums[j]; <span class="comment">//当前的放在这个位置</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> i+<span class="number">1</span>; <span class="comment">// i 为索引 从 0 开始， 返回个数是 需要加一</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2003/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="change">
-      <meta itemprop="description" content="东西没这么少，只是仓库坏了">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="懒人的胡言乱语">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/03/leetcode%2003/" class="post-title-link" itemprop="url">leetcode 总结  03 多数元素</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-      
-
-      <time title="创建时间：2021-03-03 20:14:34 / 修改时间：22:00:14" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="leetcode-总结-03-多数元素"><a href="#leetcode-总结-03-多数元素" class="headerlink" title="leetcode 总结 03 多数元素"></a>leetcode 总结 03 多数元素</h1><h3 id="多数元素"><a href="#多数元素" class="headerlink" title="多数元素"></a>多数元素</h3><p>给定一个大小为 n 的数组，找到其中的多数元素。多数元素是指在数组中出现次数 大于 ⌊ n/2 ⌋ 的元素。</p>
-<p>你可以假设数组是非空的，并且给定的数组总是存在多数元素。</p>
-<p>示例 1：</p>
-<p>输入：[3,2,3]<br>输出：3<br>示例 2：</p>
-<p>输入：[2,2,1,1,1,2,2]<br>输出：2</p>
-<p>进阶：</p>
-<p>尝试设计时间复杂度为 O(n)、空间复杂度为 O(1) 的算法解决此问题。</p>
-<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions/xm77tm/">https://leetcode-cn.com/leetbook/read/top-interview-questions/xm77tm/</a></p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 解题思路：找到数量最多的数字 </span></span><br><span class="line"><span class="comment">// 1. 可以用map ， 放进去每一个元素，然后更新这个元素的个数，最后查找map 中元素的第二位数值。（肯定可行，但是 时间复杂度 控件复杂度不合适）</span></span><br><span class="line"><span class="comment">// 如果只需要一次遍历 ， 就得找一个数值用来记录最大的数量，还得有一个标识，用来记录当前这个最大数量指向的是哪个数值</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">majorityElement</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> resultNum = nums[<span class="number">0</span>]; <span class="comment">// 保存当前最大的数值，默认第一位就是最多的    [1,2,3,4,2,2,3]</span></span><br><span class="line">        <span class="keyword">int</span> count = <span class="number">0</span>; <span class="comment">// 保存最多的数据被记录了多少次</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.size(); i++) <span class="comment">// 正常遍历操作</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(nums[i] == resultNum)  <span class="comment">// 如果相等，那么 计数器加一</span></span><br><span class="line">            &#123;</span><br><span class="line">                count ++;</span><br><span class="line">            &#125;<span class="keyword">else</span>  <span class="comment">// 如果不相等</span></span><br><span class="line">            &#123;</span><br><span class="line">                count --;  <span class="comment">// 计数器减少 一</span></span><br><span class="line">                <span class="keyword">if</span>(count == <span class="number">0</span>)  <span class="comment">//当计数器归零的时候，更换一下最多的记录</span></span><br><span class="line">                &#123;</span><br><span class="line">                    resultNum = nums[i];  <span class="comment">// 认为当前的是最多的</span></span><br><span class="line">                    count ++;  <span class="comment">// 计数器自增</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> resultNum;  <span class="comment">// 返回当前认为记录最多的</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
 
       
@@ -819,97 +963,6 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2007/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="change">
-      <meta itemprop="description" content="东西没这么少，只是仓库坏了">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="懒人的胡言乱语">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/03/leetcode%2007/" class="post-title-link" itemprop="url">leetcode 总结  07 加一</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-03-03 20:14:34" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-04 18:53:08" itemprop="dateModified" datetime="2021-03-04T18:53:08+08:00">2021-03-04</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="leetcode-07-加一"><a href="#leetcode-07-加一" class="headerlink" title="leetcode 07 加一"></a>leetcode 07 加一</h1><p>给定一个由 整数 组成的 非空 数组所表示的非负整数，在该数的基础上加一。</p>
-<p>最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。</p>
-<p>你可以假设除了整数 0 之外，这个整数不会以零开头。</p>
-<p>示例 1：</p>
-<p>输入：digits = [1,2,3]<br>输出：[1,2,4]<br>解释：输入数组表示数字 123。<br>示例 2：</p>
-<p>输入：digits = [4,3,2,1]<br>输出：[4,3,2,2]<br>解释：输入数组表示数字 4321。<br>示例 3：</p>
-<p>输入：digits = [0]<br>输出：[1]</p>
-<p>提示：</p>
-<p>1 &lt;= digits.length &lt;= 100<br>0 &lt;= digits[i] &lt;= 9</p>
-<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x2cv1c/">https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x2cv1c/</a></p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//解题思路：因为是从后面往前开始去处理 ， 竟然还是写了 i++  ， 真的是头大了。</span></span><br><span class="line"><span class="comment">// 解题思路是 ， 从最后一位开始，如果是 9，那么 设置数值为0，再往前遍历，如果数字小于 9 ， 那么自增，然后直接返回数组</span></span><br><span class="line"><span class="comment">// 对于最后的，如果变成了 00000 , 那么需要用一个新vector ，放入 当前的内容和最头部的 1</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">plusOne</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; digits)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> m_size = digits.size(); <span class="comment">// 拿到vector 的length</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = m_size - <span class="number">1</span>; i &gt;= <span class="number">0</span> ; i--) <span class="comment">// 倒叙遍历， 逐个获取</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(digits[i] != <span class="number">9</span>) <span class="comment">// 如果当前数值不是  9 ， 那么 自增，然后返回数组</span></span><br><span class="line">            &#123;</span><br><span class="line">                digits[i] += <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">return</span> digits;</span><br><span class="line">            &#125;</span><br><span class="line">            digits[i] = <span class="number">0</span>; <span class="comment">// 如果是 9 ，还没返回出去 ，那么置为0</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">vec</span><span class="params">(m_size + <span class="number">1</span>)</span></span>; <span class="comment">// 都变成 0 了之后 ，返回 当前vector </span></span><br><span class="line">        vec[<span class="number">0</span>] = <span class="number">1</span>; <span class="comment">// 首位方置为 1</span></span><br><span class="line">        <span class="keyword">return</span> vec;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
     <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2006/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -998,7 +1051,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2007/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -1011,7 +1064,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/" class="post-title-link" itemprop="url">仓库损坏</a>
+          <a href="/2021/03/03/leetcode%2007/" class="post-title-link" itemprop="url">leetcode 总结  07 加一</a>
         </h2>
 
         <div class="post-meta-container">
@@ -1021,9 +1074,24 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2021-03-01 14:59:19 / 修改时间：15:01:28" itemprop="dateCreated datePublished" datetime="2021-03-01T14:59:19+08:00">2021-03-01</time>
+      <time title="创建时间：2021-03-03 20:14:34" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-05-28 14:19:17" itemprop="dateModified" datetime="2021-05-28T14:19:17+08:00">2021-05-28</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
+        </span>
     </span>
 
   
@@ -1036,8 +1104,18 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h1 id="仓库损坏"><a href="#仓库损坏" class="headerlink" title="仓库损坏"></a>仓库损坏</h1><p>如题，因为升级本地node 环境和hexo 版本，导致本地配置无法使用。</p>
-<p>最直接的损失是，TensorFlow 系列无法直接显示。最近新增了一些C++  的东西，先在可用的环境下进行提交，好消息是原始文件都存在。</p>
+          <h1 id="leetcode-07-加一"><a href="#leetcode-07-加一" class="headerlink" title="leetcode 07 加一"></a>leetcode 07 加一</h1><p>给定一个由 整数 组成的 非空 数组所表示的非负整数，在该数的基础上加一。</p>
+<p>最高位数字存放在数组的首位， 数组中每个元素只存储单个数字。</p>
+<p>你可以假设除了整数 0 之外，这个整数不会以零开头。</p>
+<p>示例 1：</p>
+<p>输入：digits = [1,2,3]<br>输出：[1,2,4]<br>解释：输入数组表示数字 123。<br>示例 2：</p>
+<p>输入：digits = [4,3,2,1]<br>输出：[4,3,2,2]<br>解释：输入数组表示数字 4321。<br>示例 3：</p>
+<p>输入：digits = [0]<br>输出：[1]</p>
+<p>提示：</p>
+<p>1 &lt;= digits.length &lt;= 100<br>0 &lt;= digits[i] &lt;= 9</p>
+<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x2cv1c/">https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x2cv1c/</a></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//解题思路：因为是从后面往前开始去处理 ， 竟然还是写了 i++  ， 真的是头大了。</span></span><br><span class="line"><span class="comment">// 解题思路是 ， 从最后一位开始，如果是 9，那么 设置数值为0，再往前遍历，如果数字小于 9 ， 那么自增，然后直接返回数组</span></span><br><span class="line"><span class="comment">// 对于最后的，如果变成了 00000 , 那么需要用一个新vector ，放入 当前的内容和最头部的 1</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">plusOne</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; digits)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> m_size = digits.size(); <span class="comment">// 拿到vector 的length</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = m_size - <span class="number">1</span>; i &gt;= <span class="number">0</span> ; i--) <span class="comment">// 倒叙遍历， 逐个获取</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span>(digits[i] != <span class="number">9</span>) <span class="comment">// 如果当前数值不是  9 ， 那么 自增，然后返回数组</span></span><br><span class="line">            &#123;</span><br><span class="line">                digits[i] += <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">return</span> digits;</span><br><span class="line">            &#125;</span><br><span class="line">            digits[i] = <span class="number">0</span>; <span class="comment">// 如果是 9 ，还没返回出去 ，那么置为0</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt; <span class="title">vec</span><span class="params">(m_size + <span class="number">1</span>)</span></span>; <span class="comment">// 都变成 0 了之后 ，返回 当前vector </span></span><br><span class="line">        vec[<span class="number">0</span>] = <span class="number">1</span>; <span class="comment">// 首位方置为 1</span></span><br><span class="line">        <span class="keyword">return</span> vec;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
