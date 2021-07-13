@@ -159,7 +159,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
           <a href="/archives">
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -202,6 +202,172 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="东西没这么少，只是仓库坏了">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/" class="post-title-link" itemprop="url">未命名</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-07-13 10:40:08" itemprop="dateCreated datePublished" datetime="2021-07-13T10:40:08+08:00">2021-07-13</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="Laya-Native-性能分析和改造笔记"><a href="#Laya-Native-性能分析和改造笔记" class="headerlink" title="Laya Native 性能分析和改造笔记"></a>Laya Native 性能分析和改造笔记</h1><p>分析和修改步骤：</p>
+<p>1、使用laya编辑器 ， 2.1.0 版本的，导出生成 2.1.0 版本的ios 工程为基础</p>
+<p>为了验证编译导出的laya 二进制文件能否放入到低版本，先对2.1.0 版本ios 工程做了以下修改</p>
+<p>改动部分如下：</p>
+<ol>
+<li>替换laya脚本导出的 libconch.a 文件</li>
+<li>替换高版本（2.11.0）apploader.js , index.js ,挪动版本 webglPlus.js 到低版本工程</li>
+</ol>
+<p>改动后代码可以直接正常运行。</p>
+<p>profile 内存使用情况 （更换后,游戏运行状态） 170M （现象，也同时证明laya已有js 代码可以直接运行在Laya 高版本运行环境）</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled.png"></p>
+<h2 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h2><p>在直接更改iOS源码，强制卸载laya部分，表现如下，内存并没有如预期下降。</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%201.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%201.png"></p>
+<p>在profile 里面去查找还持有，存在于内存的一些对象，可以发现如下（两个占用内存的大户）</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%202.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%202.png"></p>
+<p>把相关退出代码搬运到 laya 提供的项目工程中，通过debug方式profile ，能够看到每次重新进入laya 内存部分被重新分配了 30+ M  （每一次都会增加，认定引擎侧出现内存泄漏，在于C++或者ObjectC）</p>
+<p>比如可以很直观发现下面的泄漏。</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%203.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%203.png"></p>
+<p>优先解决内存占用大户，发现特征是如下，不能指向具体的代码片段，但是也提供了相应的信息，libglxxxx 推测是在OpenGL 侧。（可能是C++ 持有，属于重点怀疑，但是这个库又是iOS自己提供，所以ObjectC 也不能排除）</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%204.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%204.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%205.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%205.png"></p>
+<p>在一次profile 时候，在资源载入的时候发现了JCLayaGl  和texture2d 的字段，所以怀疑为C++ 本身内存泄漏的可能性又在加强。libglxxxx 这个东西依然存在，可以先做排除法，先不去管texure2d这块儿。</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%206.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%206.png"></p>
+<p>不使用texure2d的最直接方式是不给图片资源，于是，更换为无图片资源小游戏demo，测试如下</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%207.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%207.png"></p>
+<p>依然存在大量的 Gl 字段， 而且还能看到很多 allocated pair to attach …   这货又好像是iOS的内存泄漏</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%208.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%208.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%209.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%209.png"></p>
+<p>所以基本认定，在iOS Object C 侧，卸载部分存在内存泄漏，在C++侧也大致会存在相应的内存泄漏。那么下面面临的问题就是如何修复。</p>
+<p>C++通用内存泄漏部分基本是在于 Init 或者 构造函数 中 new 出一些对象，在析构时候没有干掉，导致一些内存常驻。</p>
+<p>Object C 里面也有C++ 类似的地方，alloc 出对象，然后强制引用，导致对象不能正常释放。</p>
+<p>所以基本解决的思路就有了，下一步，干活验证。</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2010.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2010.png"></p>
+<p>ios 如下图，现有学生端 profile 内存部分，也能找到在上面魔改的Demo 工程中出现的内存消耗大户，所以laya 本身存在 destory 接口，但是内部逻辑却没有做到位。既然有，那么我们强制析构对象的时机和入口就很明确了。</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2011.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2011.png"></p>
+<h2 id="测试内存和性能比对："><a href="#测试内存和性能比对：" class="headerlink" title="测试内存和性能比对："></a>测试内存和性能比对：</h2><p>替换修改好的laya二进制到学生端    卸载前</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2012.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2012.png"></p>
+<p>卸载后</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2013.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2013.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2014.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2014.png"></p>
+<p>明显看到内存能够降下去！！！</p>
+<h2 id="具体内存和性能对比"><a href="#具体内存和性能对比" class="headerlink" title="具体内存和性能对比"></a>具体内存和性能对比</h2><p>laya 两个版本运行时内存比较</p>
+<h3 id="新版本"><a href="#新版本" class="headerlink" title="新版本"></a>新版本</h3><p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2015.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2015.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2016.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2016.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2017.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2017.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2018.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2018.png"></p>
+<h3 id="旧版本"><a href="#旧版本" class="headerlink" title="旧版本"></a>旧版本</h3><p>旧有的占用内存量</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2019.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2019.png"></p>
+<p>点击切换，干掉laya</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2020.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2020.png"></p>
+<p>再次拉起</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2021.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2021.png"></p>
+<p>会持续增加</p>
+<h2 id="按照-登录→大厅→录播课→回到大厅"><a href="#按照-登录→大厅→录播课→回到大厅" class="headerlink" title="按照 登录→大厅→录播课→回到大厅"></a>按照 登录→大厅→录播课→回到大厅</h2><h3 id="新版本二进制，移除laya-时候内存"><a href="#新版本二进制，移除laya-时候内存" class="headerlink" title="新版本二进制，移除laya 时候内存"></a>新版本二进制，移除laya 时候内存</h3><p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2022.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2022.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2023.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2023.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2024.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2024.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2025.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2025.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2026.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2026.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2027.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2027.png"></p>
+<h2 id="没有做修改的内存"><a href="#没有做修改的内存" class="headerlink" title="没有做修改的内存"></a>没有做修改的内存</h2><p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2028.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2028.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2029.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2029.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2030.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2030.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2031.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2031.png"></p>
+<h3 id="对比两种二进制，在laya-是否卸载方面内存变化结论"><a href="#对比两种二进制，在laya-是否卸载方面内存变化结论" class="headerlink" title="对比两种二进制，在laya 是否卸载方面内存变化结论"></a>对比两种二进制，在laya 是否卸载方面内存变化结论</h3><p>很明显能够看到在切换场景的时候内存有一个很深的释放，因为在释放完成第一个layacontroller之后会重新建立一个新的layaController ， 这里会有一个很深的尖角，因为需要载入新的场景和资源，内存会再次上升。因为小游戏在运行时候必须的内存大小基本固定，所以会回归到正常的内存数值。</p>
+<p>现有Laya 单利方式在内存表现方面没有太多的增加，在大厅进入到录播AI课的时候会有一定的内存上涨，在从录播AI课回到大厅的时候，一些内存没有释放掉，维持在 396M 左右， 在使用释放laya 的方式，在回到大厅时候，维持大厅刚进入时候的内存值，即 349M 左右。</p>
+<p>有一个明显不一样的地方是，如果在新版本中大厅切换到一个空的页面，即无laya 运行时环境，iOS 内存能够从 349M 下降到 85M 左右（如下图）， 但是现有的版本，内存无法下降</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2032.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2032.png"></p>
+<p>旧版本如下：</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2033.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2033.png"></p>
+<p>具体时机数值比较</p>
+<p><a target="_blank" rel="noopener" href="https://www.notion.so/f8d0e91dae0746ef856f9b58107a6fe8">Untitled</a></p>
+<h2 id="Laya单独一个课件载入到一个新的demo-中"><a href="#Laya单独一个课件载入到一个新的demo-中" class="headerlink" title="Laya单独一个课件载入到一个新的demo 中"></a>Laya单独一个课件载入到一个新的demo 中</h2><p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2034.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2034.png"></p>
+<p>在正常运行时候 191M （这里没有声网，没有录播课中的视频，只是laya 课件）， 但是卸载以后，就在 70.3M  </p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2035.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2035.png"></p>
+<p>就是理论评估，本讲课件暂用内存在 121M 左右。</p>
+<p>在学生端这里，从大厅进入—&gt;到AI录播课→回到大厅流程 （在释放laya 对象时候进行延时处理，延时为 5秒 ，可以详细的记录内存的变化）</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2036.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2036.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2037.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2037.png"></p>
+<p>327 - 137 = 190M （相比上面单独demo 中的 121M ，应该算是合理的）</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2038.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2038.png"></p>
+<p>大厅课件占用内存  353 - 137  = 216 M</p>
+<h2 id="关于性能方面初步结论："><a href="#关于性能方面初步结论：" class="headerlink" title="关于性能方面初步结论："></a>关于性能方面初步结论：</h2><p>在同等环境下，运行时候需要的内存是一致的，但是在于卸载laya 到原生端这里，2.1.0 </p>
+<p>版本因为laya 引擎自身原因，引擎运行分配出来的内存和JavaScript context，资源内存并没有被释放。导致再次拉起Laya 工程，内存会重新分配，出现严重的内存泄漏。2.11.0 版本，修改以后是可以释放掉laya运行时内存，不会因为多次释放和重新拉起引起内存泄漏。</p>
+<p>渲染侧：</p>
+<p>暂时还需要低端机器和相关测试环境对比</p>
+<h2 id="内存比对"><a href="#内存比对" class="headerlink" title="内存比对"></a>内存比对</h2><p>比如线上debug 版本，进入ai课执行空游戏，即载入空场景表现</p>
+<p>redirect url 之后内存维持在 169M</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2039.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2039.png"></p>
+<p>如果使用卸载Laya 方式</p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2040.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2040.png"></p>
+<p><img src="/2021/07/13/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2041.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2041.png"></p>
+<p>相当于如果使用修改后的引擎，在不使用Laya 的环境中 相比之前稳定在 169M 的内存， 能够减少  169 - 82.6 =  86.4M   ,  也就是说可以多出来 86.4M 内存提供给额外业务使用。</p>
+<h2 id="后续升级："><a href="#后续升级：" class="headerlink" title="后续升级："></a>后续升级：</h2><p>现有iOS升级可更改的内容非常少，主要修改点在于：</p>
+<ol>
+<li>iOS 之前单利方式的Laya Controller 更改为对象方式，在需要的时候载入初始化，不需要的时候可以销毁。</li>
+<li>替换新版本 laya 原生二进制文件（必要）</li>
+<li>JavaScript 部分，修改或者替换apploader.js ,index.js 新增 webglPlus.js</li>
+</ol>
+<h3 id="新版本特性："><a href="#新版本特性：" class="headerlink" title="新版本特性："></a>新版本特性：</h3><ol>
+<li>在新版本Laya 代码中使用的是 WkWebview，iOS 可以使用高版本二进制进行新项目提审。</li>
+<li>支持内存释放，可以做多runtime 引擎之间切换。</li>
+<li>具备扩展性，可以在现有基础上对引擎底层做特定修改。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -1041,96 +1207,8 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/03/03/leetcode%2006/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="change">
-      <meta itemprop="description" content="东西没这么少，只是仓库坏了">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="懒人的胡言乱语">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/03/03/leetcode%2006/" class="post-title-link" itemprop="url">leetcode 总结  06 存在重复元素</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-03-03 20:14:34" itemprop="dateCreated datePublished" datetime="2021-03-03T20:14:34+08:00">2021-03-03</time>
-    </span>
-      <span class="post-meta-item">
-        <span class="post-meta-item-icon">
-          <i class="far fa-calendar-check"></i>
-        </span>
-        <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-03-04 18:04:05" itemprop="dateModified" datetime="2021-03-04T18:04:05+08:00">2021-03-04</time>
-      </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/leetcode/" itemprop="url" rel="index"><span itemprop="name">leetcode</span></a>
-        </span>
-    </span>
-
-  
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h1 id="leetcode-06-存在重复元素"><a href="#leetcode-06-存在重复元素" class="headerlink" title="leetcode 06 存在重复元素"></a>leetcode 06 存在重复元素</h1><p>给定一个整数数组，判断是否存在重复元素。</p>
-<p>如果存在一值在数组中出现至少两次，函数返回 true 。如果数组中每个元素都不相同，则返回 false 。</p>
-<p>示例 1:</p>
-<p>输入: [1,2,3,1]<br>输出: true<br>示例 2:</p>
-<p>输入: [1,2,3,4]<br>输出: false<br>示例 3:</p>
-<p>输入: [1,1,1,3,3,4,3,2,4,2]<br>输出: true</p>
-<p>作者：力扣 (LeetCode)<br>链接：<a target="_blank" rel="noopener" href="https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x248f5/">https://leetcode-cn.com/leetbook/read/top-interview-questions-easy/x248f5/</a></p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//解题思路：一开始在没看清楚题目的时候就直接去写了， 因为看到类似的题目，另外一个是需要得到数组中存在最多的数字，但是忽略了一个点，没法记录多少次</span></span><br><span class="line"><span class="comment">// 回来继续考虑，因为知道map 存在两个数据 ，第一个可以作为key ， 第二个用来存放存在的数量，当然对于本题来讲，返回True 就可以了。于是代码如下</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">containsDuplicate</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(nums.size() &lt;= <span class="number">1</span>) <span class="comment">// 如果只有一个，或者这个数组就没内容，那么必须没有重复的</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">map</span> &lt;<span class="keyword">int</span> ,<span class="keyword">int</span>&gt; myMap; <span class="comment">// 定义用来存放的map  key 作为 数值 value 作为出现的次数</span></span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="keyword">int</span>,<span class="keyword">int</span>&gt;::iterator it;  <span class="comment">// 定义it ，服务于map</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nums.size();i++) <span class="comment">// 一次遍历</span></span><br><span class="line">        &#123;</span><br><span class="line">            it = myMap.find(nums[i]); <span class="comment">// 查询是否存在</span></span><br><span class="line">            <span class="keyword">if</span>(it != myMap.end()) <span class="comment">// 如果已经存在 ， 那么肯定这次是重复的</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                myMap[nums[i]] = <span class="number">1</span>; <span class="comment">// 这里用来存放次数，这里是错误的，主要有用的是key</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
