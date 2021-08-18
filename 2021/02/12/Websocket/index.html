@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="Websocket整理一下Websocket，方便以后问题查找 什么是Websocket ？Websocket 是在TCP协议上封装的另一种应用层协议,主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。 HTTP 也是基于TCP 的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Websocket">
+<meta property="og:url" content="https://waitingchange.github.io/2021/02/12/Websocket/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="Websocket整理一下Websocket，方便以后问题查找 什么是Websocket ？Websocket 是在TCP协议上封装的另一种应用层协议,主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。 HTTP 也是基于TCP 的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://waitingchange.github.io/images/Websocket/tcp.gif">
+<meta property="og:image" content="https://waitingchange.github.io/images/Websocket/tcp_handshake.gif">
+<meta property="og:image" content="https://waitingchange.github.io/images/Websocket/websocket_connect.gif">
+<meta property="og:image" content="https://waitingchange.github.io/images/Websocket/websocket_handshake.webp">
+<meta property="article:published_time" content="2021-02-12T05:24:13.000Z">
+<meta property="article:modified_time" content="2021-03-11T11:11:59.595Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://waitingchange.github.io/images/Websocket/tcp.gif">
+
+
+<link rel="canonical" href="https://waitingchange.github.io/2021/02/12/Websocket/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Websocket | 懒人的胡言乱语</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Websocket"><span class="nav-number">1.</span> <span class="nav-text">Websocket</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFWebsocket-%EF%BC%9F"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">什么是Websocket ？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP-%E7%9A%84%E6%8F%A1%E6%89%8B%E6%96%B9%E5%BC%8F"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">TCP 的握手方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%9E%E5%BD%92%E6%AD%A3%E9%A2%98%EF%BC%8C%E7%BB%A7%E7%BB%AD%E8%AE%B2%E8%A7%A3Websocket"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">回归正题，继续讲解Websocket</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Websocket-%E8%B7%9FHTTP-%E8%BF%9B%E8%A1%8C%E6%AF%94%E8%BE%83"><span class="nav-number">1.0.0.4.</span> <span class="nav-text">Websocket 跟HTTP 进行比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E5%A6%82%E4%BD%95%E5%88%86%E6%9E%90"><span class="nav-number">1.0.0.5.</span> <span class="nav-text">常见问题如何分析</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description">仓库坏了，丢了一些内容</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:waiting0313@gmail.com" title="E-Mail → mailto:waiting0313@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/02/12/Websocket/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="仓库坏了，丢了一些内容">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Websocket
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-02-12 13:24:13" itemprop="dateCreated datePublished" datetime="2021-02-12T13:24:13+08:00">2021-02-12</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-11 19:11:59" itemprop="dateModified" datetime="2021-03-11T19:11:59+08:00">2021-03-11</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Websocket/" itemprop="url" rel="index"><span itemprop="name">Websocket</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Websocket"><a href="#Websocket" class="headerlink" title="Websocket"></a>Websocket</h1><p>整理一下Websocket，方便以后问题查找</p>
+<h4 id="什么是Websocket-？"><a href="#什么是Websocket-？" class="headerlink" title="什么是Websocket ？"></a>什么是Websocket ？</h4><p><code>Websocket</code> 是在TCP协议上封装的另一种应用层协议,主要用于Client 和Server 之间的全双工通信，WebSocket API也被W3C定为标准。因为本身设计的目的就是为了满足双工通信，所以解决了之前TCP 只能通过客户端请求服务端的限制，得到了比较广泛的使用。</p>
+<p><code>HTTP</code> 也是基于TCP 的一种常见的协议，是一个基于请求与响应模式的、无状态的、应用层的协议，常基于TCP的连接方式。正是因为这些特性，Web开发中的大多数网络请求走的是Http 的协议，走的是短链接形式。</p>
+<p>既然Websocket 是基于TCP的，那么可以先了解一下TCP 工作的方式。</p>
+<h4 id="TCP-的握手方式"><a href="#TCP-的握手方式" class="headerlink" title="TCP 的握手方式"></a>TCP 的握手方式</h4><p><img src="/images/Websocket/tcp.gif"></p>
+<p>直观的以gif 为例，建立连接需要三次握手</p>
+<p><img src="/images/Websocket/tcp_handshake.gif" alt="tcp_handshake"></p>
+<p><strong>第一次握手</strong>：客户端发送请求报文将<code>SYN = 1</code>同步序列号和初始化序列号<code>seq = x</code>发送给服务端，发送完之后客户端处于<code>SYN_Send</code>状态。</p>
+<p><strong>第二次握手</strong>：服务端受到<code>SYN</code>请求报文之后，如果同意连接，会以自己的同步序列号<code>SYN(服务端) = 1</code>、初始化序列号<code>seq = y</code>和确认序列号（期望下次收到的数据包）<code>ack = x+ 1</code>以及确认号<code>ACK = 1</code>报文作为应答，服务器为<code>SYN_Receive</code>状态。</p>
+<p><strong>第三次握手</strong>： 客户端接收到服务端的<code>SYN + ACK</code>之后，知道可以下次可以发送了下一序列的数据包了，然后发送同步序列号<code>ack = y + 1</code>和数据包的序列号<code>seq = x + 1</code>以及确认号<code>ACK = 1</code>确认包作为应答，客户端转为<code>established</code>状态。</p>
+<h4 id="回归正题，继续讲解Websocket"><a href="#回归正题，继续讲解Websocket" class="headerlink" title="回归正题，继续讲解Websocket"></a>回归正题，继续讲解Websocket</h4><p><img src="/images/Websocket/websocket_connect.gif" alt="websocket_connect"></p>
+<p>对于握手，Websocket 需要多一次，先经过三次握手，建立连接，然后再发送<code>Upgrade</code></p>
+<p><img src="/images/Websocket/websocket_handshake.webp" alt="websocket_handshake"></p>
+<p>因为 Websocket 已经被作为了标准，主流的浏览器都已经支持，在使用方面也已经成熟。来看一下Http 和 Websocket 在发起连接的报文区别.</p>
+<p>Websocket 请求头</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F; HTTP&#x2F;1.1</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Host: example.com</span><br><span class="line">Origin: http:&#x2F;&#x2F;example.com</span><br><span class="line">Sec-WebSocket-Key: sN9cRrP&#x2F;n9NdMgdcy2VJFQ&#x3D;&#x3D;</span><br><span class="line">Sec-WebSocket-Version: 13</span><br></pre></td></tr></table></figure>
+
+<p>Http 请求头</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;hello.txt HTTP&#x2F;1.1</span><br><span class="line">User-Agent: curl&#x2F;7.16.3 libcurl&#x2F;7.16.3 OpenSSL&#x2F;0.9.7l zlib&#x2F;1.2.3</span><br><span class="line">Host: www.example.com</span><br><span class="line">Accept-Language: en, mi</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 这两个是Websocket 与 Http 不同的部分 用来标识是使用Websocket 协议</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br></pre></td></tr></table></figure>
+
+<p><code>Sec-WebSocket-Key</code> 是由浏览器随机生成的，提供基本的防护，防止恶意或者无意的连接。</p>
+<p><code>Sec-WebSocket-Version</code> 表示 WebSocket 的版本，最初 WebSocket 协议太多，不同厂商都有自己的协议版本，不过现在已经定下来了。如果服务端不支持该版本，需要返回一个 <code>Sec-WebSocket-Versionheader</code>，里面包含服务端支持的版本号。</p>
+<p><strong>对于返回包</strong></p>
+<p>Websocket 返回包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HTTP&#x2F;1.1 101 Switching Protocols</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk&#x3D;</span><br><span class="line">Sec-WebSocket-Protocol: chat</span><br></pre></td></tr></table></figure>
+
+<p>Http 返回包</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">HTTP&#x2F;1.1 200 OK</span><br><span class="line">Date: Mon, 27 Jul 2009 12:28:53 GMT</span><br><span class="line">Server: Apache</span><br><span class="line">Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT</span><br><span class="line">ETag: &quot;34aa387-d-1568eb00&quot;</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 51</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text&#x2F;plain</span><br></pre></td></tr></table></figure>
+<p>对于Websocket 返回包</p>
+<ol>
+<li>首先，101 状态码表示服务器已经理解了客户端的请求，并将通过 <code>Upgrade</code> 消息头通知客户端采用不同的协议来完成这个请求；</li>
+<li>然后， <code>Sec-WebSocket-Accept</code> 这个则是经过服务器确认，并且加密过后的 <code>Sec-WebSocket-Key</code>；</li>
+<li>最后， <code>Sec-WebSocket-Protocol</code> 则是表示最终使用的协议。</li>
+</ol>
+<p><code>Sec-WebSocket-Accept</code> 的计算方法：</p>
+<ol>
+<li>将 <code>Sec-WebSocket-Key</code> 跟 258EAFA5-E914-47DA-95CA-C5AB0DC85B11 拼接；</li>
+<li>通过 SHA1 计算出摘要，并转成 base64 字符串。</li>
+</ol>
+<p>注意： <code>Sec-WebSocket-Key</code>/ <code>Sec-WebSocket-Accept</code> 的换算，只能带来基本的保障，但连接是否安全、数据是否安全、客户端 / 服务端是否合法的 ws 客户端、ws 服务端，其实并没有实际性的保证</p>
+<h4 id="Websocket-跟HTTP-进行比较"><a href="#Websocket-跟HTTP-进行比较" class="headerlink" title="Websocket 跟HTTP 进行比较"></a>Websocket 跟HTTP 进行比较</h4><p>共同点：</p>
+<ol>
+<li>Websocket使用和 HTTP 相同的 TCP 端口，可以绕过大多数防火墙的限制。默认情况下，Websocket协议使用80端口；运行在TLS之上时，默认使用443端口。</li>
+<li>两者都基于TCP ，提供可靠连接。</li>
+</ol>
+<p>不同点：</p>
+<ol>
+<li>较少的控制开销。在连接创建后，服务器和客户端之间交换数据时，用于协议控制的数据包头部相对较小。在不包含扩展的情况下，对于服务器到客户端的内容，此头部大小只有2至10字节（和数据包长度有关）；对于客户端到服务器的内容，此头部还需要加上额外的4字节的掩码。相对于HTTP请求每次都要携带完整的头部，此项开销显著减少了。</li>
+<li>更强的实时性。由于协议是全双工的，所以服务器可以随时主动给客户端下发数据。相对于HTTP请求需要等待客户端发起请求服务端才能响应，延迟明显更少；即使是和Comet等类似的长轮询比较，其也能在短时间内更多次地传递数据。</li>
+<li>保持连接状态。于HTTP不同的是，Websocket需要先创建连接，这就使得其成为一种有状态的协议，之后通信时可以省略部分状态信息。而HTTP请求可能需要在每个请求都携带状态信息（如身份认证等）。</li>
+<li>更好的二进制支持。Websocket定义了二进制帧，相对HTTP，可以更轻松地处理二进制内容。</li>
+<li>可以支持扩展。Websocket定义了扩展，用户可以扩展协议、实现部分自定义的子协议。如部分浏览器支持压缩等。</li>
+<li>更好的压缩效果。相对于HTTP压缩，Websocket在适当的扩展支持下，可以沿用之前内容的上下文，在传递类似的数据时，可以显著地提高压缩率。</li>
+</ol>
+<p>Websocket 通过 HTTP/1.1 协议的<strong>101</strong>状态码进行握手。 为了创建Websocket连接，需要通过客户端发出请求，之后服务器进行回应，这个过程通常称为“握手”。</p>
+<h4 id="常见问题如何分析"><a href="#常见问题如何分析" class="headerlink" title="常见问题如何分析"></a>常见问题如何分析</h4><p>如果 返回码不是 <strong>101</strong> 那么出现的错误就是  <strong>Invalid HTTP status.</strong></p>
+<p>如果是 回包消息中没有 <code>Upgrade</code> 、 <code>Connection</code>、 <code>Sec-WebSocket-Key</code> 、<code>Sec-WebSocket-Accept</code>  没有这几个货，错误消息是 <strong>A required HTTP header is missing</strong></p>
+<p>然后Websocket 内部就会自动走关闭connection 逻辑，执行 <code>handle_terminate</code>  , 根据之前的错误类型，就会执行回调给到 <code>on_fail</code> 或者是 <code>on_close</code></p>
+<p>同时会携带错误代码 ， 比如 异常退出 1006， 正常退出 1000 等</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/12/18/OpenCV%20+%20AI%E7%BE%8E%E9%A2%9C%20To%20Electron/" rel="prev" title="从C++ 使用OpenCV + AI美颜 到 Electron">
+                  <i class="fa fa-chevron-left"></i> 从C++ 使用OpenCV + AI美颜 到 Electron
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/02/12/Websocket%E6%95%B0%E6%8D%AE%E5%B8%A7/" rel="next" title="Websocket数据发送">
+                  Websocket数据发送 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

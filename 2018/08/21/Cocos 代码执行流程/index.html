@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="1.Cocos对于IOS来讲我们知道C语言&#x2F;C++ 语言的程序入口是 main ， IOS 工程一样入口文件在于 ios&#x2F;main.m 1int retVal &#x3D; UIApplicationMain(argc, argv, nil, @&quot;AppController&quot;);  这一行代码解释：IPhone初始化应用程序对象，并且传递给应用需要使用的代理类并初始化 1234">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cocos 代码执行流程">
+<meta property="og:url" content="https://waitingchange.github.io/2018/08/21/Cocos%20%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="1.Cocos对于IOS来讲我们知道C语言&#x2F;C++ 语言的程序入口是 main ， IOS 工程一样入口文件在于 ios&#x2F;main.m 1int retVal &#x3D; UIApplicationMain(argc, argv, nil, @&quot;AppController&quot;);  这一行代码解释：IPhone初始化应用程序对象，并且传递给应用需要使用的代理类并初始化 1234">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://waitingchange.github.io/images/cocos_ios.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/cocos_android.png">
+<meta property="article:published_time" content="2018-08-21T12:37:21.000Z">
+<meta property="article:modified_time" content="2018-12-23T06:53:56.000Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://waitingchange.github.io/images/cocos_ios.png">
+
+
+<link rel="canonical" href="https://waitingchange.github.io/2018/08/21/Cocos%20%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Cocos 代码执行流程 | 懒人的胡言乱语</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Cocos%E5%AF%B9%E4%BA%8EIOS%E6%9D%A5%E8%AE%B2"><span class="nav-number">1.</span> <span class="nav-text">1.Cocos对于IOS来讲</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%88%E5%86%99%E5%88%B0%E6%89%A7%E8%A1%8Cmainloop%EF%BC%8Ccocos%E4%B8%AD%E6%AF%8F%E4%B8%80%E4%B8%AA%E5%AF%B9%E8%B1%A1%E5%A6%82%E4%BD%95%E8%A2%AB%E6%B8%B2%E6%9F%93%E4%B8%8B%E6%AC%A1%E5%86%8D%E7%BB%86%E8%AE%B2"><span class="nav-number">1.0.1.</span> <span class="nav-text">先写到执行mainloop，cocos中每一个对象如何被渲染下次再细讲</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%AF%B9%E4%BA%8ECocos-Android-%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">2.对于Cocos Android 的执行流程</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description">仓库坏了，丢了一些内容</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:waiting0313@gmail.com" title="E-Mail → mailto:waiting0313@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2018/08/21/Cocos%20%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="仓库坏了，丢了一些内容">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cocos 代码执行流程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-08-21 20:37:21" itemprop="dateCreated datePublished" datetime="2018-08-21T20:37:21+08:00">2018-08-21</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2018-12-23 14:53:56" itemprop="dateModified" datetime="2018-12-23T14:53:56+08:00">2018-12-23</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Cocos/" itemprop="url" rel="index"><span itemprop="name">Cocos</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="1-Cocos对于IOS来讲"><a href="#1-Cocos对于IOS来讲" class="headerlink" title="1.Cocos对于IOS来讲"></a>1.Cocos对于IOS来讲</h1><p>我们知道C语言/C++ 语言的程序入口是 <strong>main</strong> ， IOS 工程一样入口文件在于 <strong>ios/main.m</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int retVal &#x3D; UIApplicationMain(argc, argv, nil, @&quot;AppController&quot;);</span><br></pre></td></tr></table></figure>
+
+<p>这一行代码解释：IPhone初始化应用程序对象，并且传递给应用需要使用的代理类并初始化</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int UIApplicationMain (</span><br><span class="line">   int argc,</span><br><span class="line">   char *argv[],</span><br><span class="line">   NSString *principalClassName,</span><br><span class="line">   NSString *delegateClassName</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>解释这个函数：第一个，函数传入参数的个数，第二个，参数列表，第三个，UIApplication或其子类的名字，如果设置为nil，默认为UIApplication 第四个，应用程序使用的代理类名，传入以后会进行实例化然后给Application 设置代理。<strong>如果</strong>（principalClassName）为<strong>nil</strong>，程序会从Info.plist中获取，如果Info.plist中没有响应的Key，那么默认是UIApplication</p>
+<p>所以main调用以后代码会在 AppController 中执行</p>
+<p>因为AppController 是 UIApplicationMain 的代理</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</span><br><span class="line">&#123;</span><br><span class="line">	&#x2F;&#x2F;这个函数体会显现的比价重要</span><br><span class="line">    &#x2F;&#x2F;cocos Application的单利</span><br><span class="line">    cocos2d::Application *app &#x3D; cocos2d::Application::getInstance();</span><br><span class="line">    &#x2F;&#x2F;中间是一系列的初始化</span><br><span class="line">    ...</span><br><span class="line">    &#x2F;&#x2F;执行了 cocos Application 的run方法</span><br><span class="line">    app-&gt;run();</span><br><span class="line">    return YES;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当我们发现 cocos Application 生成单利的时候会发现仅仅是返回了 Application 的单利，没有涉及到构造函数，略微感觉奇怪。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// cocos2d application instance  全局静态类对象？</span></span><br><span class="line"><span class="keyword">static</span> AppDelegate s_sharedApplication;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>是全局静态类对象，初始化在main函数执行以前，一旦被创建，在程序执行结束以前都不会销毁</p>
+<p> <strong>AppDelegate</strong>会不会有一些熟悉？</p>
+<p>初始化就会执行下面代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Application* Application::sm_pSharedApplication = <span class="number">0</span>;</span><br><span class="line"><span class="comment">//初始化就执行构造函数，构造函数给单利对象赋值</span></span><br><span class="line">Application::Application()</span><br><span class="line">&#123;</span><br><span class="line">    CC_ASSERT(! sm_pSharedApplication);</span><br><span class="line">    sm_pSharedApplication = <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line"><span class="comment">//提供给静态函数调用使用</span></span><br><span class="line"><span class="function">Application* <span class="title">Application::getInstance</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    CC_ASSERT(sm_pSharedApplication);</span><br><span class="line">    <span class="keyword">return</span> sm_pSharedApplication;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>到现在这个位置，cocos Application 生成了对象，并且要执行 app-&gt;run();</p>
+<p>神秘的地方会在<strong>run()</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">Application::run</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//先执行c++部分的 applicationDidFinishLaunching 正是AppDelegate的方法 正是AppDelegate继承于cocos2d::Application</span></span><br><span class="line">    <span class="keyword">if</span> (applicationDidFinishLaunching()) </span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//启动 mainLoop  游戏运转的入口</span></span><br><span class="line">        [[CCDirectorCaller sharedDirectorCaller] startMainLoop];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于cocos lua </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">AppDelegate::applicationDidFinishLaunching</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//初始化 lua虚拟机然后制定函数的入口部分加入正确的资源搜索路径</span></span><br><span class="line">    <span class="comment">//然后执行 (如果是.lua)</span></span><br><span class="line">    <span class="keyword">if</span> (engine-&gt;executeString(<span class="string">&quot;require(&#x27;src/main&#x27;)&quot;</span>))&#123;</span><br><span class="line">         <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>lua 虚拟机初始化完毕以后就开始执行了lua 的入口部分 然后执行了启动 mainloop</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;如果认为直接是 Dierctor 执行的mainloop 那么就有一些失望了  CCDirectorCaller 这个才是</span><br><span class="line">[[CCDirectorCaller sharedDirectorCaller] startMainLoop];</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">-(void) startMainLoop</span><br><span class="line">&#123;</span><br><span class="line">        &#x2F;&#x2F; Director::setAnimationInterval() is called, we should invalidate it first</span><br><span class="line">    [self stopMainLoop];</span><br><span class="line">    &#x2F;&#x2F;设置定时器 设置定时回调 doCaller</span><br><span class="line">    displayLink &#x3D; [NSClassFromString(@&quot;CADisplayLink&quot;) displayLinkWithTarget:self selector:@selector(doCaller:)];</span><br><span class="line">    [displayLink setFrameInterval: self.interval];</span><br><span class="line">    [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line">-(void) doCaller: (id) sender</span><br><span class="line">&#123;</span><br><span class="line">    cocos2d::Director* director &#x3D; cocos2d::Director::getInstance();</span><br><span class="line">    [EAGLContext setCurrentContext: [(CCEAGLView*)director-&gt;getOpenGLView()-&gt;getEAGLView() context]];</span><br><span class="line">&#x2F;&#x2F;    正常安装60帧每秒进行调用 最终会执行到 熟悉的 Director 的 mainLoop</span><br><span class="line">    director-&gt;mainLoop();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>最关键的部分来了 <strong>mainLoop</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//为啥不是Director </span></span><br><span class="line"><span class="comment">//翻看头文件  class DisplayLinkDirector : public Director  调用父类纯虚函数 执行子类方法 (多态)</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">DisplayLinkDirector::mainLoop</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//是否销毁Director 在下一帧</span></span><br><span class="line">    <span class="keyword">if</span> (_purgeDirectorInNextLoop)</span><br><span class="line">    &#123;</span><br><span class="line">        _purgeDirectorInNextLoop = <span class="literal">false</span>;</span><br><span class="line">        purgeDirector();</span><br><span class="line">    &#125; <span class="comment">//是否重启Director 在下一帧</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (_restartDirectorInNextLoop)</span><br><span class="line">    &#123;</span><br><span class="line">        _restartDirectorInNextLoop = <span class="literal">false</span>;</span><br><span class="line">        restartDirector();</span><br><span class="line">    &#125;<span class="comment">//是否可用</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (! _invalid)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//核心的部分在于 draw 既然是游戏，那么画布就需要跟黑板一样先擦干净，然后画图案显示 画的足够快(限定氛围内)，动作在人的视觉范围内就是动画</span></span><br><span class="line">        drawScene();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// release the objects  想想这里 AutoreleasePool 关于内存管理的部分 如果没暂停，每一帧结束的时候倾倒池子中的对象</span></span><br><span class="line">        PoolManager::getInstance()-&gt;getCurrentPool()-&gt;clear();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/cocos_ios.png" alt="&quot;IOS 执行流程&quot;"></p>
+<h3 id="先写到执行mainloop，cocos中每一个对象如何被渲染下次再细讲"><a href="#先写到执行mainloop，cocos中每一个对象如何被渲染下次再细讲" class="headerlink" title="先写到执行mainloop，cocos中每一个对象如何被渲染下次再细讲"></a>先写到执行mainloop，cocos中每一个对象如何被渲染下次再细讲</h3><h1 id="2-对于Cocos-Android-的执行流程"><a href="#2-对于Cocos-Android-的执行流程" class="headerlink" title="2.对于Cocos Android 的执行流程"></a>2.对于Cocos Android 的执行流程</h1><p>如果创建一个空的Android 工程，工程的内容基本包含 AndroidManifest.xml ，Android 逻辑部分 java ，需要的静态资源 res等。</p>
+<p>创建一个Cocos 工程同时，Cocos 已经创建了IOS 工程和Android工程, Cocos 的这个Android 工程可以理解为一个空的Android工程</p>
+<p>想要知道游戏的启动流程，就需要先知道正常Android 中每一个APP的启动流程</p>
+<p>Android 是基于Linux 的，Android 应用安装以后，应用图标可以理解为在一个Launcher 上面挂着，当点击图标的时候  </p>
+<p> 1.系统会去调用 **startActivity(Intent) ** </p>
+<p> 2.第一次执行 Android  ActivityManagerService 会创建新的进程来实例化目标activity.</p>
+<p>把关注点切回到代码部分</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;application</span><br><span class="line">    android:allowBackup=&quot;true&quot;</span><br><span class="line">    android:icon=&quot;@mipmap/ic_launcher&quot;&gt;</span><br><span class="line">    <span class="comment">&lt;!-- Tell Cocos2dxActivity the name of our .so --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta-data</span> <span class="attr">android:name</span>=<span class="string">&quot;android.app.lib_name&quot;</span></span></span><br><span class="line"><span class="tag">               <span class="attr">android:value</span>=<span class="string">&quot;cocos2dlua&quot;</span> /&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--Android Activity name and path --&gt;</span></span><br><span class="line">    &lt;activity</span><br><span class="line">        android:name=&quot;org.cocos2dx.lua.AppActivity&quot;</span><br><span class="line">        android:screenOrientation=&quot;landscape&quot;</span><br><span class="line">        android:configChanges=&quot;orientation|keyboardHidden|screenSize&quot;</span><br><span class="line">        android:label=&quot;@string/app_name&quot;</span><br><span class="line">        android:theme=&quot;@android:style/Theme.NoTitleBar.Fullscreen&quot; &gt;</span><br><span class="line">        <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.action.MAIN&quot;</span> /&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.category.LAUNCHER&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">application</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>AndroidManifest.xml 文件暂时可以先理解为配置文件。 Android 系统拿到包名，拿到Activity 文件路径，开始执行Activity 的初始化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppActivity</span> <span class="keyword">extends</span> <span class="title">Cocos2dxActivity</span></span>&#123;</span><br><span class="line">     <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        <span class="comment">//执行了java Activity 的初始化   没有额外的新奇的代码了 少点什么 ？还是 ？</span></span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看了代码好像什么都没写，但是Cocos 给出的代码就是这样的，是有问题还是 ？</p>
+<p>所以 <strong>public class AppActivity extends Cocos2dxActivity</strong> 这句话提醒了我们，AppActivity  继承与 Cocos2dxActivity</p>
+<p>想要知道 Cocos2dxActivity 真正具有什么内容，需要看下类本身</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Cocos2dxActivity</span> <span class="keyword">extends</span> <span class="title">Activity</span> <span class="keyword">implements</span> <span class="title">Cocos2dxHelperListener</span> </span></span><br></pre></td></tr></table></figure>
+
+<p> 代码部分显示 Cocos2dxActivity 继承于常见的 Activity 和 CocosHelperListener </p>
+<p>我们暂时关心的是代码执行的逻辑顺序，于是现在急于知道Cocos2dxActivity的onCreate</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(<span class="keyword">final</span> Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//国际惯例  super </span></span><br><span class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">    onLoadNativeLibraries(); <span class="comment">// 根据manifest 中cocos lib 的名字进行载入so库</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">//hadler 构造和初始化</span></span><br><span class="line">    <span class="keyword">this</span>.mHandler = <span class="keyword">new</span> Cocos2dxHandler(<span class="keyword">this</span>);</span><br><span class="line">    Cocos2dxHelper.init(<span class="keyword">this</span>);</span><br><span class="line">    <span class="comment">//设置Layout ...</span></span><br><span class="line">     <span class="keyword">this</span>.init(); <span class="comment">//根据函数命名基本感觉这个比较重要</span></span><br><span class="line">     <span class="comment">// window 啥啥啥</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>好奇init 函数会有什么惊喜</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// FrameLayout 什么什么的</span></span><br><span class="line">    <span class="comment">// Cocos2dxGLSurfaceView 创建 GLSurfaceView </span></span><br><span class="line">    <span class="keyword">this</span>.mGLSurfaceView = <span class="keyword">this</span>.onCreateView();</span><br><span class="line"> 	<span class="comment">// 设置渲染 创建渲染  这里面会有什么特别的 ？</span></span><br><span class="line">    <span class="keyword">this</span>.mGLSurfaceView.setCocos2dxRenderer(<span class="keyword">new</span> Cocos2dxRenderer());</span><br><span class="line">    <span class="keyword">this</span>.mGLSurfaceView.setCocos2dxEditText(edittext);</span><br><span class="line">    <span class="comment">// Set framelayout as the content view</span></span><br><span class="line">    setContentView(mFrameLayout);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>new Cocos2dxRenderer() 这个会让我感兴趣，创建了一个render ，这个render 里面会做什么 ？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cocos2dxRenderer</span> <span class="keyword">implements</span> <span class="title">GLSurfaceView</span>.<span class="title">Renderer</span> // 就是<span class="title">Gl</span> 需要用到的<span class="title">render</span></span></span><br><span class="line"><span class="class">   ...</span></span><br><span class="line"><span class="class">        @<span class="title">Override</span></span></span><br><span class="line"><span class="class">    <span class="title">public</span> <span class="title">void</span> <span class="title">onSurfaceCreated</span>(<span class="title">final</span> <span class="title">GL10</span> <span class="title">GL10</span>, <span class="title">final</span> <span class="title">EGLConfig</span> <span class="title">EGLConfig</span>) </span>&#123;</span><br><span class="line">    	<span class="comment">//根据宽高进行初始化内容  nativeInit 会比较感兴趣 这块最终是调用到c++ 部分 jni 调用</span></span><br><span class="line">        Cocos2dxRenderer.nativeInit(<span class="keyword">this</span>.mScreenWidth, <span class="keyword">this</span>.mScreenHeight);</span><br><span class="line">    	...</span><br><span class="line">    &#125;</span><br><span class="line"> 	<span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSurfaceChanged</span><span class="params">(<span class="keyword">final</span> GL10 GL10, <span class="keyword">final</span> <span class="keyword">int</span> width, <span class="keyword">final</span> <span class="keyword">int</span> height)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//猜想会根据gl 给出的宽高进行c++ 内部的更改逻辑</span></span><br><span class="line">        Cocos2dxRenderer.nativeOnSurfaceChanged(width, height);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDrawFrame</span><span class="params">(<span class="keyword">final</span> GL10 gl)</span> </span>&#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">       	 * 游戏每一帧渲染开始入口</span></span><br><span class="line"><span class="comment">         * No need to use algorithm in default(60 FPS) situation,</span></span><br><span class="line"><span class="comment">         * since onDrawFrame() was called by system 60 times per second by default.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">if</span> (sAnimationInterval &lt;= <span class="number">1.0</span> / <span class="number">60</span> * Cocos2dxRenderer.NANOSECONDSPERSECOND) &#123;</span><br><span class="line">            <span class="comment">//每一帧执行的入口。 所以会不会跟MainLoop 一样 ？</span></span><br><span class="line">            Cocos2dxRenderer.nativeRender();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">long</span> now = System.nanoTime();</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">long</span> interval = now - <span class="keyword">this</span>.mLastTickInNanoSeconds;</span><br><span class="line">        </span><br><span class="line">            <span class="keyword">if</span> (interval &lt; Cocos2dxRenderer.sAnimationInterval) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    Thread.sleep((Cocos2dxRenderer.sAnimationInterval - interval) / Cocos2dxRenderer.NANOSECONDSPERMICROSECOND);</span><br><span class="line">                &#125; <span class="keyword">catch</span> (<span class="keyword">final</span> Exception e) &#123;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">/*</span></span><br><span class="line"><span class="comment">             * Render time MUST be counted in, or the FPS will slower than appointed.</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">            <span class="keyword">this</span>.mLastTickInNanoSeconds = System.nanoTime();</span><br><span class="line">            Cocos2dxRenderer.nativeRender();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>从点击icon 到Activity 的初始化，程序做了这么一些事情 </p>
+<ol>
+<li>Activity 的onCreate  </li>
+<li>Activity 的父类的 onCreate</li>
+<li>Activity 父类的 init()</li>
+<li>Cocos Render 对象的初始化</li>
+<li>Cocos Render 对象初始化以后 调用 nativeInit</li>
+<li>每一帧调用c++ 部分的nativeRender</li>
+</ol>
+<p><strong>下面是nativeInit</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> <span class="title">Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeInit</span><span class="params">(JNIEnv*  env, jobject thiz, jint w, jint h)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> director = cocos2d::Director::getInstance(); </span><br><span class="line">    <span class="keyword">auto</span> glview = director-&gt;getOpenGLView();</span><br><span class="line">    <span class="keyword">if</span> (!glview)</span><br><span class="line">    &#123;</span><br><span class="line">        glview = cocos2d::GLViewImpl::create(<span class="string">&quot;Android app&quot;</span>);</span><br><span class="line">        glview-&gt;setFrameSize(w, h);</span><br><span class="line">        director-&gt;setOpenGLView(glview);</span><br><span class="line">        cocos2d::Application::getInstance()-&gt;run(); <span class="comment">// android 部分的 执行c++ 的Run()</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        cocos2d::GL::invalidateStateCache();</span><br><span class="line">        cocos2d::GLProgramCache::getInstance()-&gt;reloadDefaultGLPrograms();</span><br><span class="line">        cocos2d::DrawPrimitives::init();</span><br><span class="line">        cocos2d::VolatileTextureMgr::reloadAllTextures();</span><br><span class="line">        <span class="function">cocos2d::EventCustom <span class="title">recreatedEvent</span><span class="params">(EVENT_RENDERER_RECREATED)</span></span>;</span><br><span class="line">        director-&gt;getEventDispatcher()-&gt;dispatchEvent(&amp;recreatedEvent);</span><br><span class="line">        director-&gt;setGLDefaultValues();</span><br><span class="line">    &#125;</span><br><span class="line">    cocos2d::network::_preloadJavaDownloaderClass();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>下面是nativeRender</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeRender</span><span class="params">(JNIEnv* env)</span> </span>&#123;</span><br><span class="line">    cocos2d::Director::getInstance()-&gt;mainLoop();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/cocos_android.png" alt="&quot;IOS 执行流程&quot;"></p>
+<p>当IOS 和Android 部分执行到Mainloop ， 启动的差异就已经被屏蔽了</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2017/08/22/c-%E8%B0%83%E7%94%A8objectC-%E5%92%8C-c-%E8%B0%83%E7%94%A8java/" rel="prev" title="C++调用objectC 和 C++调用java">
+                  <i class="fa fa-chevron-left"></i> C++调用objectC 和 C++调用java
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/12/01/TexurePacker/" rel="next" title="TexurePacker">
+                  TexurePacker <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

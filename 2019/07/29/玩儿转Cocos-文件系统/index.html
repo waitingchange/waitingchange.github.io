@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="#如何玩转 Cocos 文件系统 1.资源是如何被找到的&amp;nbsp;&amp;nbsp;     没做开发以前一直在想一个问题，文件如何被计算机找到并且执行？ 当知道计算机在执行 0101 的二进制文件时候就又在想，我们的图片、声音等文件应该是变成了机器代码之后才能被读出来和执行。于是抱着这种想法开始了codeing。偶然有一次发现，Android 的 apk 包竟然可以用zip 解压工具解开，里面竟然找">
+<meta property="og:type" content="article">
+<meta property="og:title" content="玩儿转Cocos 文件系统">
+<meta property="og:url" content="https://waitingchange.github.io/2019/07/29/%E7%8E%A9%E5%84%BF%E8%BD%ACCocos-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="#如何玩转 Cocos 文件系统 1.资源是如何被找到的&amp;nbsp;&amp;nbsp;     没做开发以前一直在想一个问题，文件如何被计算机找到并且执行？ 当知道计算机在执行 0101 的二进制文件时候就又在想，我们的图片、声音等文件应该是变成了机器代码之后才能被读出来和执行。于是抱着这种想法开始了codeing。偶然有一次发现，Android 的 apk 包竟然可以用zip 解压工具解开，里面竟然找">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-29T09:09:15.000Z">
+<meta property="article:modified_time" content="2019-09-21T07:18:22.000Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://waitingchange.github.io/2019/07/29/%E7%8E%A9%E5%84%BF%E8%BD%ACCocos-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>玩儿转Cocos 文件系统 | 懒人的胡言乱语</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E8%B5%84%E6%BA%90%E6%98%AF%E5%A6%82%E4%BD%95%E8%A2%AB%E6%89%BE%E5%88%B0%E7%9A%84"><span class="nav-number">1.</span> <span class="nav-text">1.资源是如何被找到的</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description">仓库坏了，丢了一些内容</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:waiting0313@gmail.com" title="E-Mail → mailto:waiting0313@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2019/07/29/%E7%8E%A9%E5%84%BF%E8%BD%ACCocos-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="仓库坏了，丢了一些内容">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          玩儿转Cocos 文件系统
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-29 17:09:15" itemprop="dateCreated datePublished" datetime="2019-07-29T17:09:15+08:00">2019-07-29</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2019-09-21 15:18:22" itemprop="dateModified" datetime="2019-09-21T15:18:22+08:00">2019-09-21</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Cocos/" itemprop="url" rel="index"><span itemprop="name">Cocos</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>#如何玩转 Cocos 文件系统</p>
+<h2 id="1-资源是如何被找到的"><a href="#1-资源是如何被找到的" class="headerlink" title="1.资源是如何被找到的"></a>1.资源是如何被找到的</h2><p>&nbsp;&nbsp;     没做开发以前一直在想一个问题，文件如何被计算机找到并且执行？ 当知道计算机在执行 <em>0101</em> 的二进制文件时候就又在想，我们的图片、声音等文件应该是变成了机器代码之后才能被读出来和执行。于是抱着这种想法开始了codeing。偶然有一次发现，Android 的 apk 包竟然可以用zip 解压工具解开，里面竟然找到了一些未经过压缩的图片和其他资源。在好奇心的驱使下就想要搞明白计算机是如何做到的。在玩儿 <strong>Cocos</strong> 的过程中，接触到了<strong>FileUtils</strong>这个类文件。顺着源码部分我们去看，发现在经过引擎一系列优化以后，查找文件代码最终调用了系统方法，根据文件的名字，在APP的指定路径（包里面或者可读写路径下）返回资源文件的全路径。</p>
+<p>&nbsp;&nbsp;    似乎经过上面一说，整片文章就可以结束了。以Cocos lua 为例子 我们尝试列一下流程</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//先说一下 luafile  部分</span></span><br><span class="line"><span class="comment">// cocos lua 部分入口是在c++ 初始化 LuaEngine 以后执行lua 代码</span></span><br><span class="line">  <span class="keyword">if</span> (engine-&gt;executeScriptFile(<span class="string">&quot;src/main.lua&quot;</span>)) </span><br><span class="line"><span class="comment">// LuaEngine 之后做了如下操作</span></span><br><span class="line">  LuaStack  去执行了  executeScriptFile(filename);</span><br><span class="line"><span class="comment">// 判断结尾，确认是 lua 还是 luac</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> fullPath = utils-&gt;fullPathForFilename(buf);</span><br><span class="line">  Data data = utils-&gt;getDataFromFile(fullPath);</span><br><span class="line"> </span><br><span class="line"><span class="comment">// data 存在 执行</span></span><br><span class="line">  <span class="keyword">if</span> (luaLoadBuffer(_state, (<span class="keyword">const</span> <span class="keyword">char</span>*)data.getBytes(), (<span class="keyword">int</span>)data.getSize(), 			fullPath.c_str()) == <span class="number">0</span>)</span><br><span class="line">  &#123;</span><br><span class="line">      rn = executeFunction(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line"> </span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;    脚本文件在执行之前，需要通过引擎代码 <em>FileUtils</em> 进行定位文件具体位置，然后获取文件buffer 内容和长度以后进行执行。</p>
+<p>&nbsp;&nbsp;    我们于是可能会好奇图片文件是如何被载入和执行的，上面的流程是否满足图片资源的需求 ？</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Talk is cheap , show me the code</span></span><br><span class="line">  Sprite::create(fileName)</span><br><span class="line"><span class="comment">// 跟踪fileName</span></span><br><span class="line">  <span class="keyword">if</span> (sprite &amp;&amp; sprite-&gt;initWithFile(filename))</span><br><span class="line"><span class="comment">//Cocos 使用了 Texure2d</span></span><br><span class="line">  Texture2D *texture = Director::getInstance()-&gt;getTextureCache()-&gt;addImage(filename);</span><br><span class="line"><span class="comment">//继续关心fileName 是如何最后变成 Texture2D 对象的</span></span><br><span class="line">  <span class="built_in">std</span>::<span class="built_in">string</span> fullpath = FileUtils::getInstance()-&gt;fullPathForFilename(path);</span><br><span class="line">  <span class="keyword">bool</span> bRet = image-&gt;initWithImageFile(fullpath);</span><br><span class="line"><span class="comment">// 于是继续向下查找</span></span><br><span class="line">  _filePath = FileUtils::getInstance()-&gt;fullPathForFilename(path);</span><br><span class="line">  Data data = FileUtils::getInstance()-&gt;getDataFromFile(_filePath);</span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;  似乎图片资源从file到 机器可识别的Data 也需要关键的两步，findPath ,getData </p>
+<p>&nbsp;&nbsp;  我们可以继续去验证其他后缀结尾的文件，大多数都在执行同样的流程。为甚叫做大多数呢 ？ 当你实验到音频文件的时候，例如 mp3 ，最后执行的貌似并不是当前的流程。读代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 感兴趣的点在哪里</span></span><br><span class="line">  AudioEngine::play2d</span><br><span class="line"><span class="comment">//屡一下源码部分  容错处理</span></span><br><span class="line">  <span class="keyword">if</span> ( !FileUtils::getInstance()-&gt;isFileExist(filePath))&#123;</span><br><span class="line">  		<span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  ret = _audioEngineImpl-&gt;play2d(filePath, loop, volume);</span><br><span class="line"><span class="comment">//在ios一侧 使用了  SimpleAudioEngine</span></span><br><span class="line">  -(<span class="keyword">void</span>) playBackgroundMusic:(NSString*) filePath</span><br><span class="line">  &#123;</span><br><span class="line">   [am playBackgroundMusic:filePath loop:TRUE];</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">// 看到OC 代码的时候 就会发现，对于 SimpleAudioEngine 库来讲，需要的仅仅是文件的绝对地址 ，这个音频库会找到		文件然后进行播放</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>&nbsp;&nbsp;    我们希望引擎中代码部分和整体的设计流程保持一致，大多数文件是保持了先经过 FileUtils 获取到文件在设备存放的位置，然后读取file Buffer 之后再次加工处理。</p>
+<p>&nbsp;&nbsp;    设计结构的时候，我们经常会对内容进行归类，找出共同点，然后进行粗略处理，最后不同之处做区分。现实情况中我们总会发现Cocos原生打包内容资源部分容易被盗，脚本代码也很容易被还原，安全方面几乎无法保证，虽然逻辑部分能正常work 。</p>
+<p>&nbsp;&nbsp;    代码的主要逻辑在于如何获取文本 <em>Buffer</em> 和 <em>Length</em> 面对上面的常见问题， 所以具体原始文件是什么形式我们不是特别关心，只是要给到 <em>fileName</em> 我们正确的返回 <em>Buffer</em> 和 <em>Length</em> 就可以了。 加入文件名字是被算法加密了呢？假如文本内容是被高效率解析加密函数加密了呢？很多事情貌似可以直接上手做。设想和做是两回事儿。</p>
+<p>&nbsp;&nbsp;    万一文件名字和内容都被一个加密算法加密了呢 ？比如ZIP</p>
+<p>&nbsp;&nbsp;    为什么是zip ？ 在读FileUtils 类的时候有一个函数很吸引人 <em>FileUtils::getFileDataFromZip</em></p>
+<p>&nbsp;&nbsp;    选择ZIP会有一些优势，最简单常见的是可以给资源进行压缩和加密，如果是需要进行热更操作的资源呢？连续性大文件下载的优势就有了，而且具有压缩的特点，资源或者代码的热更时间会大大减少。有没有了解过zip文件的结构？考虑到每一个文件，你会关心哪些数据？简单理解ZIP文件为一大片连续的数据段？</p>
+<p>&nbsp;&nbsp;    我们在读Cocos 提供的unzip文件的时候会发现几个比较有意思的函数</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">unzOpen</span><br><span class="line">unzGoToFirstFile64</span><br><span class="line">unzGetFilePos</span><br><span class="line">unzGoToNextFile64</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">unzGoToFilePos</span><br><span class="line">unzOpenCurrentFilePassword</span><br><span class="line">unzReadCurrentFile</span><br></pre></td></tr></table></figure>
+
+<p>如果理解ZIP 文件为长串儿连续压缩文件的话也并不是不可以，只不过每一个文件头部都有包含一些信息：1.文件名字，无压缩文件大小，起始文件地址等。依靠这些文件已经可以把压缩文件解压缩读出。</p>
+<p>Demo 暂时不列出，思路可以提供。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/04/11/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95Android-SO-%E8%8E%B7%E5%8F%96-xxtea-%E5%AF%86%E7%A0%81/" rel="prev" title="动态调试Android SO 获取 xxtea 密码">
+                  <i class="fa fa-chevron-left"></i> 动态调试Android SO 获取 xxtea 密码
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/03/03/%E8%87%AA%E5%88%B6%E7%88%AC%E8%99%AB%E5%B7%A5%E5%85%B7/" rel="next" title="自制爬虫工具">
+                  自制爬虫工具 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

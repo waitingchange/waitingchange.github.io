@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="WebSocket CPP 的设计部分先讲一讲为啥要有C++ 版本的Websocket首先什么是Websocket ，是socket，可以提供与服务器进行双工通信，具有建立连接的概念，Http 只能由客服端发起通信，服务端无法知道客户端的状态。 为什么要用底层Websocket，原因是现有框架结构是js版本的Websocket ，使用起来需要收到js环境的限制，更深层次的业务无法实现，而且性能方面">
+<meta property="og:type" content="website">
+<meta property="og:title" content="c++层Websocket设计">
+<meta property="og:url" content="https://waitingchange.github.io/C++%E5%B1%82Websocket%E8%AE%BE%E8%AE%A1.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="WebSocket CPP 的设计部分先讲一讲为啥要有C++ 版本的Websocket首先什么是Websocket ，是socket，可以提供与服务器进行双工通信，具有建立连接的概念，Http 只能由客服端发起通信，服务端无法知道客户端的状态。 为什么要用底层Websocket，原因是现有框架结构是js版本的Websocket ，使用起来需要收到js环境的限制，更深层次的业务无法实现，而且性能方面">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://waitingchange.github.io/images/Websocket/%E4%BA%A4%E4%BA%92%E6%97%B6%E5%BA%8F%E5%9B%BE.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/Websocket/%E6%8E%A5%E5%8F%A3%E7%BB%93%E6%9E%84.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/Websocket/%E8%AE%BE%E8%AE%A1%E7%BB%93%E6%9E%84.png">
+<meta property="article:published_time" content="2020-08-02T10:29:38.000Z">
+<meta property="article:modified_time" content="2020-08-05T08:32:19.096Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://waitingchange.github.io/images/Websocket/%E4%BA%A4%E4%BA%92%E6%97%B6%E5%BA%8F%E5%9B%BE.png">
+
+
+<link rel="canonical" href="https://waitingchange.github.io/C++%E5%B1%82Websocket%E8%AE%BE%E8%AE%A1">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>c++层Websocket设计 | 懒人的胡言乱语
+</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WebSocket-CPP-%E7%9A%84%E8%AE%BE%E8%AE%A1%E9%83%A8%E5%88%86"><span class="nav-number">1.</span> <span class="nav-text">WebSocket CPP 的设计部分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%88%E8%AE%B2%E4%B8%80%E8%AE%B2%E4%B8%BA%E5%95%A5%E8%A6%81%E6%9C%89C-%E7%89%88%E6%9C%AC%E7%9A%84Websocket"><span class="nav-number">1.0.1.</span> <span class="nav-text">先讲一讲为啥要有C++ 版本的Websocket</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9E%E7%AD%94%E6%80%8E%E4%B9%88%E5%81%9A%E4%B9%8B%E5%89%8D%E5%85%88%E4%BA%86%E8%A7%A3%E4%B8%80%E4%B8%8B%E7%8E%B0%E7%8A%B6"><span class="nav-number">1.0.2.</span> <span class="nav-text">回答怎么做之前先了解一下现状</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E5%81%9A"><span class="nav-number">1.0.3.</span> <span class="nav-text">怎么做</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%81%9A%E7%9A%84%E6%80%9D%E8%B7%AF%E5%AE%8C%E6%88%90%E4%BB%A5%E5%90%8E%E5%B0%B1%E5%BC%80%E5%A7%8B%E5%AE%9E%E6%96%BD"><span class="nav-number">1.0.4.</span> <span class="nav-text">做的思路完成以后就开始实施</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%BB%E5%AE%8C%E6%B5%81%E7%A8%8B%E5%9B%BE%E5%B0%B1%E7%AE%80%E5%8D%95%E8%AE%B2%E4%B8%80%E4%B8%8B%E8%AE%BE%E8%AE%A1%E4%BD%BF%E7%94%A8%E6%B5%81%E7%A8%8B"><span class="nav-number">1.0.5.</span> <span class="nav-text">画完流程图就简单讲一下设计使用流程</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description">仓库坏了，丢了一些内容</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:waiting0313@gmail.com" title="E-Mail → mailto:waiting0313@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner page posts-expand">
+
+
+    
+    
+    
+    <div class="post-block" lang="zh-CN"><header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">c++层Websocket设计
+</h1>
+
+<div class="post-meta-container">
+</div>
+
+</header>
+
+      
+      
+      <div class="post-body">
+          <h1 id="WebSocket-CPP-的设计部分"><a href="#WebSocket-CPP-的设计部分" class="headerlink" title="WebSocket CPP 的设计部分"></a>WebSocket CPP 的设计部分</h1><h3 id="先讲一讲为啥要有C-版本的Websocket"><a href="#先讲一讲为啥要有C-版本的Websocket" class="headerlink" title="先讲一讲为啥要有C++ 版本的Websocket"></a>先讲一讲为啥要有C++ 版本的Websocket</h3><p>首先什么是Websocket ，是socket，可以提供与服务器进行双工通信，具有建立连接的概念，Http 只能由客服端发起通信，服务端无法知道客户端的状态。</p>
+<p>为什么要用底层Websocket，原因是现有框架结构是js版本的Websocket ，使用起来需要收到js环境的限制，更深层次的业务无法实现，而且性能方面堪忧。</p>
+<p>剩下的问题就是怎么做。</p>
+<h3 id="回答怎么做之前先了解一下现状"><a href="#回答怎么做之前先了解一下现状" class="headerlink" title="回答怎么做之前先了解一下现状"></a>回答怎么做之前先了解一下现状</h3><p>现有客户端框架是在laya引擎方面进行的搭建，主要的核心业务部分使用laya （AS）JavaScript 部分来完成。客户端部分因为平台情况，分为Mac、Windows、Android、IOS。技术分类来讲，IOS 、Android 使用的是laya引擎提供的Native 服务，PC 端使用的是Electron 来完成的跨平台。我们现有的产品中还会包含有一些原生部分开发的一些内容。简单点理解就是js层是内容，Native 层是外围壳子，只是壳子比通用部分还多了Electron 部分。所以如果我们想在js层调用native 层一些内容，根据laya 提供的API确实能够做到互通。剩下就是如何去搞定C++ 部分和接口部分如何定义和使用。似乎一切看起来都没那么有难度。</p>
+<p>大致的想法应该是这样，C++ 部分负责业务代码的编写，CMake 负责 C++ 代码跨平台的编译，接口层采用C语言接口提供静态方法，然后在原生层写交互传值接口，js层作为业务中转层。</p>
+<h3 id="怎么做"><a href="#怎么做" class="headerlink" title="怎么做"></a>怎么做</h3><p>思路不麻烦，从第一层，如何写C++开始。因为必须要依赖C++ 使用的第三方库，如何管理第三方库是首先要考虑的问题，也需要考虑怎么搭建外围开发环境。因为我们要考虑跨平台开发，微软提供了vcpkg这个工具，但是这个工具有缺陷，对第三方库的支持目前只是一部分。备用方案一，使用系统安装方式，备用方案二，使用其他人提供的静态库和头文件。</p>
+<p>作为功能提供方，源码部分打算做一套，那么提供出去的内容也只能考虑静态库或者动态库，所以需要考虑如何编译库文件。CMake 是一个非常棒的工具，CMake 具备跨平台功能，但是最常见的部分还是在服务器Linux 部分，没有特别方便的调试配套工具，编译出静态库以后调试的方式大多数就只能靠log日志了。当然能够调试的阶段是在CMake 方式编译出库以后，CMake中间会遇到各种问题，一般都是路径查找，链接第三方库文件等，报错信息往往很有限。</p>
+<p>直接一步到位使用CMake 来进行库的编译是很难搞定的，于是就只能依靠更为方便的编辑器工具：Xcode 、AndroidStudio、Virtual Studio。于是这些编辑编译的工具链需要的环境部分配置又是相当的繁琐了。</p>
+<p>有问题肯定是需要解决的，当库文件OK 的时候，第一个问题是如何测试这些静态库是否符合设计部分，第二个问题是如何通过更合适的工具去检测分析这些内容是否存在缺陷或者内存泄漏内容。当我们把静态库单独打包整合到一个新的工程内容的时候，我们的源码部分就很难debug了，log日志不能满足需求，于是发现Xcode 可以包含子项目同时编译和使用子项目内容的功能，而且Xcode可以提供完整的编译和分析工具，因为底层部分是一套C++ 源码，讲道理从Xcode 里面验证过没问题的话编译过后是可以直接应用到不同的平台的。</p>
+<h3 id="做的思路完成以后就开始实施"><a href="#做的思路完成以后就开始实施" class="headerlink" title="做的思路完成以后就开始实施"></a>做的思路完成以后就开始实施</h3><p>C++ Websocket ，在实施之前就需要考虑到基于什么架构去编写，使用C++ 标准库没问题，但是似乎Boost 框架会更加完善。在Boost 框架里面我们还能找到很完善的一些公共内容，缺点就是整个Boost 框架非常庞大，因为我们只是需要Boost框架内容的一部分，Strip 过后的Release lib 还算可控。选择Boost 以后就是查找Websocket 稳定库，Websocketcpp 刚好合适。</p>
+<p>C++ 编译以后的静态库可以直接被移动端和PC端使用，我们跟正常使用不太一样的地方就是我们还需要支持Electron ，简单点解释就是，在PC 端生成的静态库需要被Electron（NodeJs）使用的V8 的C++ 使用然后再次编译生成Electron可以使用的 .node 文件。Electron js 跟静态库进行交互。那么对于公司业务层来讲就是需要从Laya js 跟Electron 交互，Electron 跟静态库交互。略微绕。</p>
+<p>库有了，环境也搭建完成以后剩下的就是开始写业务逻辑。下面是C++ Websocket  的框架部分和执行时序图。</p>
+<p><img src="/images/Websocket/%E4%BA%A4%E4%BA%92%E6%97%B6%E5%BA%8F%E5%9B%BE.png" alt="交互时序图"></p>
+<p><img src="/images/Websocket/%E6%8E%A5%E5%8F%A3%E7%BB%93%E6%9E%84.png" alt="接口结构"></p>
+<p><img src="/images/Websocket/%E8%AE%BE%E8%AE%A1%E7%BB%93%E6%9E%84.png" alt="设计结构"></p>
+<h3 id="画完流程图就简单讲一下设计使用流程"><a href="#画完流程图就简单讲一下设计使用流程" class="headerlink" title="画完流程图就简单讲一下设计使用流程"></a>画完流程图就简单讲一下设计使用流程</h3><p>因为现状这里设计了两层的Interface ，一层提供给JavaScript 调用，一层提供给C++ 使用。 在主动调用方面主要分为： <strong>创建、配置、连接、发送消息、断开</strong> </p>
+<p>用户接受方包含：<strong>on_open ,  on_close , on_message , on_reconnect</strong>  返回参数中第一个为用户创建的链接ID ， 用户根据创建信息维持C++ 内部的一个对象，对象对应这个链接ID。接口层在用户发送时候也需要携带这个目标ID，只是为了更方便使用，在上层JavaScript 中屏蔽了ID 的概念。 </p>
+<p>用户只会关心 创建链接，配置链接，然后连接链接，发送和接收回包消息，断开连接等，维持长链接，断线重连，重试连接等会被封装到下层，不需要用户关心。</p>
+<p>涉及到网络消息部分就需要使用日志系统，Websocketcpp 在开发调试过程中默认可以开启终端日志，内容非常详细，也非常庞大，Websocketcpp 的日志系统也是基于Boost 的日志系统，所以在这里又自定义了一下boost 的日志系统，按照分等级的形势把Websocket 中的一些关键信息部分打印出来。</p>
+
+      </div>
+      
+      
+      
+    </div>
+
+    
+    
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="Laya Native 性能分析和改造笔记分析和修改步骤： 1、使用laya编辑器 ， 2.1.0 版本的，导出生成 2.1.0 版本的ios 工程为基础 为了验证编译导出的laya 二进制文件能否放入到低版本，先对2.1.0 版本ios 工程做了以下修改 改动部分如下：  替换laya脚本导出的 libconch.a 文件 替换高版本（2.11.0）apploader.js , index.js">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laya Native 性能分析和改造笔记">
+<meta property="og:url" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="Laya Native 性能分析和改造笔记分析和修改步骤： 1、使用laya编辑器 ， 2.1.0 版本的，导出生成 2.1.0 版本的ios 工程为基础 为了验证编译导出的laya 二进制文件能否放入到低版本，先对2.1.0 版本ios 工程做了以下修改 改动部分如下：  替换laya脚本导出的 libconch.a 文件 替换高版本（2.11.0）apploader.js , index.js">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%201.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%202.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%203.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%204.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%205.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%206.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%207.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%208.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%209.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2010.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2011.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2012.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2013.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2014.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2015.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2016.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2017.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2018.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2019.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2020.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2021.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2022.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2023.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2024.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2025.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2026.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2027.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2028.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2029.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2030.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2031.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2032.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2033.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2034.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2035.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2036.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2037.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2038.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2039.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2040.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2041.png">
+<meta property="article:published_time" content="2021-06-04T09:16:28.000Z">
+<meta property="article:modified_time" content="2021-07-13T10:47:12.645Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled.png">
+
+
+<link rel="canonical" href="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Laya Native 性能分析和改造笔记 | 懒人的胡言乱语</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Laya-Native-%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0"><span class="nav-number">1.</span> <span class="nav-text">Laya Native 性能分析和改造笔记</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">问题：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95%E5%86%85%E5%AD%98%E5%92%8C%E6%80%A7%E8%83%BD%E6%AF%94%E5%AF%B9%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">测试内存和性能比对：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%86%85%E5%AD%98%E5%92%8C%E6%80%A7%E8%83%BD%E5%AF%B9%E6%AF%94"><span class="nav-number">1.3.</span> <span class="nav-text">具体内存和性能对比</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E7%89%88%E6%9C%AC"><span class="nav-number">1.3.1.</span> <span class="nav-text">新版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%97%A7%E7%89%88%E6%9C%AC"><span class="nav-number">1.3.2.</span> <span class="nav-text">旧版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%89%E7%85%A7-%E7%99%BB%E5%BD%95%E2%86%92%E5%A4%A7%E5%8E%85%E2%86%92%E5%BD%95%E6%92%AD%E8%AF%BE%E2%86%92%E5%9B%9E%E5%88%B0%E5%A4%A7%E5%8E%85"><span class="nav-number">1.4.</span> <span class="nav-text">按照 登录→大厅→录播课→回到大厅</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E7%89%88%E6%9C%AC%E4%BA%8C%E8%BF%9B%E5%88%B6%EF%BC%8C%E7%A7%BB%E9%99%A4laya-%E6%97%B6%E5%80%99%E5%86%85%E5%AD%98"><span class="nav-number">1.4.1.</span> <span class="nav-text">新版本二进制，移除laya 时候内存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B2%A1%E6%9C%89%E5%81%9A%E4%BF%AE%E6%94%B9%E7%9A%84%E5%86%85%E5%AD%98"><span class="nav-number">1.5.</span> <span class="nav-text">没有做修改的内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E6%AF%94%E4%B8%A4%E7%A7%8D%E4%BA%8C%E8%BF%9B%E5%88%B6%EF%BC%8C%E5%9C%A8laya-%E6%98%AF%E5%90%A6%E5%8D%B8%E8%BD%BD%E6%96%B9%E9%9D%A2%E5%86%85%E5%AD%98%E5%8F%98%E5%8C%96%E7%BB%93%E8%AE%BA"><span class="nav-number">1.5.1.</span> <span class="nav-text">对比两种二进制，在laya 是否卸载方面内存变化结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Laya%E5%8D%95%E7%8B%AC%E4%B8%80%E4%B8%AA%E8%AF%BE%E4%BB%B6%E8%BD%BD%E5%85%A5%E5%88%B0%E4%B8%80%E4%B8%AA%E6%96%B0%E7%9A%84demo-%E4%B8%AD"><span class="nav-number">1.6.</span> <span class="nav-text">Laya单独一个课件载入到一个新的demo 中</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E4%BA%8E%E6%80%A7%E8%83%BD%E6%96%B9%E9%9D%A2%E5%88%9D%E6%AD%A5%E7%BB%93%E8%AE%BA%EF%BC%9A"><span class="nav-number">1.7.</span> <span class="nav-text">关于性能方面初步结论：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%AF%94%E5%AF%B9"><span class="nav-number">1.8.</span> <span class="nav-text">内存比对</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8E%E7%BB%AD%E5%8D%87%E7%BA%A7%EF%BC%9A"><span class="nav-number">1.9.</span> <span class="nav-text">后续升级：</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E7%89%88%E6%9C%AC%E7%89%B9%E6%80%A7%EF%BC%9A"><span class="nav-number">1.9.1.</span> <span class="nav-text">新版本特性：</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description">仓库坏了，丢了一些内容</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:waiting0313@gmail.com" title="E-Mail → mailto:waiting0313@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="仓库坏了，丢了一些内容">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Laya Native 性能分析和改造笔记
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-04 17:16:28" itemprop="dateCreated datePublished" datetime="2021-06-04T17:16:28+08:00">2021-06-04</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-07-13 18:47:12" itemprop="dateModified" datetime="2021-07-13T18:47:12+08:00">2021-07-13</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">内存优化</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Laya-Native-性能分析和改造笔记"><a href="#Laya-Native-性能分析和改造笔记" class="headerlink" title="Laya Native 性能分析和改造笔记"></a>Laya Native 性能分析和改造笔记</h1><p>分析和修改步骤：</p>
+<p>1、使用laya编辑器 ， 2.1.0 版本的，导出生成 2.1.0 版本的ios 工程为基础</p>
+<p>为了验证编译导出的laya 二进制文件能否放入到低版本，先对2.1.0 版本ios 工程做了以下修改</p>
+<p>改动部分如下：</p>
+<ol>
+<li>替换laya脚本导出的 libconch.a 文件</li>
+<li>替换高版本（2.11.0）apploader.js , index.js ,挪动版本 webglPlus.js 到低版本工程</li>
+</ol>
+<p>改动后代码可以直接正常运行。</p>
+<p>profile 内存使用情况 （更换后,游戏运行状态） 170M （现象，也同时证明laya已有js 代码可以直接运行在Laya 高版本运行环境）</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled.png"></p>
+<h2 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h2><p>在直接更改iOS源码，强制卸载laya部分，表现如下，内存并没有如预期下降。</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%201.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%201.png"></p>
+<p>在profile 里面去查找还持有，存在于内存的一些对象，可以发现如下（两个占用内存的大户）</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%202.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%202.png"></p>
+<p>把相关退出代码搬运到 laya 提供的项目工程中，通过debug方式profile ，能够看到每次重新进入laya 内存部分被重新分配了 30+ M  （每一次都会增加，认定引擎侧出现内存泄漏，在于C++或者ObjectC）</p>
+<p>比如可以很直观发现下面的泄漏。</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%203.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%203.png"></p>
+<p>优先解决内存占用大户，发现特征是如下，不能指向具体的代码片段，但是也提供了相应的信息，libglxxxx 推测是在OpenGL 侧。（可能是C++ 持有，属于重点怀疑，但是这个库又是iOS自己提供，所以ObjectC 也不能排除）</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%204.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%204.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%205.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%205.png"></p>
+<p>在一次profile 时候，在资源载入的时候发现了JCLayaGl  和texture2d 的字段，所以怀疑为C++ 本身内存泄漏的可能性又在加强。libglxxxx 这个东西依然存在，可以先做排除法，先不去管texure2d这块儿。</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%206.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%206.png"></p>
+<p>不使用texure2d的最直接方式是不给图片资源，于是，更换为无图片资源小游戏demo，测试如下</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%207.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%207.png"></p>
+<p>依然存在大量的 Gl 字段， 而且还能看到很多 allocated pair to attach …   这货又好像是iOS的内存泄漏</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%208.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%208.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%209.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%209.png"></p>
+<p>所以基本认定，在iOS Object C 侧，卸载部分存在内存泄漏，在C++侧也大致会存在相应的内存泄漏。那么下面面临的问题就是如何修复。</p>
+<p>C++通用内存泄漏部分基本是在于 Init 或者 构造函数 中 new 出一些对象，在析构时候没有干掉，导致一些内存常驻。</p>
+<p>Object C 里面也有C++ 类似的地方，alloc 出对象，然后强制引用，导致对象不能正常释放。</p>
+<p>所以基本解决的思路就有了，下一步，干活验证。</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2010.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2010.png"></p>
+<p>ios 如下图，现有学生端 profile 内存部分，也能找到在上面魔改的Demo 工程中出现的内存消耗大户，所以laya 本身存在 destory 接口，但是内部逻辑却没有做到位。既然有，那么我们强制析构对象的时机和入口就很明确了。</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2011.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2011.png"></p>
+<h2 id="测试内存和性能比对："><a href="#测试内存和性能比对：" class="headerlink" title="测试内存和性能比对："></a>测试内存和性能比对：</h2><p>替换修改好的laya二进制到学生端    卸载前</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2012.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2012.png"></p>
+<p>卸载后</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2013.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2013.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2014.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2014.png"></p>
+<p>明显看到内存能够降下去！！！</p>
+<h2 id="具体内存和性能对比"><a href="#具体内存和性能对比" class="headerlink" title="具体内存和性能对比"></a>具体内存和性能对比</h2><p>laya 两个版本运行时内存比较</p>
+<h3 id="新版本"><a href="#新版本" class="headerlink" title="新版本"></a>新版本</h3><p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2015.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2015.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2016.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2016.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2017.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2017.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2018.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2018.png"></p>
+<h3 id="旧版本"><a href="#旧版本" class="headerlink" title="旧版本"></a>旧版本</h3><p>旧有的占用内存量</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2019.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2019.png"></p>
+<p>点击切换，干掉laya</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2020.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2020.png"></p>
+<p>再次拉起</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2021.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2021.png"></p>
+<p>会持续增加</p>
+<h2 id="按照-登录→大厅→录播课→回到大厅"><a href="#按照-登录→大厅→录播课→回到大厅" class="headerlink" title="按照 登录→大厅→录播课→回到大厅"></a>按照 登录→大厅→录播课→回到大厅</h2><h3 id="新版本二进制，移除laya-时候内存"><a href="#新版本二进制，移除laya-时候内存" class="headerlink" title="新版本二进制，移除laya 时候内存"></a>新版本二进制，移除laya 时候内存</h3><p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2022.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2022.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2023.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2023.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2024.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2024.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2025.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2025.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2026.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2026.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2027.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2027.png"></p>
+<h2 id="没有做修改的内存"><a href="#没有做修改的内存" class="headerlink" title="没有做修改的内存"></a>没有做修改的内存</h2><p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2028.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2028.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2029.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2029.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2030.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2030.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2031.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2031.png"></p>
+<h3 id="对比两种二进制，在laya-是否卸载方面内存变化结论"><a href="#对比两种二进制，在laya-是否卸载方面内存变化结论" class="headerlink" title="对比两种二进制，在laya 是否卸载方面内存变化结论"></a>对比两种二进制，在laya 是否卸载方面内存变化结论</h3><p>很明显能够看到在切换场景的时候内存有一个很深的释放，因为在释放完成第一个layacontroller之后会重新建立一个新的layaController ， 这里会有一个很深的尖角，因为需要载入新的场景和资源，内存会再次上升。因为小游戏在运行时候必须的内存大小基本固定，所以会回归到正常的内存数值。</p>
+<p>现有Laya 单利方式在内存表现方面没有太多的增加，在大厅进入到录播AI课的时候会有一定的内存上涨，在从录播AI课回到大厅的时候，一些内存没有释放掉，维持在 396M 左右， 在使用释放laya 的方式，在回到大厅时候，维持大厅刚进入时候的内存值，即 349M 左右。</p>
+<p>有一个明显不一样的地方是，如果在新版本中大厅切换到一个空的页面，即无laya 运行时环境，iOS 内存能够从 349M 下降到 85M 左右（如下图）， 但是现有的版本，内存无法下降</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2032.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2032.png"></p>
+<p>旧版本如下：</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2033.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2033.png"></p>
+<p>具体时机数值比较</p>
+<p><a target="_blank" rel="noopener" href="https://www.notion.so/f8d0e91dae0746ef856f9b58107a6fe8">Untitled</a></p>
+<h2 id="Laya单独一个课件载入到一个新的demo-中"><a href="#Laya单独一个课件载入到一个新的demo-中" class="headerlink" title="Laya单独一个课件载入到一个新的demo 中"></a>Laya单独一个课件载入到一个新的demo 中</h2><p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2034.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2034.png"></p>
+<p>在正常运行时候 191M （这里没有声网，没有录播课中的视频，只是laya 课件）， 但是卸载以后，就在 70.3M  </p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2035.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2035.png"></p>
+<p>就是理论评估，本讲课件暂用内存在 121M 左右。</p>
+<p>在学生端这里，从大厅进入—&gt;到AI录播课→回到大厅流程 （在释放laya 对象时候进行延时处理，延时为 5秒 ，可以详细的记录内存的变化）</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2036.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2036.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2037.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2037.png"></p>
+<p>327 - 137 = 190M （相比上面单独demo 中的 121M ，应该算是合理的）</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2038.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2038.png"></p>
+<p>大厅课件占用内存  353 - 137  = 216 M</p>
+<h2 id="关于性能方面初步结论："><a href="#关于性能方面初步结论：" class="headerlink" title="关于性能方面初步结论："></a>关于性能方面初步结论：</h2><p>在同等环境下，运行时候需要的内存是一致的，但是在于卸载laya 到原生端这里，2.1.0 </p>
+<p>版本因为laya 引擎自身原因，引擎运行分配出来的内存和JavaScript context，资源内存并没有被释放。导致再次拉起Laya 工程，内存会重新分配，出现严重的内存泄漏。2.11.0 版本，修改以后是可以释放掉laya运行时内存，不会因为多次释放和重新拉起引起内存泄漏。</p>
+<p>渲染侧：</p>
+<p>暂时还需要低端机器和相关测试环境对比</p>
+<h2 id="内存比对"><a href="#内存比对" class="headerlink" title="内存比对"></a>内存比对</h2><p>比如线上debug 版本，进入ai课执行空游戏，即载入空场景表现</p>
+<p>redirect url 之后内存维持在 169M</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2039.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2039.png"></p>
+<p>如果使用卸载Laya 方式</p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2040.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2040.png"></p>
+<p><img src="/2021/06/04/Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2041.png" alt="Laya%20Native%20%E6%80%A7%E8%83%BD%E5%88%86%E6%9E%90%E5%92%8C%E6%94%B9%E9%80%A0%E7%AC%94%E8%AE%B0%2067e77270abfb45999959e8f3991ec77d/Untitled%2041.png"></p>
+<p>相当于如果使用修改后的引擎，在不使用Laya 的环境中 相比之前稳定在 169M 的内存， 能够减少  169 - 82.6 =  86.4M   ,  也就是说可以多出来 86.4M 内存提供给额外业务使用。</p>
+<h2 id="后续升级："><a href="#后续升级：" class="headerlink" title="后续升级："></a>后续升级：</h2><p>现有iOS升级可更改的内容非常少，主要修改点在于：</p>
+<ol>
+<li>iOS 之前单利方式的Laya Controller 更改为对象方式，在需要的时候载入初始化，不需要的时候可以销毁。</li>
+<li>替换新版本 laya 原生二进制文件（必要）</li>
+<li>JavaScript 部分，修改或者替换apploader.js ,index.js 新增 webglPlus.js</li>
+</ol>
+<h3 id="新版本特性："><a href="#新版本特性：" class="headerlink" title="新版本特性："></a>新版本特性：</h3><ol>
+<li>在新版本Laya 代码中使用的是 WkWebview，iOS 可以使用高版本二进制进行新项目提审。</li>
+<li>支持内存释放，可以做多runtime 引擎之间切换。</li>
+<li>具备扩展性，可以在现有基础上对引擎底层做特定修改。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/07/leetcode%2009/" rel="prev" title="leetcode 总结  09 反转链表">
+                  <i class="fa fa-chevron-left"></i> leetcode 总结  09 反转链表
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/06/18/iOS-%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90/" rel="next" title="iOS 内存分析">
+                  iOS 内存分析 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

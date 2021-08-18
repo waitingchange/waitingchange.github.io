@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="Nodejs 使用Buffer 为什么需要在Nodejs 中使用 buffer ？如上图所示，Nodejs 最外层接口是JavaScript，内部的具体执行是C++ 。由于JavaScript的灵活易用性和使用广泛性，暴露接口为JavaScript这一点对于快速开发绝对是有利的。虽然纯粹JavaScript 语言本身可以使用buffer ， 但是与C++相比，对于二进制数据类型内容处理，JavaS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nodejs 使用Buffer">
+<meta property="og:url" content="https://waitingchange.github.io/2021/02/23/NodeJs%E4%BD%BF%E7%94%A8Buffer/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="Nodejs 使用Buffer 为什么需要在Nodejs 中使用 buffer ？如上图所示，Nodejs 最外层接口是JavaScript，内部的具体执行是C++ 。由于JavaScript的灵活易用性和使用广泛性，暴露接口为JavaScript这一点对于快速开发绝对是有利的。虽然纯粹JavaScript 语言本身可以使用buffer ， 但是与C++相比，对于二进制数据类型内容处理，JavaS">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://waitingchange.github.io/images/WebsocketNew/nodejs.jpg">
+<meta property="og:image" content="https://waitingchange.github.io/images/WebsocketNew/copying.gif">
+<meta property="og:image" content="https://waitingchange.github.io/images/WebsocketNew/inplace.gif">
+<meta property="og:image" content="https://waitingchange.github.io/images/WebsocketNew/isolate.png">
+<meta property="article:published_time" content="2021-02-23T02:15:39.000Z">
+<meta property="article:modified_time" content="2021-03-01T06:48:42.280Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://waitingchange.github.io/images/WebsocketNew/nodejs.jpg">
+
+
+<link rel="canonical" href="https://waitingchange.github.io/2021/02/23/NodeJs%E4%BD%BF%E7%94%A8Buffer/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>Nodejs 使用Buffer | 懒人的胡言乱语</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Nodejs-%E4%BD%BF%E7%94%A8Buffer"><span class="nav-number">1.</span> <span class="nav-text">Nodejs 使用Buffer</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E9%9C%80%E8%A6%81%E5%9C%A8Nodejs-%E4%B8%AD%E4%BD%BF%E7%94%A8-buffer-%EF%BC%9F"><span class="nav-number">1.0.0.1.</span> <span class="nav-text">为什么需要在Nodejs 中使用 buffer ？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8%EF%BC%8C%E4%BC%9A%E6%9C%89%E4%BB%80%E4%B9%88%E6%A0%B7%E7%9A%84%E9%97%AE%E9%A2%98-%EF%BC%9F"><span class="nav-number">1.0.0.2.</span> <span class="nav-text">如何使用，会有什么样的问题 ？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%94%A8%E6%B3%95"><span class="nav-number">1.0.0.3.</span> <span class="nav-text">用法</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description">仓库坏了，丢了一些内容</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:waiting0313@gmail.com" title="E-Mail → mailto:waiting0313@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/02/23/NodeJs%E4%BD%BF%E7%94%A8Buffer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="仓库坏了，丢了一些内容">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Nodejs 使用Buffer
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-02-23 10:15:39" itemprop="dateCreated datePublished" datetime="2021-02-23T10:15:39+08:00">2021-02-23</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-03-01 14:48:42" itemprop="dateModified" datetime="2021-03-01T14:48:42+08:00">2021-03-01</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Nodejs/" itemprop="url" rel="index"><span itemprop="name">Nodejs</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Nodejs-使用Buffer"><a href="#Nodejs-使用Buffer" class="headerlink" title="Nodejs 使用Buffer"></a>Nodejs 使用Buffer</h1><p><img src="/images/WebsocketNew/nodejs.jpg" alt="nodejs"></p>
+<h4 id="为什么需要在Nodejs-中使用-buffer-？"><a href="#为什么需要在Nodejs-中使用-buffer-？" class="headerlink" title="为什么需要在Nodejs 中使用 buffer ？"></a>为什么需要在Nodejs 中使用 buffer ？</h4><p>如上图所示，Nodejs 最外层接口是JavaScript，内部的具体执行是C++ 。由于JavaScript的灵活易用性和使用广泛性，暴露接口为JavaScript这一点对于快速开发绝对是有利的。虽然纯粹JavaScript 语言本身可以使用buffer ， 但是与C++相比，对于二进制数据类型内容处理，JavaScript 表现的并不擅长。因为Nodejs 的底层是依赖于C++ ， 所以为了更好的发挥各项语言之间的擅长，提升产品的性能，JavaScript 与C++ 之间的buffer 通信就是一种必然。在Nodejs中存在着重要的一个模块儿，<strong>Google V8</strong> 。依赖于V8提供的扩展API，JavaScript 可以比较容易的跟C++ 进行通信。</p>
+<p>我们的产品在PC端使用的是Electron（基于Nodejs），在关于图形图像和文件处理方面也会有使用场景。</p>
+<h4 id="如何使用，会有什么样的问题-？"><a href="#如何使用，会有什么样的问题-？" class="headerlink" title="如何使用，会有什么样的问题 ？"></a>如何使用，会有什么样的问题 ？</h4><p>根据NodeJs 的架构图我们也能发现一些问题，我们需要处理不同语言之间的信息交互。所以单单从语言层面来讲，通用的做法，两个语言之间进行通信，需要在不同的语言中各自分配一份内存用于存放数据交换的内容。对于buffer 数据而言，在长度不固定前提下，两个语言都要重新分配和释放连续内存再加上内容拷贝就会显得效率不会很高。但是Nodejs 中有V8。</p>
+<p>因为Nodejs 有V8 的存在，JavaScript 中间需要分配的交换数据可以经过V8分配和持有的内存用来存储，但是V8 持有的内存又跟平常C++ 分配的内存一样。V8 Data 持有的储单元是可通过 V8 的 C++ API 访问的，但这些又不是普通的 C++ 变量，这些存储单元只能够通过受限的方式访问。</p>
+<p>如果把V8存储单元作为<strong>“桥”</strong>，那么数据拷贝的交互模式就会如下。</p>
+<p> JavaScript 向C++ 发送数据的流程就是，JavaScript 准备需要发送的buffer 数据，让V8存储单元进行存储，然后通过Nodejs 提供的交互API，调用C++，先在C++ 层进行数据拷贝。这样就完成了数据的单向发送。同步方式阻塞方式直接返回数据的流程就是，在C++ 中获取到处理后的<strong>Output</strong>数据，通过V8 持有存储单元，执行Nodejs 提供的API ， 可以把数据交给JavaScript。</p>
+<p>这样的做法似乎没什么问题，但是如果在处理大量的交互数据时候，从V8侧拷贝交换数据再给到C++ 就会需要一定的性能损失。还存在另外一个问题，就是既然使用Nodejs，依赖于C++，目的就是不能阻塞JavaScript 单线程。异步交互就会显得比较重要，在Nodejs 中，如果需要使用异步操作，那么Libuv是另外一个绕不过去的重点。</p>
+<p>具体的执行步骤如下。</p>
+<p><img src="/images/WebsocketNew/copying.gif" alt="copying"></p>
+<p>如果去掉内容拷贝，C++ 和 JavaScript 能指向并且能够直接使用V8 存储单元的数据，就是比较理想的状况。</p>
+<p><img src="/images/WebsocketNew/inplace.gif" alt="inplace"></p>
+<p>Nodejs 对于这类问题的处理提供了一个比较合适的组件，Buffer。</p>
+<h4 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h4><p> 参考  <a target="_blank" rel="noopener" href="https://nodejs.org/api/buffer.html">Nodejs官方文档</a> </p>
+<p><strong>JavaScript</strong>侧</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 构造 buffer 对象</span></span><br><span class="line"><span class="keyword">const</span> buf = Buffer.alloc(<span class="number">5</span>);</span><br><span class="line"><span class="built_in">console</span>.log(buf);</span><br><span class="line"><span class="comment">// Prints: &lt;Buffer 00 00 00 00 00&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//Buffer.from 用法</span></span><br><span class="line"><span class="comment">// Creates a Buffer containing the bytes [1, 2, 3].</span></span><br><span class="line"><span class="keyword">const</span> buf4 = Buffer.from([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]);</span><br><span class="line"><span class="comment">// 字符串  后面是编码格式</span></span><br><span class="line"><span class="keyword">const</span> buf = Buffer.from(<span class="string">&#x27;hello world&#x27;</span>, <span class="string">&#x27;utf8&#x27;</span>);</span><br><span class="line"><span class="built_in">console</span>.log(buf.toString(<span class="string">&#x27;hex&#x27;</span>));</span><br><span class="line"><span class="comment">// Prints: 68656c6c6f20776f726c64</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 参考上面官网连接可以有更多的特殊用法，常用的就是如上面  如果觉得省事儿可以理解为数组， 但是不同点的是，Buffer 在nodejs 中分配的内存并不是由JavaScript 持有， 也不由底层C++ 直接访问持有 ， 而是属于V8 的一部分存储单元</span></span><br></pre></td></tr></table></figure>
+
+<p>C++ 侧</p>
+<p>正如上面官网内容，没有丝毫的跟下层C++ 交互的内容。</p>
+<p>为了方便理解和使用，这里提供一个Demo 方便于参考。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从JavaScript 开始  示例 1  设计一个 从JavaScript 传递buffer 到C++ ， C++ 拿到传递数据之后修改部分数据之后直接返回</span></span><br><span class="line"><span class="comment">// 示例 1 主动传递buffer ，并且接收 C++ 直接返回</span></span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&quot;----------------&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;=========&quot;</span>);</span><br><span class="line"><span class="comment">// 输入buffer ， C++ 内部实现在拿到buffer 数据之后对数据的后部分做 “加一” 操作  </span></span><br><span class="line"><span class="comment">// 返回数据应该为 Hello C++ Beepo&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">var</span> bufSource = Buffer.from(<span class="string">&quot;Hello C++ Addon!!!&quot;</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&quot;bufSource is : &quot;</span> + bufSource);</span><br><span class="line"><span class="keyword">var</span> buffer =  <span class="built_in">global</span>.logBridge.getNewBuffer(bufSource);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&quot;Direct return buffer is : &quot;</span> + buffer);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">&quot;----------------&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;=========&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>对于<code>V8</code>操作，这里需要先补充以下知识点</p>
+<p><code>Isolate</code>是一个独立的V8实例，也可以说一个独立虚拟机，其中可以包含一个或多个线程，但同一时间，只有一个线程是执行状态。</p>
+<p><code>Context</code>代表一个执行上下文（执行环境），它使得可以在一个 V8 实例中运行相互隔离且无关的 JavaScript 代码. 你必须为你将要执行的 JavaScript 代码显式的指定一个 context。Context支持嵌套。</p>
+<p><code>Handle</code>是一个指向堆内存的指针，在V8中JavaScript的值和对象也都存放在堆中，Handle提供了一个JS对象在堆内存中的地址的引用。有人会有疑问我们直接操作JS变量指针不可以嘛？由于V8的GC策略，可能会对堆中的JS变量移动其内存位置，Handle的出现可以跟踪相应变量的地址。</p>
+<p><code>Handle Scope</code>是一个Handle的容器，为了解决一个个释放handle过于繁琐，将一些handle接入handle scope中，方便统一管理（释放等）。</p>
+<img src="/images/WebsocketNew/isolate.png" alt="isolate" style="zoom: 67%;">
+
+<p>具体接受和处理代码如下</p>
+<ol>
+<li>主动传递和接收</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// C++ 侧</span></span><br><span class="line"><span class="comment">// 按照规则要求需要先提供一个可以被JavaScript 调用的 getNewBuffer 函数</span></span><br><span class="line">Nan::SetPrototypeMethod(tpl, <span class="string">&quot;getNewBuffer&quot;</span>, getNewBuffer); <span class="comment">// 暴露JavaScript调用接口  在Init 函数中</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MyBuffer::getNewBuffer</span><span class="params">(<span class="keyword">const</span> Nan::FunctionCallbackInfo&lt;v8::Value&gt; &amp;info)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Isolate *isolate = info.GetIsolate();  <span class="comment">// 获取当前isolate</span></span><br><span class="line">    <span class="function">v8::HandleScope <span class="title">scope</span><span class="params">(isolate)</span></span>;  <span class="comment">// 持有当前 isolate</span></span><br><span class="line">  <span class="comment">// 获取 getNewBuffer 调用时候 第一个参数 并且转化为 V8local Onject</span></span><br><span class="line">    v8::Local&lt;v8::Object&gt; infoObj = v8::Local&lt;v8::Object&gt;::Cast(info[<span class="number">0</span>]); </span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> *buffer = (<span class="keyword">unsigned</span> <span class="keyword">char</span> *)node::Buffer::Data(infoObj); <span class="comment">// 获取熟知的 char * buffer</span></span><br><span class="line">    <span class="keyword">size_t</span> size = node::Buffer::Length(infoObj); <span class="comment">// 获取传递的buffer 长度</span></span><br><span class="line">		<span class="comment">// 对 buffer 长度的后半段进行数据 ‘ + 1’ 操作</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; size; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (i &gt; size / <span class="number">2</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            buffer[i] += <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 在使用 Nan::NewBuffer 的时候一定要注意内存管理 ， 这里使用了 Nan::CopyBuffer  直接在这里返回处理后的buffer </span></span><br><span class="line">    info.GetReturnValue().Set(Nan::CopyBuffer((<span class="keyword">char</span> *)buffer, size).ToLocalChecked());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>单向从JavaScript 到 C++  , 经过V8 Buffer 再回调回JavaScript ， 整个一圈就可以走完。如果发起方一直是JavaScript ，那么这个流程无疑是最直观能理解到的，但是还会存在其他的情况。 事件的发起方是C++ ， 而且是多线程处理，需要把相关数据交给JavaScript，而且是多次异步回调。</p>
+<p>补充提醒，JavaScript 只有单线程，而C++ 可以有多线程。</p>
+<ol start="2">
+<li>C++ 主动异步多线程发送，JavaScript 被动接收</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 用于保存和设置 JavaScript 回调函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">MyBuffer::setCallback</span><span class="params">(<span class="keyword">const</span> Nan::FunctionCallbackInfo&lt;v8::Value&gt; &amp;info)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    v8::Local&lt;v8::Context&gt; context = info.GetIsolate()-&gt;GetCurrentContext(); <span class="comment">// get context</span></span><br><span class="line">    Isolate *isolate = info.GetIsolate(); <span class="comment">// get isolate</span></span><br><span class="line">    Nan::HandleScope mscope;  <span class="comment">// HandleScope</span></span><br><span class="line">    <span class="function">v8::HandleScope <span class="title">scope</span><span class="params">(isolate)</span></span>; </span><br><span class="line">    Local&lt;Value&gt; arg = info[<span class="number">0</span>]; <span class="comment">// get input JavaScript callback</span></span><br><span class="line">    <span class="keyword">if</span> (!arg-&gt;IsFunction()) <span class="comment">// 类型判断</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 持久化存储 JavaScript callback</span></span><br><span class="line">    v8::Local&lt;v8::Function&gt; func = v8::Local&lt;v8::Function&gt;::Cast(info[<span class="number">0</span>]); <span class="comment">// to Local function</span></span><br><span class="line">    MyBuffer::getInstance()-&gt;callback.Reset(func); <span class="comment">//放在 Nan::Persistent  持久化 JavaScript</span></span><br><span class="line">    uv_async_init(uv_default_loop(), &amp;MyBuffer::getInstance()-&gt;m_callback_async, async_on_callback);  <span class="comment">// libuv init</span></span><br><span class="line">    <span class="comment">// 这里为了测试先在这里启动timer  多次调用请注意合理关闭timer</span></span><br><span class="line">    MTimer *t = <span class="keyword">new</span> MTimer();   <span class="comment">// 这里timer 中开启了新的线程，所以需要考虑线程安全的内容  于是回调就绕不开 Libuv</span></span><br><span class="line">    t-&gt;setInterval([&amp;]() &#123;</span><br><span class="line">        MyBuffer::getInstance()-&gt;m_counter++;</span><br><span class="line">        <span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;time is : &quot;</span> &lt;&lt; MyBuffer::getInstance()-&gt;m_counter &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">        <span class="comment">// 构造假数据</span></span><br><span class="line">        <span class="built_in">string</span> dataStr = <span class="string">&quot;TimerCallBack count is &quot;</span> + to_string(MyBuffer::getInstance()-&gt;m_counter) + <span class="string">&quot; hello &quot;</span>;</span><br><span class="line">        MyCallbackData *m_data = <span class="keyword">new</span> MyCallbackData();</span><br><span class="line">        m_data-&gt;data = <span class="keyword">new</span> <span class="keyword">char</span>[<span class="built_in">strlen</span>(dataStr.c_str()) + <span class="number">1</span>];</span><br><span class="line">        <span class="built_in">strncpy</span>(m_data-&gt;data, dataStr.c_str(), <span class="built_in">strlen</span>(dataStr.c_str()));</span><br><span class="line">        m_data-&gt;data[<span class="built_in">strlen</span>(dataStr.c_str())] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">        m_data-&gt;size = <span class="built_in">strlen</span>(dataStr.c_str());  <span class="comment">// 目的 ， copy 这里构造的假数据，用于回调给JavaScript</span></span><br><span class="line">        <span class="comment">// 数据入队   线程安全方式入队</span></span><br><span class="line">        MyBuffer::getInstance()-&gt;m_BufferData_l.enqueue(m_data);</span><br><span class="line">      	<span class="comment">// 通知libuv  异步句柄允许用户“唤醒”事件循环并获取从另一个线程调用的回调。</span></span><br><span class="line">        uv_async_send(&amp;MyBuffer::getInstance()-&gt;m_callback_async);  <span class="comment">// 线程安全</span></span><br><span class="line">    &#125;,</span><br><span class="line">   <span class="number">20</span>); <span class="comment">// 20 Ms 回调一次</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Libuv 回调，真正执行回调JavaScript 部分</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 真正用于异步执行JavaScript 存放在C++ 中的回调函数。 由libuv 触发</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">async_on_callback</span><span class="params">(<span class="keyword">uv_async_t</span> *handle)</span></span></span><br><span class="line"><span class="function"></span>&#123;   </span><br><span class="line">    v8::Isolate *isolate = v8::Isolate::GetCurrent();  <span class="comment">// isolate</span></span><br><span class="line">    <span class="function">v8::HandleScope <span class="title">scope</span><span class="params">(isolate)</span></span>; <span class="comment">// HandleScope </span></span><br><span class="line">    MyCallbackData *m_bufferData; <span class="comment">// 数据出队</span></span><br><span class="line">    <span class="keyword">while</span> (MyBuffer::getInstance()-&gt;m_BufferData_l.try_dequeue(m_bufferData))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 留意这个 copy 字段 ， 存在内存重新分配 使用时候要小心  v8 data 不在C++ 也不在JavaScript</span></span><br><span class="line">        v8::Local&lt;v8::Object&gt; buferObj = Nan::CopyBuffer(m_bufferData-&gt;data, m_bufferData-&gt;size).ToLocalChecked();</span><br><span class="line">        <span class="comment">//std::string msg = std::string(m_bufferData-&gt;data,m_bufferData-&gt;size); //用于debug 输出</span></span><br><span class="line">        <span class="comment">//std::cout &lt;&lt; &quot;---&quot; &lt;&lt;  msg &lt;&lt; std::endl; // 用于debug 输出</span></span><br><span class="line">        <span class="keyword">delete</span> [](m_bufferData-&gt;data);  <span class="comment">// 记得销毁之前分配的buffer</span></span><br><span class="line">        <span class="keyword">delete</span>(m_bufferData); <span class="comment">// delete 之前new 出来的对象</span></span><br><span class="line">        m_bufferData = <span class="literal">nullptr</span>; <span class="comment">// 指针置空</span></span><br><span class="line">				<span class="comment">//准备返回 JavaScript 数据</span></span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">unsigned</span> argc = <span class="number">1</span>;  </span><br><span class="line">        v8::Local&lt;v8::Value&gt; argv[argc] = &#123;buferObj&#125;;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;		<span class="comment">// C++ 方式try catch （不是很必要）  // 下面这一行是从 Nan::Persistent function 转化为  local function </span></span><br><span class="line">            v8::Local&lt;v8::Function&gt; m_call = v8::Local&lt;v8::Function&gt;::New(isolate, MyBuffer::getInstance()-&gt;callback);</span><br><span class="line">            Nan::Call(m_call, isolate-&gt;GetCurrentContext()-&gt;Global(), argc, argv); <span class="comment">// 执行回调</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (<span class="keyword">const</span> <span class="built_in">std</span>::exception &amp;e)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">std</span>::<span class="built_in">cerr</span> &lt;&lt; e.what() &lt;&lt; <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Libuv 总结 </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Libuv 需要以下</span></span><br><span class="line">uv_async_init(); <span class="comment">// 初始化异步回调</span></span><br><span class="line">uv_async_send(); <span class="comment">// 子线程发起事件</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">async_on_callback</span><span class="params">(<span class="keyword">uv_async_t</span> *handle)</span></span>; <span class="comment">// 执行异步回调</span></span><br></pre></td></tr></table></figure>
+
+<p>通过libuv 就可以异步从 C++ 子线程发起回调启动，  libuv 通过内部loop 在合适时机交给主线程 ，然后执行具体 回调函数。</p>
+<p>附赠代码demo  <a target="_blank" rel="noopener" href="https://github.com/waitingchange/NodejsAddonWithBuffer">NodejsC++AddonBuffer</a> </p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/02/12/Websocket%E6%95%B0%E6%8D%AE%E5%B8%A7/" rel="prev" title="Websocket数据发送">
+                  <i class="fa fa-chevron-left"></i> Websocket数据发送
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/03/01/%E4%BB%93%E5%BA%93%E6%8D%9F%E5%9D%8F/" rel="next" title="仓库损坏">
+                  仓库损坏 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="设想一下，一个游戏有N多图片资源，分为M个文件夹，手动使用TexurePacker打图实在是一个体力活，同时还有忙中出乱的风险。使用脚本批量处理是不二的选择（当前环境为mac） 1.安装 TexturePacker 然后安装 TexturePacker Command Line Tool如上图所示，安装 TexturePacker Command Line Tool 2.打开Teminal">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TexurePacker">
+<meta property="og:url" content="https://waitingchange.github.io/2018/12/01/TexurePacker/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="设想一下，一个游戏有N多图片资源，分为M个文件夹，手动使用TexurePacker打图实在是一个体力活，同时还有忙中出乱的风险。使用脚本批量处理是不二的选择（当前环境为mac） 1.安装 TexturePacker 然后安装 TexturePacker Command Line Tool如上图所示，安装 TexturePacker Command Line Tool 2.打开Teminal">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://waitingchange.github.io/images/texurepacker_install.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/texurepacker_teminal.png">
+<meta property="article:published_time" content="2018-12-01T15:06:11.000Z">
+<meta property="article:modified_time" content="2018-12-01T15:06:11.000Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://waitingchange.github.io/images/texurepacker_install.png">
+
+
+<link rel="canonical" href="https://waitingchange.github.io/2018/12/01/TexurePacker/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>TexurePacker | 懒人的胡言乱语</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85-TexturePacker-%E7%84%B6%E5%90%8E%E5%AE%89%E8%A3%85-TexturePacker-Command-Line-Tool"><span class="nav-number">1.</span> <span class="nav-text">1.安装 TexturePacker 然后安装 TexturePacker Command Line Tool</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%89%93%E5%BC%80Teminal-%E8%BE%93%E5%85%A5-TexturePacker"><span class="nav-number">2.</span> <span class="nav-text">2.打开Teminal  输入 TexturePacker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%9F%A5%E9%81%93%E9%99%90%E5%AE%9A%E6%9D%A1%E4%BB%B6%EF%BC%8C%E9%82%A3%E4%B9%88%E5%91%BD%E4%BB%A4%E4%B9%9F%E5%A4%A7%E6%A6%82%E8%83%BD%E7%9F%A5%E9%81%93%E4%BA%86"><span class="nav-number">3.</span> <span class="nav-text">3.知道限定条件，那么命令也大概能知道了</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%A8%A1%E6%9D%BF%E6%9C%89%E4%BA%86%E4%B9%8B%E5%90%8E%EF%BC%8C%E5%89%A9%E4%B8%8B%E7%9A%84%E5%B0%B1%E6%98%AF%E5%AE%9E%E7%8E%B0%E4%BA%86"><span class="nav-number">4.</span> <span class="nav-text">4.模板有了之后，剩下的就是实现了</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description">仓库坏了，丢了一些内容</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:waiting0313@gmail.com" title="E-Mail → mailto:waiting0313@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2018/12/01/TexurePacker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="仓库坏了，丢了一些内容">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          TexurePacker
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2018-12-01 23:06:11" itemprop="dateCreated datePublished" datetime="2018-12-01T23:06:11+08:00">2018-12-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%87%92%E4%BA%BA%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">懒人工具</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>  设想一下，一个游戏有N多图片资源，分为M个文件夹，手动使用TexurePacker打图实在是一个体力活，同时还有忙中出乱的风险。使用脚本批量处理是不二的选择（当前环境为mac）</p>
+<h3 id="1-安装-TexturePacker-然后安装-TexturePacker-Command-Line-Tool"><a href="#1-安装-TexturePacker-然后安装-TexturePacker-Command-Line-Tool" class="headerlink" title="1.安装 TexturePacker 然后安装 TexturePacker Command Line Tool"></a>1.安装 TexturePacker 然后安装 TexturePacker Command Line Tool</h3><p><img src="/images/texurepacker_install.png" alt="&quot;install图片&quot;"><br>如上图所示，安装 TexturePacker Command Line Tool</p>
+<h3 id="2-打开Teminal-输入-TexturePacker"><a href="#2-打开Teminal-输入-TexturePacker" class="headerlink" title="2.打开Teminal  输入 TexturePacker"></a>2.打开Teminal  输入 TexturePacker</h3><p><img src="/images/texurepacker_teminal.png" alt="&quot;Teminal图片&quot;"><br>​    1.检查是否安装成功<br>​    2.细看 Options:内容的 Output:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">--sheet &lt;filename&gt;   要输出的文件的名字       Name of the sheet to write, see texture-format <span class="keyword">for</span> formats available</span><br><span class="line">--texture-format &lt;id&gt;  要输出的图片格式   png、pvr2、pvr2gz、jpg 等   Sets the format <span class="keyword">for</span> the textures.</span><br><span class="line">--data &lt;filename&gt;      plist文件的名字     Name of the data file to write</span><br><span class="line">--format &lt;format&gt;   类型 cocos2d 、unity 等        Format to write, default is cocos2d</span><br><span class="line">--force-publish   忽略hash_key 每次都强制从新输出      Ignore smart update <span class="built_in">hash</span> and force re-publishing of the files</span><br><span class="line">--texturepath &lt;path&gt; 输出路径    Adds the path to the texture file name stored <span class="keyword">in</span> the data file.</span><br><span class="line"> 	--border-padding &lt;int&gt;    图片之间间隔  Sets a padding around each the border, value is <span class="keyword">in</span> pixels, default is 2</span><br><span class="line">--shape-padding &lt;int&gt;   图片形状间隔    Sets a padding around each shape, value is <span class="keyword">in</span> pixels, default is 2</span><br><span class="line">--trim-mode &lt;value&gt; 删除透明像素恢复原始大小，加快渲染 Remove transparent parts of a sprite to shrink atlas size and speed up rendering</span><br><span class="line">                                            None - Keep transparent pixels</span><br><span class="line">                                            Trim - Remove transparent pixels, use original size.</span><br><span class="line">                                            Crop - Remove transparent pixels, use trimmed size, flush position.</span><br><span class="line">                                     CropKeepPos - Remove transparent pixels, use trimmed size, keep position.</span><br><span class="line"></span><br><span class="line">	--basic-sort-by    图片排序     Sort order <span class="keyword">for</span> the sprite list</span><br><span class="line">                                            Best - Best</span><br><span class="line">                                            Name - Name</span><br><span class="line">                                           Width - Width</span><br><span class="line">                                          Height - Height</span><br><span class="line">                                            Area - Area</span><br><span class="line">                                   Circumference - Circumference</span><br><span class="line">--basic-order      方向排序     Sorting direction</span><br><span class="line">                                       Ascending - Ascending</span><br><span class="line">                                      Descending - Descending</span><br><span class="line">--scale &lt;<span class="built_in">float</span>&gt;   缩放          Scales all images before creating the sheet. E.g. use 0.5 <span class="keyword">for</span> half size</span><br><span class="line"> --max-size &lt;int&gt;  最大的尺寸        Sets the maximum width and height <span class="keyword">for</span> the texture <span class="keyword">in</span> auto size mode, default is 2048</span><br><span class="line"> --size-constraints &lt;value&gt; 结纹理进行大小格式化，AnySize 任何大小 POT 使用2次幂  Restrict sizes</span><br><span class="line">                                             POT - Power of 2 (2,4,8,16,32,...)</span><br><span class="line">                                         AnySize - Minimum size</span><br><span class="line">                                            NPOT - Any size but power of 2</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="3-知道限定条件，那么命令也大概能知道了"><a href="#3-知道限定条件，那么命令也大概能知道了" class="headerlink" title="3.知道限定条件，那么命令也大概能知道了"></a>3.知道限定条件，那么命令也大概能知道了</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Examples:</span><br><span class="line">  TexturePacker assets/*.png</span><br><span class="line">        creates out.plist and out.png from all png files <span class="keyword">in</span> assets</span><br><span class="line">        trimming all files and creating a texture with max. 2048x2048px</span><br><span class="line"></span><br><span class="line">  TexturePacker --data main-hd.plist --format cocos2d --sheet main-hd.png assets/*.png</span><br><span class="line">        creates main-hd.plist and main-hd.png from all png files <span class="keyword">in</span> assets</span><br><span class="line">        trimming all files and creating a texture with max. 2048x2048px</span><br><span class="line"></span><br><span class="line">  TexturePacker --scale 0.5 --max-size 1024 --data main-sd.plist --format cocos2d --sheet main-sd.png assets/*.png</span><br><span class="line">        creates main-sd.plist and main-sd.png from all png files <span class="keyword">in</span> assets</span><br><span class="line">        scaling all images to 50%, trimming all files and creating</span><br><span class="line">        a texture with max. 1024x1024px</span><br></pre></td></tr></table></figure>
+<h3 id="4-模板有了之后，剩下的就是实现了"><a href="#4-模板有了之后，剩下的就是实现了" class="headerlink" title="4.模板有了之后，剩下的就是实现了"></a>4.模板有了之后，剩下的就是实现了</h3><p>我自己随便写了个脚本，地址  : <a target="_blank" rel="noopener" href="https://github.com/waitingchange/Texurepacker">地址</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/08/21/Cocos%20%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B/" rel="prev" title="Cocos 代码执行流程">
+                  <i class="fa fa-chevron-left"></i> Cocos 代码执行流程
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2018/12/01/Tinypng/" rel="next" title="Tinypng">
+                  Tinypng <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

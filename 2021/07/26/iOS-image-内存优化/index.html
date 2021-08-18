@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="iOS Image 内存优化  结论在iOS 原生层，对于图片的使用，推荐使用 UIGraphicsImageRenderer API  也需要合理在不同的使用场景，根据场景需要类型使用正确的API ，同时对图片资源做加载和释放管理。 前因看看上面的这个图，有没有考虑过，iOS 里面一张 4096 * 3072 尺寸的png图片占用多大内存呢 ？答案是惊人的 48M 计算公式是这样的 image">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS image 内存优化">
+<meta property="og:url" content="https://waitingchange.github.io/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="iOS Image 内存优化  结论在iOS 原生层，对于图片的使用，推荐使用 UIGraphicsImageRenderer API  也需要合理在不同的使用场景，根据场景需要类型使用正确的API ，同时对图片资源做加载和释放管理。 前因看看上面的这个图，有没有考虑过，iOS 里面一张 4096 * 3072 尺寸的png图片占用多大内存呢 ？答案是惊人的 48M 计算公式是这样的 image">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://waitingchange.github.io/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_buffer.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_render.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_render_with.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_render_normal.png">
+<meta property="og:image" content="https://waitingchange.github.io/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_render_phy.png">
+<meta property="article:published_time" content="2021-07-26T08:25:44.000Z">
+<meta property="article:modified_time" content="2021-07-26T12:32:13.000Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://waitingchange.github.io/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_buffer.png">
+
+
+<link rel="canonical" href="https://waitingchange.github.io/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>iOS image 内存优化 | 懒人的胡言乱语</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#iOS-Image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">iOS Image 内存优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-number">1.1.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E5%9B%A0"><span class="nav-number">1.2.</span> <span class="nav-text">前因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AE%E9%A2%98%E6%9D%A5%E4%BA%86%EF%BC%8C%E5%86%85%E5%AD%98%E9%83%BD%E5%9C%A8%E5%93%AA%E9%87%8C-%EF%BC%9F"><span class="nav-number">1.3.</span> <span class="nav-text">问题来了，内存都在哪里 ？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%89%E6%B2%A1%E6%9C%89%E6%9B%B4%E5%A5%BD%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9D%A5%E9%99%8D%E4%BD%8E%E5%9B%BE%E7%89%87%E5%86%85%E5%AD%98-%EF%BC%9F"><span class="nav-number">1.4.</span> <span class="nav-text">有没有更好的方式来降低图片内存 ？</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description">仓库坏了，丢了一些内容</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:waiting0313@gmail.com" title="E-Mail → mailto:waiting0313@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="仓库坏了，丢了一些内容">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS image 内存优化
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-07-26 16:25:44 / 修改时间：20:32:13" itemprop="dateCreated datePublished" datetime="2021-07-26T16:25:44+08:00">2021-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">内存优化</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="iOS-Image-内存优化"><a href="#iOS-Image-内存优化" class="headerlink" title="iOS Image 内存优化"></a>iOS Image 内存优化</h1><img src="/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_buffer.png" style="zoom:67%;">
+
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>在iOS 原生层，对于图片的使用，推荐使用 <strong>UIGraphicsImageRenderer</strong> API </p>
+<p>也需要合理在不同的使用场景，根据场景需要类型使用正确的API ，同时对图片资源做加载和释放管理。</p>
+<h2 id="前因"><a href="#前因" class="headerlink" title="前因"></a>前因</h2><p>看看上面的这个图，有没有考虑过，iOS 里面一张 <code>4096 * 3072</code> 尺寸的<code>png</code>图片占用多大内存呢 ？答案是惊人的 <strong>48M</strong></p>
+<p>计算公式是这样的 <code>image width * image height * 4 /1024 / 1024</code>  这里认为 image 属于RGBA8888 </p>
+<h2 id="问题来了，内存都在哪里-？"><a href="#问题来了，内存都在哪里-？" class="headerlink" title="问题来了，内存都在哪里 ？"></a>问题来了，内存都在哪里 ？</h2><p>深究一下iOS 内存分配逻辑可以有下面的结论，iOS 内存部分分为三类，即：<code>Data Buffer、Image Buffer、Frame Buffer</code></p>
+<p><code>Data Buffer </code>是存储在内存中的原始数据，图像可以使用不同的格式保存，如 jpg、png。是Image 的文件内容。</p>
+<p><code>Image Buffer</code> 是图像在内存中的存在方式，用于存放图像具体素点信息。<code>Image Buffer</code> 的大小和图像的大小成正比。</p>
+<p><code>Frame Buffer</code> 和 <code>Image Buffer</code> 内容相同，不过其存储在 vRAM（video RAM）中，而 Image Buffer 存储在 RAM 中。</p>
+<p>解码就是从 <code>Data Buffer </code>生成 <code>Image Buffer </code>的过程。<code>Image Buffer</code> 会占用带宽上传到 <code>GPU</code> 成为 <code>Frame Buffer</code>，最后GPU负责使用 <code>Frame Buffer</code>用于更新显示区域。</p>
+<img src="/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_render.png" style="zoom:67%;">
+
+<p>大致执行流程如上图，先经过载入，加载图像内容到内存成为Data Buffer ， 然后就是经过Decode 过程，转化图像为GPU 可用的 Image Buffer ，在需要显示的时候Image Buffer data 会被上传到GPU 中成为Frame Buffer Data 进行相应渲染。</p>
+<p>上图飙升的 48M 内存代码如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;原图加载</span><br><span class="line">-(void)test</span><br><span class="line">&#123;</span><br><span class="line">    UIImageView *imageView &#x3D; [[UIImageView alloc]init];</span><br><span class="line">    UIImage *image &#x3D; [UIImage imageNamed:@&quot;bg_teacherLetter&quot;];</span><br><span class="line">    imageView.image &#x3D; image;</span><br><span class="line">    imageView.frame &#x3D; CGRectMake(0, 0, 1367*0.5, 1089*0.5);</span><br><span class="line">    [self.view addSubview:imageView];</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>UIImage</code> 是 iOS 中处理图像的高级类。创建一个 UIImage 实例只会加载 Data Buffer，将图像显示到屏幕上才会触发解码，也就是 Data Buffer 解码为 Image Buffer。Image Buffer 也关联在 UIImage 上。</p>
+<p><code>imageNamed</code> 这个常用API 存在一个内存问题，就是载入以后图片会被缓存到系统Cache 里面。 这是一种便捷的设计，比如可以快速在cache 里面查找到图片的缓存，同时也是一个弊端，内存就放在了cache 里面，一部分内存就会被持续占用。如果是比较小，又常用的图片，这么处理比较合适，但是针对于例子中的尺寸来讲，就非常不合适。</p>
+<p>对于这个问题，大家通用的解决方案应该是 使用 imageWithContentsOfFile这个 API 来搞，根据苹果的解释是：使用这个方法创建的图片不会缓存于系统缓存内，开发者可在适当的时机对图片进行处理。因而，对于一些比较大的或不常使用的图片，我们应当使用<code>imageWithContentsOfFile:</code>进行创建。</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">-(<span class="keyword">void</span>)withContexOfFile&#123;</span><br><span class="line">    <span class="built_in">UIImageView</span> *imageView = [[<span class="built_in">UIImageView</span> alloc]init];</span><br><span class="line">    <span class="built_in">UIImage</span> *image =   [ViewController imageWithContentName:<span class="string">@&quot;bg_teacherLetter@2x.png&quot;</span>];</span><br><span class="line">    imageView.image = image;</span><br><span class="line">    imageView.frame = <span class="built_in">CGRectMake</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">1367</span>*<span class="number">0.5</span>, <span class="number">1089</span>*<span class="number">0.5</span>);</span><br><span class="line">    [<span class="keyword">self</span>.view addSubview:imageView];</span><br><span class="line">&#125;</span><br><span class="line">+ (<span class="built_in">UIImage</span> *)imageWithContentName:(<span class="built_in">NSString</span> *)name</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> [<span class="built_in">UIImage</span> imageWithContentsOfFile:[[<span class="built_in">NSBundle</span> mainBundle] pathForResource:name ofType:<span class="literal">nil</span>]];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<img src="/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_render_with.png" style="zoom:67%;">
+
+<p>API 的本身用途是不在cache  里面缓存图片内容，但是图片占用的内存依然很大。</p>
+<p><strong>优点</strong> : 图片不使用即释放内存，不存在图片常驻内存<br><strong>缺点</strong> : 每次使用都需要做IO的操作</p>
+<p>适用于使用不频繁的大图加载</p>
+<h2 id="有没有更好的方式来降低图片内存-？"><a href="#有没有更好的方式来降低图片内存-？" class="headerlink" title="有没有更好的方式来降低图片内存 ？"></a>有没有更好的方式来降低图片内存 ？</h2><p>答案，有！ 参考 <a target="_blank" rel="noopener" href="https://developer.apple.com/videos/play/wwdc2018/219/">Image and Graphics Best Practices</a>   WWDC2018</p>
+<p>所以引出这里的重点： <strong>UIGraphicsImageRenderer</strong></p>
+<p>代码先：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">-(void)resizeTest</span><br><span class="line">&#123;</span><br><span class="line">        UIImageView *imageView &#x3D; [[UIImageView alloc]init];</span><br><span class="line">        UIImage *image &#x3D; [UIImage imageNamed:@&quot;bg_teacherLetter&quot;];</span><br><span class="line">        image &#x3D; [self resiImage:image size:CGSizeMake(1367*0.5, 1089*0.5)];</span><br><span class="line">        imageView.image &#x3D; image;</span><br><span class="line">        imageView.frame &#x3D; CGRectMake(0, 0, 1367*0.5, 1089*0.5);</span><br><span class="line">        [self.view addSubview:imageView];</span><br><span class="line">&#125;</span><br><span class="line">- (UIImage*)resiImage:(UIImage *)image size:(CGSize)size&#123;</span><br><span class="line">    UIGraphicsImageRenderer *re &#x3D; [[UIGraphicsImageRenderer alloc]initWithSize:size];</span><br><span class="line">    return [re imageWithActions:^(UIGraphicsImageRendererContext * _Nonnull rendererContext) &#123;</span><br><span class="line">        [image drawInRect:CGRectMake(0, 0, size.width, size.height)];</span><br><span class="line">    &#125;];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>先给出一组数据对比  图片尺寸同样缩放在 1367 / 2 , 1089 / 2</p>
+<p>图1 使用 imageNamed  API , 发现 Physical footprint 明显增加了 48M， 内存块儿在 <strong>IOSurface</strong></p>
+<img src="/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_render_normal.png" style="zoom:67%;">
+
+<p><strong>IOSurface</strong> 内存块儿增加是因为 图片decode 之后生成的位图，内存会被分类到这里</p>
+<p>图2 使用 UIGraphicsImageRenderer  API </p>
+<img src="/2021/07/26/iOS-image-%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/ios_image_render_phy.png" style="zoom:67%;">
+
+<p>明显观察到的内容是 占用巨大的 <strong>IOSurface</strong> 不存在了，但是内存块儿多了一个 <strong>CG raster data</strong> 大小为 5824K</p>
+<p><code>1367 *  1089 * 4  / 1024  =  5815.08984375</code> 跟 5824 很接近是不是 ？ 可是又会有一点儿感觉不对，图片的宽和高都没有按照缩放的size 进行计算。于是就这个问题又去查了一下。</p>
+<p>UIGraphicsImageRenderer 实现的原理是，系统可以根据图片分辨率选择创建解码图片的格式，如选用SRGB format 格式，每个像素占用 4 字节，而Alpha 8 format，每像素只占用 1 字节，因此可以减少大量的解码内存占用。</p>
+<p>使用 UIGraphicsImageRenderer 之后这张图片physical footprint增加了多少内存 ？ 0.2M</p>
+<p>那么优化了多少内存呢 (48 - 0.2) / 48  = 0.996 , 释放了 96% 的可用空间。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/07/08/C-%E8%B7%A8%E5%B9%B3%E5%8F%B0%E4%B8%9A%E5%8A%A1%E5%AE%9E%E4%BE%8B/" rel="prev" title="C++ 跨平台业务实例">
+                  <i class="fa fa-chevron-left"></i> C++ 跨平台业务实例
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/08/17/iOS%E5%AE%A1%E6%A0%B8/" rel="next" title="iOS审核">
+                  iOS审核 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

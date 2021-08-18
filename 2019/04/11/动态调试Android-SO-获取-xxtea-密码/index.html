@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"waitingchange.github.io","root":"/","images":"/images","scheme":"Gemini","version":"8.2.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}};
+  </script>
+<meta name="description" content="一步一步获取Cocos2dx xxtea 密码1.准备工具 Android 手机一部，最好是 32位处理器，必须能root   IDA Pro   cocos apk 确认使用xxtea （cocos new HelloLua -l lua 然后生成apk）   2.电脑环境 win or Mac​    电脑需要能够使用 adb 命令 ，建议安装 apktool （防止apk 没有配置 andr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="动态调试Android SO 获取 xxtea 密码">
+<meta property="og:url" content="https://waitingchange.github.io/2019/04/11/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95Android-SO-%E8%8E%B7%E5%8F%96-xxtea-%E5%AF%86%E7%A0%81/index.html">
+<meta property="og:site_name" content="懒人的胡言乱语">
+<meta property="og:description" content="一步一步获取Cocos2dx xxtea 密码1.准备工具 Android 手机一部，最好是 32位处理器，必须能root   IDA Pro   cocos apk 确认使用xxtea （cocos new HelloLua -l lua 然后生成apk）   2.电脑环境 win or Mac​    电脑需要能够使用 adb 命令 ，建议安装 apktool （防止apk 没有配置 andr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_1.jpg">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_2.jpg">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_3.jpg">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_4.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_5.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_6.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_7.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_8.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_9.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_10.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_11.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_12.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_13.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_14.jpg">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_15.jpg">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_16.jpg">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_17.png">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_18.jpg">
+<meta property="og:image" content="https://waitingchange.github.io/images/android_tem_19.jpg">
+<meta property="article:published_time" content="2019-04-11T08:50:51.000Z">
+<meta property="article:modified_time" content="2019-04-17T07:52:31.000Z">
+<meta property="article:author" content="change">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://waitingchange.github.io/images/android_tem_1.jpg">
+
+
+<link rel="canonical" href="https://waitingchange.github.io/2019/04/11/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95Android-SO-%E8%8E%B7%E5%8F%96-xxtea-%E5%AF%86%E7%A0%81/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+<title>动态调试Android SO 获取 xxtea 密码 | 懒人的胡言乱语</title>
+  
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">懒人的胡言乱语</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E6%AD%A5%E4%B8%80%E6%AD%A5%E8%8E%B7%E5%8F%96Cocos2dx-xxtea-%E5%AF%86%E7%A0%81"><span class="nav-number">1.</span> <span class="nav-text">一步一步获取Cocos2dx xxtea 密码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%87%86%E5%A4%87%E5%B7%A5%E5%85%B7"><span class="nav-number">1.1.</span> <span class="nav-text">1.准备工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E7%94%B5%E8%84%91%E7%8E%AF%E5%A2%83-win-or-Mac"><span class="nav-number">1.2.</span> <span class="nav-text">2.电脑环境 win or Mac</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%85%B7%E4%BD%93%E6%93%8D%E4%BD%9C%E6%AD%A5%E9%AA%A4"><span class="nav-number">1.3.</span> <span class="nav-text">3.具体操作步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E5%AF%86%E7%A0%81%E9%83%A8%E5%88%86%E5%B7%B2%E7%BB%8F%E7%BB%99%E4%BD%A0%E4%BA%86%EF%BC%8C%E5%85%B6%E4%BD%99%E7%9A%84%E5%B0%B1%E8%87%AA%E5%B7%B1%E7%9C%8B%E7%9D%80%E5%8A%9E%E5%90%A7"><span class="nav-number">1.4.</span> <span class="nav-text">4.密码部分已经给你了，其余的就自己看着办吧</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="change"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">change</p>
+  <div class="site-description" itemprop="description">仓库坏了，丢了一些内容</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">32</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/waitingchange" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;waitingchange" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:waiting0313@gmail.com" title="E-Mail → mailto:waiting0313@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://waitingchange.github.io/2019/04/11/%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95Android-SO-%E8%8E%B7%E5%8F%96-xxtea-%E5%AF%86%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="change">
+      <meta itemprop="description" content="仓库坏了，丢了一些内容">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="懒人的胡言乱语">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          动态调试Android SO 获取 xxtea 密码
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-04-11 16:50:51" itemprop="dateCreated datePublished" datetime="2019-04-11T16:50:51+08:00">2019-04-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2019-04-17 15:52:31" itemprop="dateModified" datetime="2019-04-17T15:52:31+08:00">2019-04-17</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Android-%E5%8F%8D%E7%BC%96%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">Android 反编译</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="一步一步获取Cocos2dx-xxtea-密码"><a href="#一步一步获取Cocos2dx-xxtea-密码" class="headerlink" title="一步一步获取Cocos2dx xxtea 密码"></a>一步一步获取Cocos2dx xxtea 密码</h1><h2 id="1-准备工具"><a href="#1-准备工具" class="headerlink" title="1.准备工具"></a>1.准备工具</h2><ol>
+<li><p>Android 手机一部，最好是 32位处理器，必须能root </p>
+</li>
+<li><p>IDA Pro </p>
+</li>
+<li><p>cocos apk 确认使用xxtea （cocos new HelloLua -l lua 然后生成apk）</p>
+</li>
+</ol>
+<h2 id="2-电脑环境-win-or-Mac"><a href="#2-电脑环境-win-or-Mac" class="headerlink" title="2.电脑环境 win or Mac"></a>2.电脑环境 win or Mac</h2><p>​    电脑需要能够使用 adb 命令 ，建议安装 apktool （防止apk 没有配置 <em>android:debuggable=”true”<em>，如果apk包不能直接调试请自行查找如何重新打包apk ） ，Android Studio 需要安装 （主要为了分析 manifest 文件 Application 中是否配置</em>android:debuggable=”true”</em>  另外需要使用 sdk 文件夹 tool 下面 monitor  ，win 下面可以使用 ADT Bundle 中 ddms ） 因为个人使用习惯问题，这里讲述如何在mac 系统下面操作。</p>
+<h2 id="3-具体操作步骤"><a href="#3-具体操作步骤" class="headerlink" title="3.具体操作步骤"></a>3.具体操作步骤</h2><ol>
+<li><p>Android 手机具有root 权限 而且已经安装被调试的apk包，在pc端 打开终端输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">adb shell </span><br><span class="line">su</span><br><span class="line">cd &#x2F;data&#x2F;app      #查看包名文件夹是 为debug 启动 应用做准备</span><br><span class="line">ls -l</span><br></pre></td></tr></table></figure>
+
+<p>在真正启动调试以前需要把 ida pro 提供的 android_server 文件放在 Android手机的 <em>/data/local/tmp</em> 文件夹下，操作方式可以使用 <em>adb push</em> 或者拷贝文件到手机SD 卡中，然后通过命令形式挪动到 <em>/data/local/tmp</em> ，<strong>重要的是android_server 文件需要给与可执行权限， 所以Android 手机需要有Root 权限</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">adb shell </span><br><span class="line">su</span><br><span class="line">cd &#x2F;data&#x2F;local&#x2F;tmp</span><br><span class="line">chmod 777 android_server</span><br><span class="line">.&#x2F;android_server</span><br></pre></td></tr></table></figure>
+<p><img src="/images/android_tem_1.jpg" alt="&quot;执行终端截图&quot;"><br><img src="/images/android_tem_2.jpg" alt="&quot;执行android_server&quot;"></p>
+<p>从截图可以看到已经启动了android_server 端口是 23946 ， 需要使用  adb命令将端口映射至电脑  23946 <strong>为啥是这个端口? Ida Pro 在Attach Android时候默认监听端口是这个</strong><br><img src="/images/android_tem_3.jpg" alt="&quot;adb 转发&quot;"></p>
+<p>准备工作应该差不多了，剩下的就是如何调戏Apk </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">adb shell</span><br><span class="line">am start -D -n org.cocos2dx.HelloLua&#x2F;org.cocos2dx.lua.AppActivity   #debug 形式启动apk</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/android_tem_4.png" alt="&quot;命令启动apk&quot;"></p>
+<p>am start 启动Android Activity  <strong>-D: 允许调试功能 ， -n <COMPONENT>: 指定组件名，格式为{包名}/.{主Activity名}</COMPONENT></strong></p>
+<p><img src="/images/android_tem_5.png" alt="&quot;App启动后截图&quot;"></p>
+</li>
+<li><p>启动 DDMS (win)  or Monitor (mac)</p>
+<p>也许会在想，为啥是DDMS ?  自己粗略的理解，为了查看App debug 信息（不一定正确，如果有确定的答案麻烦通知我）。 在Devices 里面能够看到等待调试的app信息，包名，端口等  但是发现debug 的标识还是红色，意思是暂时还不能调试，所以监视器已经被启动，剩下操作如何使用IDA 连接手机然后调试<br><img src="/images/android_tem_6.png" alt="&quot;DDMS能看到的内容&quot;"></p>
+</li>
+<li><p>IDA 部分操作<br>准备工作和启动APP 已经结束了，剩下的是需要借助 IDA 这货来获取我们想要的内容。好戏才刚刚开始~<br>我在使用 Mac 版本 IDA Pro 7.0 ，具体下载地址暂时不提供，毕竟业余水平的我也买不起。</p>
+<p>IDA Pro 一直存在 两个可执行文件， 32 位和 64 位之分。区别在于 32 位可以使用 F5 把二进制中函数部分难以理解的汇编转化为稍微容易可读的 C 语言。 推荐暂时使用 32 位，所以 也推荐使用 32 位处理器的 Android 手机（2019 年的今天已经很难找到，我的测试机器是A0001, 骁龙 801 处理器 64位 ,尴尬的笑脸），细心的同学们会发现在 IDA 提供的 android_server 文件在 dbgsrv 文件夹下面包含两个， 另外一个文件是 android_server64 （使用这个文件的时候请打开 IDA Pro 64）。啰嗦到此为止，我们已经打开了 IDA Pro ,需要操作的是 Attach  Android 设备。</p>
+<p><img src="/images/android_tem_7.png" alt="&quot;IDA Attach&quot;"></p>
+<p>点击 Remote ARMLinux / Android Debugger</p>
+<p><img src="/images/android_tem_8.png" alt="&quot;Set Debugger&quot;"></p>
+<p>然后点击 Debug options</p>
+<p><img src="/images/android_tem_9.png" alt="&quot;Debug options&quot;"></p>
+<p>请根据我的设置进行配置，如果你想要别的功能，那么请自行设置，然后点击确定。</p>
+<p>回到Debugg application setup 界面， Hostname 请写localhost 或者 127.0.0.1 端口号默认 23946 然后点击OK</p>
+<p>在新弹出的页面请点击seach 然后输入你需要调戏的包名（可以输入部分关键字进行查找）<br><img src="/images/android_tem_10.png" alt="&quot;Debug options&quot;"></p>
+<p>然后就是点击OK<br><img src="/images/android_tem_11.png" alt="&quot;Debug&quot;"></p>
+<p>到现在这个地方才是真正开始准备获取cocos xxtea 密码的位置。 正如前面讲到的，Monitor 中显示 APP Debug 的标识是红色的，meaning 不能调试。 解决这个问题需要一行命令，终端输入如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jdb -connect com.sun.jdi.SocketAttach:hostname&#x3D;127.0.0.1,port&#x3D;8700 #如果 8700 不好使 那就试一下 8600  为什么请问Google</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/android_tem_12.png" alt="&quot;Debug&quot;"></p>
+<p>当执行完命令时候 ，Monitor 中 debug的图标变成了绿色，所以，下一步就是开始反编译</p>
+<p>在准备下一步的时候我们需要考虑，目的到底是什么？ 需要看哪里 ？ 已知：IDA Pro 可以在二进制部分函数中进行打断点单步调试。在 Cocos 中，C++ 中的代码会最终编译到 <strong>libcocos2dlua.so</strong>， 所以需要先定位到 so包，然后再次定位到相应函数，最基本的执行逻辑。IDA Pro 可以进行断点，所以需要再函数执行以前进行打上断点，等执行到断点时候查看内容。问题来了，如何做 ？ 在什么地方打断点？如何判断so包是否被载入？如何判定打断点的函数就是你需要的函数 ？ 如何查看自己想要的值 ？一些列的问号等着解决</p>
+</li>
+<li><p>知识补充 如何查找需要debug 的函数</p>
+<p> 目的：拿到 xxtea 解密密码。 目的很明确，所以先找到Cocos 源码部分，找到xxtea.h </p>
+ <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">char</span> *<span class="title">xxtea_encrypt</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> *data, xxtea_long data_len, <span class="keyword">unsigned</span> <span class="keyword">char</span> *key, xxtea_long key_len, xxtea_long *ret_length)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">char</span> *<span class="title">xxtea_decrypt</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">char</span> *data, xxtea_long data_len, <span class="keyword">unsigned</span> <span class="keyword">char</span> *key, xxtea_long key_len, xxtea_long *ret_length)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p> xxtea_decrypt 多么刺眼，如果，我指的是如果，Cocos 的包开发者没有这块的安全意识，基本上这块的代码应该不会改动。所以，IDA 静态反编译<strong>libcocos2dlua.so</strong> ,在能够列出的函数列表中我们查找 xxtea 字段，万一能够查到我们想要的内容呢 ？</p>
+<p> 我另外开启了一个 IDA  用来静态反编译 ** libcocos2dlua.so** ， 在function 列表中查找 <em>xxtea</em> 如下截图<br> ​    <img src="/images/android_tem_13.png" alt="&quot;Debug&quot;"></p>
+<p> 有的时候结果就是这么的让人欣喜。能找到这个函数，那么剩下的问题是如何在合适的时间打上断点，然后让APP断在我们想要的位置 ？在这个之前，得先找到什么时候SO 包被载入。所以往下面看。<br>​</p>
+</li>
+<li><p>继续跟踪调试</p>
+<p> 回到我们使用IDA Pro 连接好的准备调试界面，我们在IDA 的debug 选项中选择了加载so包的时候断住，但是在我的测试中发现貌似我这个在载入<strong>libcocos2dlua.so</strong><br> 并没有断住。同时也发现暂时并没有载入 <strong>libcocos2dlua.so</strong> 。所以开始想办法，如何去断点调试。IDA Pro 提供了 <em>F8 单步调试</em> ， <em>F9 继续执行</em>。在右侧的 Modules 中 <em>ctrl + f 查找 cocos</em> 发现没有内容。使用比较粗糙的方法，<em>F8 一下一下的嗯，遇到弹框就点击继续一直到libcocos2dlua.so载入成功</em>  在SO 载入成功以后，Modules 里面也出现了我们想要的 SO 包。赞！</p>
+<p> <img src="/images/android_tem_14.jpg" alt="&quot;Debug&quot;"></p>
+<p> 双击 Modules 中 libcocos2dx.so ,然后查找 <em>xxtea</em><br> ​      <img src="/images/android_tem_15.jpg" alt="&quot;Debug&quot;"></p>
+<p> 在这里打完断点以后可以使用 <strong>F9 让App 执行到断点位置</strong><br> 我们在断点位置摁一下F5 会怎样 ？(如果使用了 64 位的IDA ，那么貌似暂时不支持)<br>  <img src="/images/android_tem_16.jpg" alt="&quot;Debug&quot;"></p>
+<p> 我们看到汇编语言版本的代码被ida 转化为了 略微熟悉的 C 语言， 根据我们xxtea_decrypt 源码我们发现，第三个只才是我们需要的 key 。 胜利在望,我们移动鼠标放在 a3 上面，发现 r2 寄存器才是我们要查找的内容<br>  <img src="/images/android_tem_17.png" alt="&quot;Debug&quot;"></p>
+<p> 双击一下 a3 会如何 ？<br>   <img src="/images/android_tem_18.jpg" alt="&quot;Debug&quot;"></p>
+<p> 或者在下面的 Hex View-1 中点击右键 Synchorize with  中选择 R2<br>  <img src="/images/android_tem_19.jpg" alt="&quot;Debug&quot;"></p>
+</li>
+</ol>
+<h2 id="4-密码部分已经给你了，其余的就自己看着办吧"><a href="#4-密码部分已经给你了，其余的就自己看着办吧" class="headerlink" title="4.密码部分已经给你了，其余的就自己看着办吧"></a>4.密码部分已经给你了，其余的就自己看着办吧</h2><p>​    ps. 转载前请先联系我  <a href="mailto:&#119;&#x61;&#105;&#x74;&#x69;&#110;&#103;&#48;&#x33;&#49;&#x33;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#111;&#109;">&#119;&#x61;&#105;&#x74;&#x69;&#110;&#103;&#48;&#x33;&#49;&#x33;&#x40;&#x67;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#111;&#109;</a><br>    提供测试 apk 下载 <a href="/download/HelloLua-debug.apk" title="测试APK下载">点击下载</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/01/26/%E6%80%8E%E6%A0%B7%E8%8E%B7%E5%8F%96fir-im%E4%B8%AD%E7%9A%84IPA%E5%8C%85/" rel="prev" title="怎样获取fir.im中的IPA包">
+                  <i class="fa fa-chevron-left"></i> 怎样获取fir.im中的IPA包
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/29/%E7%8E%A9%E5%84%BF%E8%BD%ACCocos-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" rel="next" title="玩儿转Cocos 文件系统">
+                  玩儿转Cocos 文件系统 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      const activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      const commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">change</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
